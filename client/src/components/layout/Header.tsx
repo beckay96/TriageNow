@@ -1,10 +1,12 @@
-import { FC } from 'react';
-import { Link } from 'wouter';
-import useStore from '@/store';
-import ThemeToggle from '@/components/ThemeToggle';
+import { FC } from "react";
+import { Link } from "wouter";
+import useStore from "@/store";
+import ThemeToggle from "@/components/ThemeToggle";
+import isDarkMode from "@/components/ThemeToggle"
 
 const Header: FC = () => {
   const { role } = useStore();
+
 
   return (
     <header className="bg-gradient-to-r from-zinc-800 to-blue-900 dark:bg-gradient-to-br dark:from-blue-800 dark:to-zinc-800 shadow-md py-4 transition-all duration-300">
@@ -25,22 +27,46 @@ const Header: FC = () => {
           </div>
         </Link>
         <div className="flex items-center space-x-4">
-          <div className="text-white">
-            {role === 'patient' && (
-              <div className="flex items-center opacity-0 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
-                <span className="material-icons mr-1 text-white dark:text-green-400">person</span> 
+          <div>
+            {role === "patient" && (
+              <div
+                className="flex items-center opacity-0 animate-fade-in border border-green-400 rounded-full p-2 transition-all duration-300"
+                style={{
+                  animationDelay: "0.2s",
+                  animationFillMode: "forwards",
+                }}
+              >
+                <span className="material-icons mr-1 text-white dark:text-green-400">
+                  person
+                </span>
                 <span className="relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white dark:after:bg-green-400 after:transition-all after:duration-300">
                   Patient Mode
                 </span>
               </div>
             )}
-            {role === 'medical-staff' && (
-              <div className="flex items-center opacity-0 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
-                <span className="material-icons mr-1 text-white dark:text-green-400">medical_services</span>
+            {role === "medical-staff" && (
+              <div
+                className="flex items-center opacity-0 animate-fade-in"
+                style={{
+                  animationDelay: "0.2s",
+                  animationFillMode: "forwards",
+                }}
+              >
+                <span className="material-icons mr-1 text-white dark:text-green-400">
+                  medical_services
+                </span>
                 <span className="relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white dark:after:bg-green-400 after:transition-all after:duration-300">
                   Medical Staff Mode
                 </span>
               </div>
+            )}
+          </div>
+          <div>
+            {isDarkMode (
+            <p>
+              <em>Headache</em>?
+              Try Dark Mode 👉
+            </p>
             )}
           </div>
           <ThemeToggle />
