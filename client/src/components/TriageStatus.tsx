@@ -27,10 +27,10 @@ const TriageStatus: FC<TriageStatusProps> = ({
   const getStatusClass = () => {
     const classMap = {
       processing: 'bg-neutral-200 text-neutral-700 border-neutral-300',
-      critical: 'bg-status-critical/20 text-status-critical border-status-critical',
-      high: 'bg-status-warning/20 text-status-warning border-status-warning',
-      medium: 'bg-status-caution/20 text-status-caution border-status-caution',
-      low: 'bg-status-healthy/20 text-status-healthy border-status-healthy'
+      critical: 'bg-red-50 text-red-500 border-red-500',
+      high: 'bg-orange-50 text-orange-500 border-orange-500',
+      medium: 'bg-amber-50 text-amber-500 border-amber-500',
+      low: 'bg-green-50 text-green-600 border-green-500'
     };
     
     return classMap[status] || 'bg-neutral-200 text-neutral-700 border-neutral-300';

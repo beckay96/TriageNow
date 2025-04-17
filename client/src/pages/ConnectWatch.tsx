@@ -174,27 +174,27 @@ const ConnectWatch: FC = () => {
               {/* Health Status Summary Banner */}
               <div className={`
                 p-4 mb-4 rounded-lg border-l-4
-                ${triageStatus === 'critical' ? 'bg-status-critical/10 border-status-critical' : 
-                  triageStatus === 'high' ? 'bg-status-warning/10 border-status-warning' :
-                  triageStatus === 'medium' ? 'bg-status-caution/10 border-status-caution' :
-                  'bg-status-healthy/10 border-status-healthy'}
+                ${triageStatus === 'critical' ? 'bg-red-50 border-red-500' : 
+                  triageStatus === 'high' ? 'bg-orange-50 border-orange-500' :
+                  triageStatus === 'medium' ? 'bg-amber-50 border-amber-500' :
+                  'bg-green-50 border-green-500'}
               `}>
                 <div className="flex items-center">
                   <span className={`material-icons mr-3 text-2xl
-                    ${triageStatus === 'critical' ? 'text-status-critical' : 
-                      triageStatus === 'high' ? 'text-status-warning' :
-                      triageStatus === 'medium' ? 'text-status-caution' :
-                      'text-status-healthy'}
+                    ${triageStatus === 'critical' ? 'text-red-500' : 
+                      triageStatus === 'high' ? 'text-orange-500' :
+                      triageStatus === 'medium' ? 'text-amber-500' :
+                      'text-green-600'}
                   `}>
                     {triageStatus === 'critical' || triageStatus === 'high' ? 'warning' : 
                      triageStatus === 'medium' ? 'info' : 'check_circle'}
                   </span>
                   <div>
                     <h3 className={`font-semibold text-lg
-                      ${triageStatus === 'critical' ? 'text-status-critical' : 
-                        triageStatus === 'high' ? 'text-status-warning' :
-                        triageStatus === 'medium' ? 'text-status-caution' :
-                        'text-status-healthy'}
+                      ${triageStatus === 'critical' ? 'text-red-500' : 
+                        triageStatus === 'high' ? 'text-orange-500' :
+                        triageStatus === 'medium' ? 'text-amber-500' :
+                        'text-green-600'}
                     `}>
                       {triageStatus === 'critical' ? 'Critical Health Status' : 
                        triageStatus === 'high' ? 'Elevated Health Concern' :
@@ -402,24 +402,38 @@ const ConnectWatch: FC = () => {
             </div>
           )}
 
-          <div className="flex justify-center mb-8">
-            <button 
-              className="text-primary font-medium flex items-center"
-              onClick={toggleQuestionnaire}
-            >
-              {showQuestionnaire ? (
-                <>
-                  <span className="material-icons mr-1">close</span>
-                  Close Questionnaire
-                </>
-              ) : (
-                <>
-                  <span className="material-icons mr-1">assignment</span>
-                  Complete Symptom Questionnaire
-                </>
-              )}
-            </button>
-          </div>
+          {!showQuestionnaire && (
+            <div className="bg-gradient-to-r from-red-50 to-white border-l-4 border-red-500 p-5 rounded-lg shadow-md mb-8 flex items-center justify-between">
+              <div className="flex items-start">
+                <span className="material-icons text-red-500 mr-3 text-2xl">medical_services</span>
+                <div>
+                  <h3 className="font-semibold text-lg text-gray-900">Complete Your Health Assessment</h3>
+                  <p className="text-gray-700">
+                    Provide more details about your symptoms and medical history to receive a more accurate health assessment and priority level.
+                  </p>
+                </div>
+              </div>
+              <button 
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md shadow-sm transition-colors flex items-center ml-4 whitespace-nowrap"
+                onClick={toggleQuestionnaire}
+              >
+                <span className="material-icons mr-1">assignment_turned_in</span>
+                Start Assessment
+              </button>
+            </div>
+          )}
+          
+          {showQuestionnaire && (
+            <div className="flex justify-center mb-8">
+              <button 
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md shadow-sm transition-colors flex items-center"
+                onClick={toggleQuestionnaire}
+              >
+                <span className="material-icons mr-1">close</span>
+                Close Questionnaire
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

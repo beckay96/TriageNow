@@ -53,21 +53,21 @@ const HealthMetricCard: FC<HealthMetricCardProps> = ({ title, value, unit, icon,
 
   const getStatusClass = (status: HealthStatus): string => {
     switch (status) {
-      case 'critical': return 'bg-status-critical/20 text-status-critical border-status-critical';
-      case 'warning': return 'bg-status-warning/20 text-status-warning border-status-warning';
-      case 'elevated': return 'bg-status-caution/20 text-status-caution border-status-caution';
-      case 'normal': return 'bg-status-healthy/20 text-status-healthy border-status-healthy';
-      default: return 'bg-status-healthy/20 text-status-healthy border-status-healthy';
+      case 'critical': return 'bg-red-50 text-red-500 border-red-500';
+      case 'warning': return 'bg-orange-50 text-orange-500 border-orange-500';
+      case 'elevated': return 'bg-amber-50 text-amber-500 border-amber-500';
+      case 'normal': return 'bg-green-50 text-green-600 border-green-500';
+      default: return 'bg-green-50 text-green-600 border-green-500';
     }
   };
 
   const getStatusIconColor = (status: HealthStatus): string => {
     switch (status) {
-      case 'critical': return 'text-status-critical';
-      case 'warning': return 'text-status-warning';
-      case 'elevated': return 'text-status-caution';
-      case 'normal': return 'text-status-healthy';
-      default: return 'text-status-healthy';
+      case 'critical': return 'text-red-500';
+      case 'warning': return 'text-orange-500';
+      case 'elevated': return 'text-amber-500';
+      case 'normal': return 'text-green-600';
+      default: return 'text-green-600';
     }
   };
 
