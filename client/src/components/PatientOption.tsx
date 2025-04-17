@@ -20,7 +20,7 @@ const PatientOption: React.FC<PatientOptionProps> = ({
 }) => {
   return (
     <Card 
-      className="hover:shadow-lg transition-shadow duration-300 cursor-pointer" 
+      className="border border-transparent hover:shadow-lg hover:border-blue-500 transition-shadow duration-300 cursor-pointer" 
       onClick={onClick}
     >
       <CardContent className="p-6">

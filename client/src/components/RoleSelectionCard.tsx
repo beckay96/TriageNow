@@ -11,7 +11,7 @@ interface RoleSelectionCardProps {
 const RoleSelectionCard: FC<RoleSelectionCardProps> = ({ role, title, icon, features, onClick }) => {
   return (
     <div 
-      className="bg-white rounded-lg shadow-lg p-6 flex-1 border-2 border-transparent hover:border-primary-light transition-all cursor-pointer flex flex-col"
+      className="bg-white rounded-xl shadow-xl p-6 flex-1 border-2 border-transparent hover:border-blue-500 transition-all cursor-pointer flex flex-col"
       onClick={onClick}
     >
       <div className="text-center mb-6">
@@ -29,7 +29,7 @@ const RoleSelectionCard: FC<RoleSelectionCardProps> = ({ role, title, icon, feat
         ))}
       </ul>
       <button 
-        className="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-md font-medium transition-colors"
+        className="w-full bg-gradient-to-r from-blue-800 to-green-800 text-white py-3 rounded-md font-medium transition-colors hover:bg-blue-400 hover:text-green-400"
         onClick={onClick}
       >
         Select {role === 'patient' ? 'Patient' : 'Medical Staff'}

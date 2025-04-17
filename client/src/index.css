@@ -1,14 +1,59 @@
-/* Import Material Icons */
+/* Font Imports */
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons+Outlined');
 
+/* Tailwind Directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Custom overrides inside @layer */
 @layer base {
-  * {
-    @apply border-border;
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 240 100% 66%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 5% 84%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent: 240 5.9% 90%;
+    --accent-foreground: 240 5.9% 10%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 80%;
+
+    --chart-1: 220 90% 56%;
+    --chart-2: 120 80% 40%;
+    --chart-3: 35 100% 60%;
+    --chart-4: 280 70% 50%;
+    --chart-5: 0 80% 60%;
+
+    --sidebar-background: 222.2 47.4% 11.2%;
+    --sidebar-foreground: 210 20% 98%;
+    --sidebar-primary: 240 100% 66%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 200 100% 50%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 5.9% 90%;
+    --sidebar-ring: 240 5.9% 70%;
+
+    --radius: 0.5rem;
   }
 
   body {

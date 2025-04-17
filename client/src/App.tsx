@@ -7,6 +7,7 @@ import ConnectWatch from "@/pages/ConnectWatch";
 import MedicalStaffDashboard from "@/pages/MedicalStaffDashboard";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import "./index.css";
 
 function Router() {
   return (

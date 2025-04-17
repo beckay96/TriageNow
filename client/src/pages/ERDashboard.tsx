@@ -124,7 +124,7 @@ const ERDashboard: React.FC = () => {
           <div className="p-5">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm font-medium text-neutral-500">Urgent</p>
+                <p className="text-sm font-medium text-black">Urgent</p>
                 <h3 className="text-3xl font-bold text-status-warning">{urgentCount}</h3>
               </div>
               <div className="bg-status-warning/10 p-3 rounded-full">

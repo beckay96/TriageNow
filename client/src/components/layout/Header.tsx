@@ -6,9 +6,9 @@ const Header: FC = () => {
   const { role } = useStore();
 
   return (
-    <header className="bg-primary shadow-md py-4">
+    <header className="bg-gradient-to-r from-zinc-800 to-blue-900 shadow-md py-4">
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <Link href="/" className="text-white text-xl md:text-2xl font-semibold flex items-center">
+        <Link href="/" className="bg-gradient-to-r from-blue-300 to-green-300 bg-clip-text text-transparent text-xl md:text-2xl font-semibold flex items-center">
           <span className="material-icons mr-2">local_hospital</span>
           TriageNow
         </Link>
