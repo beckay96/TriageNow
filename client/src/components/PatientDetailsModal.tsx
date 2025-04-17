@@ -413,22 +413,26 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
               <h3 className="font-medium mb-3 dark:text-neutral-300">Symptoms & Notes</h3>
               <div className="p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 
                 transition-all duration-300 hover:shadow-md">
-                <div className="">
+                <div>
                   <h4 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Reported Symptoms</h4>
-                  <div className="flex flex-wrap gap-2 animate-stagger-delay">
-                    {patient.symptoms.map((symptom, index) => (
-                      <span 
-                        key={index} 
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                          bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200
-                          hover:scale-105 transition-transform duration-300 
-                          hover:bg-primary-light/20 dark:hover:bg-primary-light/20"
-                        style={{animationDelay: `${0.1 * index}s`}}
-                      >
-                        {symptom}
-                      </span>
-                    ))}
-                  </div>
+                  {patient.symptoms && patient.symptoms.length > 0 ? (
+                    <div className="flex flex-wrap gap-2 animate-stagger-delay mt-2">
+                      {patient.symptoms.map((symptom, index) => (
+                        <span 
+                          key={index} 
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                            bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200
+                            hover:scale-105 transition-transform duration-300 
+                            hover:bg-primary-light/20 dark:hover:bg-primary-light/20"
+                          style={{animationDelay: `${0.1 * index}s`}}
+                        >
+                          {symptom}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">No symptoms reported</p>
+                  )}
                 </div>
                 
                 {/* AI Assessment */}
