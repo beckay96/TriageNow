@@ -194,34 +194,42 @@ const NoWatchPatientDashboard: FC = () => {
   const handleQuestionnaireSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Actually submit the form data now that user has clicked submit
+    submitQuestionnaire({
+      ...questionnaireData,  // Include any fields not present in formData
+      pain: formData.pain,
+      breathing: formData.breathing,
+      symptoms: formData.symptoms
+    });
+    
     // Generate AI response based on the submitted data
-    const symptomDescription = questionnaireData.symptoms.join(', ');
-    const painLevel = questionnaireData.pain;
-    const breathingLevel = questionnaireData.breathing;
+    const symptomDescription = formData.symptoms.join(', ');
+    const painLevel = formData.pain;
+    const breathingLevel = formData.breathing;
     
     let responseMessage = "Based on the information you've provided, ";
     let recommendation = "";
     
     // Determine triage status based on symptoms
     if (
-      questionnaireData.symptoms.includes('chest_pain') || 
-      questionnaireData.symptoms.includes('severe_bleeding') || 
-      questionnaireData.symptoms.includes('stroke_symptoms') ||
-      (questionnaireData.breathing === 'severe')
+      formData.symptoms.includes('chest_pain') || 
+      formData.symptoms.includes('severe_bleeding') || 
+      formData.symptoms.includes('stroke_symptoms') ||
+      (formData.breathing === 'severe')
     ) {
       recommendation = "your symptoms suggest a critical situation that requires immediate medical attention. Please call an ambulance or go to the nearest emergency room immediately.";
     } 
     else if (
       painLevel === 'severe' || 
       breathingLevel === 'moderate' || 
-      questionnaireData.symptoms.includes('fever') && questionnaireData.symptoms.includes('dizziness')
+      formData.symptoms.includes('fever') && formData.symptoms.includes('dizziness')
     ) {
       recommendation = "your symptoms indicate a potentially serious condition. I recommend seeking medical care promptly at an urgent care center or emergency room.";
     }
     else if (
       painLevel === 'moderate' || 
       breathingLevel === 'slight' || 
-      questionnaireData.symptoms.length >= 3
+      formData.symptoms.length >= 3
     ) {
       recommendation = "your symptoms suggest you should seek medical advice soon. Consider visiting an urgent care center today.";
     }
@@ -374,7 +382,7 @@ const NoWatchPatientDashboard: FC = () => {
                     type="checkbox" 
                     name="symptoms" 
                     value="chest_pain" 
-                    checked={questionnaireData.symptoms.includes('chest_pain')}
+                    checked={formData.symptoms.includes('chest_pain')}
                     onChange={handleSymptomChange}
                     className="mr-2 text-red-500" 
                   />
@@ -385,7 +393,7 @@ const NoWatchPatientDashboard: FC = () => {
                     type="checkbox" 
                     name="symptoms" 
                     value="severe_bleeding" 
-                    checked={questionnaireData.symptoms.includes('severe_bleeding')}
+                    checked={formData.symptoms.includes('severe_bleeding')}
                     onChange={handleSymptomChange}
                     className="mr-2 text-red-500" 
                   />
@@ -396,7 +404,7 @@ const NoWatchPatientDashboard: FC = () => {
                     type="checkbox" 
                     name="symptoms" 
                     value="stroke_symptoms" 
-                    checked={questionnaireData.symptoms.includes('stroke_symptoms')}
+                    checked={formData.symptoms.includes('stroke_symptoms')}
                     onChange={handleSymptomChange}
                     className="mr-2 text-red-500" 
                   />
@@ -412,7 +420,7 @@ const NoWatchPatientDashboard: FC = () => {
                     type="checkbox" 
                     name="symptoms" 
                     value="fever" 
-                    checked={questionnaireData.symptoms.includes('fever')}
+                    checked={formData.symptoms.includes('fever')}
                     onChange={handleSymptomChange}
                     className="mr-2" 
                   />
@@ -423,7 +431,7 @@ const NoWatchPatientDashboard: FC = () => {
                     type="checkbox" 
                     name="symptoms" 
                     value="dizziness" 
-                    checked={questionnaireData.symptoms.includes('dizziness')}
+                    checked={formData.symptoms.includes('dizziness')}
                     onChange={handleSymptomChange}
                     className="mr-2" 
                   />
@@ -434,7 +442,7 @@ const NoWatchPatientDashboard: FC = () => {
                     type="checkbox" 
                     name="symptoms" 
                     value="nausea" 
-                    checked={questionnaireData.symptoms.includes('nausea')}
+                    checked={formData.symptoms.includes('nausea')}
                     onChange={handleSymptomChange}
                     className="mr-2" 
                   />
@@ -445,7 +453,7 @@ const NoWatchPatientDashboard: FC = () => {
                     type="checkbox" 
                     name="symptoms" 
                     value="cough" 
-                    checked={questionnaireData.symptoms.includes('cough')}
+                    checked={formData.symptoms.includes('cough')}
                     onChange={handleSymptomChange}
                     className="mr-2" 
                   />
@@ -456,7 +464,7 @@ const NoWatchPatientDashboard: FC = () => {
                     type="checkbox" 
                     name="symptoms" 
                     value="rash" 
-                    checked={questionnaireData.symptoms.includes('rash')}
+                    checked={formData.symptoms.includes('rash')}
                     onChange={handleSymptomChange}
                     className="mr-2" 
                   />
