@@ -62,6 +62,20 @@ export interface QuestionnaireData {
   pain: 'none' | 'mild' | 'moderate' | 'severe';
   breathing: 'none' | 'slight' | 'moderate' | 'severe';
   symptoms: string[];
+  
+  // Additional fields for enhanced assessment
+  symptomsDescription: string;
+  symptomsStarted: string;
+  painLevel: number;
+  conditions: {
+    diabetes: boolean;
+    hypertension: boolean;
+    heart: boolean;
+    asthma: boolean;
+    other: boolean;
+  };
+  allergies: string;
+  medications: string;
 }
 
 export type StoreState = {
@@ -134,7 +148,21 @@ const initialHealthMetrics: HealthMetrics = {
 const initialQuestionnaireData: QuestionnaireData = {
   pain: 'none',
   breathing: 'none',
-  symptoms: []
+  symptoms: [],
+  
+  // Additional fields with default values
+  symptomsDescription: '',
+  symptomsStarted: 'today',
+  painLevel: 0,
+  conditions: {
+    diabetes: false,
+    hypertension: false,
+    heart: false,
+    asthma: false,
+    other: false
+  },
+  allergies: '',
+  medications: ''
 };
 
 // Note: mockPatientEntries already imported at the top
