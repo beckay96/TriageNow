@@ -356,7 +356,7 @@ const NoWatchPatientDashboard: FC = () => {
                 { value: 'moderate', label: 'Moderate pain' },
                 { value: 'severe', label: 'Severe pain' }
               ]}
-              selected={questionnaireData.pain}
+              selected={formData.pain}
               onChange={handlePainChange}
             />
 
@@ -369,7 +369,7 @@ const NoWatchPatientDashboard: FC = () => {
                 { value: 'moderate', label: 'Moderate difficulty' },
                 { value: 'severe', label: 'Severe difficulty' }
               ]}
-              selected={questionnaireData.breathing}
+              selected={formData.breathing}
               onChange={handleBreathingChange}
             />
 
@@ -475,7 +475,7 @@ const NoWatchPatientDashboard: FC = () => {
                     type="checkbox" 
                     name="symptoms" 
                     value="headache" 
-                    checked={questionnaireData.symptoms.includes('headache')}
+                    checked={formData.symptoms.includes('headache')}
                     onChange={handleSymptomChange}
                     className="mr-2" 
                   />
