@@ -97,21 +97,21 @@ const ERDashboard: React.FC = () => {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-status-critical">
+        <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md dark:shadow-zinc-900/50 overflow-hidden border-l-4 border-status-critical transition-colors duration-300">
           <div className="p-5">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm font-medium text-neutral-500">Critical</p>
+                <p className="text-sm font-medium text-neutral-500 dark:text-neutral-300">Critical</p>
                 <h3 className="text-3xl font-bold text-status-critical">{criticalCount}</h3>
               </div>
-              <div className="bg-status-critical/10 p-3 rounded-full">
+              <div className="bg-status-critical/10 dark:bg-status-critical/20 p-3 rounded-full transition-colors duration-300">
                 <AlertCircle className="h-6 w-6 text-status-critical" />
               </div>
             </div>
             <div className="mt-2">
               <Button 
                 variant="ghost" 
-                className="text-xs px-2 py-1 h-auto text-status-critical"
+                className="text-xs px-2 py-1 h-auto text-status-critical dark:text-status-critical hover:bg-status-critical/5 dark:hover:bg-status-critical/10 transition-colors duration-300"
                 onClick={() => handleFilterByPriority(1)}
               >
                 {priorityFilter === 1 ? 'Show All' : 'Show Only'}
@@ -120,21 +120,21 @@ const ERDashboard: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-status-warning">
+        <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md dark:shadow-zinc-900/50 overflow-hidden border-l-4 border-status-warning transition-colors duration-300">
           <div className="p-5">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm font-medium text-black">Urgent</p>
+                <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Urgent</p>
                 <h3 className="text-3xl font-bold text-status-warning">{urgentCount}</h3>
               </div>
-              <div className="bg-status-warning/10 p-3 rounded-full">
+              <div className="bg-status-warning/10 dark:bg-status-warning/20 p-3 rounded-full transition-colors duration-300">
                 <Bell className="h-6 w-6 text-status-warning" />
               </div>
             </div>
             <div className="mt-2">
               <Button 
                 variant="ghost" 
-                className="text-xs px-2 py-1 h-auto text-status-warning"
+                className="text-xs px-2 py-1 h-auto text-status-warning dark:text-status-warning hover:bg-status-warning/5 dark:hover:bg-status-warning/10 transition-colors duration-300"
                 onClick={() => handleFilterByPriority(2)}
               >
                 {priorityFilter === 2 ? 'Show All' : 'Show Only'}
@@ -143,21 +143,21 @@ const ERDashboard: React.FC = () => {
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-status-healthy">
+        <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md dark:shadow-zinc-900/50 overflow-hidden border-l-4 border-status-healthy transition-colors duration-300">
           <div className="p-5">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm font-medium text-neutral-500">Stable</p>
+                <p className="text-sm font-medium text-neutral-500 dark:text-neutral-300">Stable</p>
                 <h3 className="text-3xl font-bold text-status-healthy">{stableCount}</h3>
               </div>
-              <div className="bg-status-healthy/10 p-3 rounded-full">
+              <div className="bg-status-healthy/10 dark:bg-status-healthy/20 p-3 rounded-full transition-colors duration-300">
                 <span className="material-icons text-status-healthy">check_circle</span>
               </div>
             </div>
             <div className="mt-2">
               <Button 
                 variant="ghost" 
-                className="text-xs px-2 py-1 h-auto text-status-healthy"
+                className="text-xs px-2 py-1 h-auto text-status-healthy dark:text-status-healthy hover:bg-status-healthy/5 dark:hover:bg-status-healthy/10 transition-colors duration-300"
                 onClick={() => handleFilterByPriority(3)}
               >
                 {priorityFilter === 3 ? 'Show All' : 'Show Only'}
@@ -167,8 +167,8 @@ const ERDashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
-        <div className="p-4 border-b">
+      <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-md dark:shadow-zinc-900/50 overflow-hidden mb-6 transition-colors duration-300">
+        <div className="p-4 border-b dark:border-zinc-800">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <div className="relative">
@@ -182,11 +182,11 @@ const ERDashboard: React.FC = () => {
                 <Search className="h-5 w-5 text-neutral-400 absolute left-3 top-2.5" />
               </div>
               <div className="flex space-x-2">
-                <Button variant="outline" size="sm" className="flex items-center">
+                <Button variant="outline" size="sm" className="flex items-center dark:text-white dark:border-zinc-700 dark:hover:bg-zinc-800">
                   <SlidersHorizontal className="h-4 w-4 mr-1" />
                   Filter
                 </Button>
-                <Button variant="outline" size="sm" className="flex items-center">
+                <Button variant="outline" size="sm" className="flex items-center dark:text-white dark:border-zinc-700 dark:hover:bg-zinc-800">
                   <ArrowDownAZ className="h-4 w-4 mr-1" />
                   Sort
                 </Button>
@@ -196,8 +196,8 @@ const ERDashboard: React.FC = () => {
               <Badge 
                 variant="outline" 
                 className={`
-                  ${priorityFilter === 1 ? 'bg-status-critical/20' : 'bg-status-critical/10'} 
-                  text-status-critical border-status-critical/30
+                  ${priorityFilter === 1 ? 'bg-status-critical/20 dark:bg-status-critical/30' : 'bg-status-critical/10 dark:bg-status-critical/20'} 
+                  text-status-critical border-status-critical/30 dark:border-status-critical/50 transition-colors duration-300
                 `}
                 onClick={() => handleFilterByPriority(1)}
               >
@@ -206,8 +206,8 @@ const ERDashboard: React.FC = () => {
               <Badge 
                 variant="outline" 
                 className={`
-                  ${priorityFilter === 2 ? 'bg-status-warning/20' : 'bg-status-warning/10'} 
-                  text-status-warning border-status-warning/30
+                  ${priorityFilter === 2 ? 'bg-status-warning/20 dark:bg-status-warning/30' : 'bg-status-warning/10 dark:bg-status-warning/20'} 
+                  text-status-warning border-status-warning/30 dark:border-status-warning/50 transition-colors duration-300
                 `}
                 onClick={() => handleFilterByPriority(2)}
               >
@@ -216,8 +216,8 @@ const ERDashboard: React.FC = () => {
               <Badge 
                 variant="outline" 
                 className={`
-                  ${priorityFilter === 3 ? 'bg-status-healthy/20' : 'bg-status-healthy/10'} 
-                  text-status-healthy border-status-healthy/30
+                  ${priorityFilter === 3 ? 'bg-status-healthy/20 dark:bg-status-healthy/30' : 'bg-status-healthy/10 dark:bg-status-healthy/20'} 
+                  text-status-healthy border-status-healthy/30 dark:border-status-healthy/50 transition-colors duration-300
                 `}
                 onClick={() => handleFilterByPriority(3)}
               >
@@ -232,7 +232,7 @@ const ERDashboard: React.FC = () => {
 
       <div className="mt-8 text-center">
         <button 
-          className="inline-flex items-center text-neutral-600 hover:text-primary"
+          className="inline-flex items-center text-neutral-600 hover:text-primary dark:text-neutral-400 dark:hover:text-white transition-colors duration-300"
           onClick={handleBackToRoleSelection}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">

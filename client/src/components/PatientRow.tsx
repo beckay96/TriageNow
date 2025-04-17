@@ -226,7 +226,7 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
             </div>
             <div className="flex items-center hover-scale">
               <span className={`material-icons ${getMetricIconClass(patient.vitals.bloodOxygen.status)} mr-1 text-base
-                ${patient.vitals.bloodOxygen.status === 'critical' ? 'critical-highlight' : ''} hover:scale-110 transition-transform duration-300`}>
+                hover:scale-110 transition-transform duration-300`}>
                 air
               </span>
               <span>{vitalData.bloodOxygen}% O₂</span>
