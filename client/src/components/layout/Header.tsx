@@ -1,11 +1,11 @@
 import { FC } from "react";
 import { Link } from "wouter";
 import useStore from "@/store";
-import ThemeToggle from "@/components/ThemeToggle";
-import isDarkMode from "@/components/ThemeToggle"
+import ThemeToggle, { useIsDarkMode } from "@/components/ThemeToggle";
 
 const Header: FC = () => {
   const { role } = useStore();
+  const isDarkMode = useIsDarkMode();
 
 
   return (
@@ -62,7 +62,7 @@ const Header: FC = () => {
             )}
           </div>
           <div>
-            {isDarkMode (
+            {!isDarkMode && (
             <p>
               <em>Headache</em>?
               Try Dark Mode 👉

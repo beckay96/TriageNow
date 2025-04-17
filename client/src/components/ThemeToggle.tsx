@@ -1,6 +1,20 @@
 import { FC, useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 
+// Custom hook to expose dark mode state
+export const useIsDarkMode = () => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setIsDarkMode(localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && isDark));
+    }
+  }, []);
+  
+  return isDarkMode;
+};
+
 const ThemeToggle: FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
