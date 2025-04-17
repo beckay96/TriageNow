@@ -170,8 +170,8 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
 
   return (
     <>
-      <tr className={`hover:bg-neutral-50 dark:hover:bg-neutral-800/50 border-l-4 ${getPriorityColor(patient.priority)} 
-        transition-colors duration-300 animate-fade-in`} style={{animationDelay: '0.1s', animationFillMode: 'backwards'}}>
+      <tr className={`hover:bg-neutral-50 dark:hover:bg-zinc-800 border-l-4 ${getPriorityColor(patient.priority)} 
+        transition-colors duration-300 animate-fade-in dark-card`} style={{animationDelay: '0.1s', animationFillMode: 'backwards'}}>
         <td className="px-4 py-4 whitespace-nowrap">
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
             ${getPriorityBadgeClass(patient.priority)} hover:scale-110 transition-transform duration-300`}>
@@ -256,13 +256,13 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
             {/* AI Note - only visible when expanded */}
             {isExpanded && (
               <div className={`mt-2 p-2 rounded-md text-xs ${getPriorityColor(patient.priority)} 
-                bg-neutral-50 dark:bg-neutral-800 border dark:border-neutral-700 
-                transition-all duration-300 transform animate-fade-in`}>
-                <div className="flex items-center text-neutral-700 dark:text-neutral-300 mb-1">
-                  <span className="material-icons text-primary dark:text-primary-light text-xs mr-1 animate-bounce-light">smart_toy</span>
-                  <span className="font-medium">AI Assessment Note</span>
+                bg-neutral-50 dark:bg-zinc-800 border dark:border-zinc-700 
+                transition-all duration-300 transform animate-fade-in dark-gradient-bg`}>
+                <div className="flex items-center text-neutral-700 dark:text-green-400 mb-1">
+                  <span className="material-icons text-primary dark:text-green-400 text-xs mr-1 animate-bounce-light">smart_toy</span>
+                  <span className="font-medium text-shimmer">AI Assessment Note</span>
                 </div>
-                <div className="text-neutral-600 dark:text-neutral-400">{aiNote}</div>
+                <div className="text-neutral-600 dark:text-white">{aiNote}</div>
               </div>
             )}
           </div>
@@ -295,29 +295,38 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
                 
                 {/* Ambulance action dropdown */}
                 {showAmbulanceActions && (
-                  <div className="absolute right-0 mt-1 bg-white rounded-md shadow-lg border border-neutral-200 z-10 w-44">
+                  <div className="absolute right-0 mt-1 bg-white dark:bg-zinc-900 rounded-md shadow-lg 
+                    border border-neutral-200 dark:border-zinc-700 z-10 w-44 animate-fade-in">
                     <div className="py-1">
                       <button
-                        className="flex items-center w-full px-4 py-2 text-left text-sm hover:bg-neutral-100"
+                        className="flex items-center w-full px-4 py-2 text-left text-sm 
+                          hover:bg-neutral-100 dark:hover:bg-zinc-800 dark:text-white group transition-colors duration-300"
                         onClick={() => {
                           setAmbulanceActionType('rush');
                           setShowActionConfirmation(true);
                           setShowAmbulanceActions(false);
                         }}
                       >
-                        <AlertCircle className="h-3 w-3 mr-2 text-status-critical" />
-                        Rush Ambulance
+                        <AlertCircle className="h-3 w-3 mr-2 text-status-critical group-hover:scale-110 transition-transform duration-300" />
+                        <span className="relative">
+                          Rush Ambulance
+                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-status-critical/30 group-hover:w-full transition-all duration-300"></span>
+                        </span>
                       </button>
                       <button
-                        className="flex items-center w-full px-4 py-2 text-left text-sm hover:bg-neutral-100"
+                        className="flex items-center w-full px-4 py-2 text-left text-sm 
+                          hover:bg-neutral-100 dark:hover:bg-zinc-800 dark:text-white group transition-colors duration-300"
                         onClick={() => {
                           setAmbulanceActionType('next-in-line');
                           setShowActionConfirmation(true);
                           setShowAmbulanceActions(false);
                         }}
                       >
-                        <span className="material-icons text-xs mr-2">pending_actions</span>
-                        Next in Line
+                        <span className="material-icons text-xs mr-2 text-accent dark:text-green-400 group-hover:scale-110 transition-transform duration-300">pending_actions</span>
+                        <span className="relative">
+                          Next in Line
+                          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent/30 dark:bg-green-400/30 group-hover:w-full transition-all duration-300"></span>
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -362,28 +371,41 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
       {showActionConfirmation && (
         <tr>
           <td colSpan={6} className="p-0">
-            <div className="bg-black/20 dark:bg-black/50 p-4 animate-fade-in">
-              <div className="bg-white dark:bg-neutral-900 rounded-lg p-4 max-w-2xl mx-auto border-status-critical border shadow-lg animate-slide-up">
+            <div className="bg-black/20 dark:bg-black/70 p-4 animate-fade-in">
+              <div className="bg-white dark:bg-zinc-900 rounded-lg p-4 max-w-2xl mx-auto border-status-critical border dark:border-red-800 shadow-lg animate-slide-up dark-gradient-bg">
                 <div className="flex items-center text-status-critical mb-4">
                   <AlertCircle className="h-5 w-5 mr-2 animate-pulse" />
-                  <h3 className="font-bold">Confirm {ambulanceActionType === 'rush' ? 'Rush Ambulance' : 'Next in Line'}</h3>
+                  <h3 className="font-bold dark:text-white text-shimmer">Confirm {ambulanceActionType === 'rush' ? 'Rush Ambulance' : 'Next in Line'}</h3>
                 </div>
-                <p className="mb-4 text-sm dark:text-neutral-300">
+                <p className="mb-4 text-sm dark:text-white">
                   {ambulanceActionType === 'rush'
-                    ? `Are you sure you want to rush an ambulance for ${patient.name}? This will override existing ambulance assignments.`
-                    : `Are you sure you want to set ${patient.name} as next in line for ambulance dispatch?`}
+                    ? <>
+                        <span className="font-semibold dark:text-green-400">Rush ambulance request</span>: Are you sure you want to rush an ambulance for 
+                        <span className="font-semibold mx-1">{patient.name}</span>? 
+                        <span className="block mt-2 text-red-600 dark:text-red-400 text-sm animate-pulse">
+                          ⚠️ This action will override existing ambulance assignments.
+                        </span>
+                      </>
+                    : <>
+                        <span className="font-semibold dark:text-green-400">Ambulance prioritization</span>: Are you sure you want to set 
+                        <span className="font-semibold mx-1">{patient.name}</span> as next in line for ambulance dispatch?
+                        <span className="block mt-2 text-amber-600 dark:text-amber-400 text-sm">
+                          This patient will be moved to the front of the dispatch queue.
+                        </span>
+                      </>
+                  }
                 </p>
-                <div className="flex justify-end space-x-3">
+                <div className="flex justify-end space-x-3 animate-fade-in" style={{animationDelay: '0.2s', animationFillMode: 'backwards'}}>
                   <Button 
                     variant="outline" 
                     onClick={() => setShowActionConfirmation(false)}
-                    className="text-sm py-1 px-3 h-auto hover-lift"
+                    className="text-sm py-1 px-3 h-auto hover-lift dark:border-zinc-700 dark:text-white dark:hover:bg-zinc-800"
                   >
                     Cancel
                   </Button>
                   <Button 
                     className="bg-status-critical hover:bg-status-critical/90 text-white text-sm py-1 px-3 h-auto
-                      relative overflow-hidden group"
+                      hover-lift relative overflow-hidden group"
                     onClick={() => {
                       ambulanceActionType === 'rush'
                         ? handleRushAmbulance(patient.id)

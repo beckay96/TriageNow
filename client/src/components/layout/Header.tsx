@@ -7,29 +7,39 @@ const Header: FC = () => {
   const { role } = useStore();
 
   return (
-    <header className="bg-gradient-to-r from-zinc-800 to-blue-900 dark:from-neutral-900 dark:to-blue-950 shadow-md py-4 transition-all duration-300">
+    <header className="bg-gradient-to-r from-zinc-800 to-blue-900 dark:bg-gradient-to-br dark:from-blue-800 dark:to-zinc-800 shadow-md py-4 transition-all duration-300">
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="group">
-          <div className="bg-gradient-to-r from-blue-300 to-green-300 dark:from-blue-400 dark:to-green-400 bg-clip-text text-transparent text-xl md:text-2xl font-semibold flex items-center">
-            <span className="material-icons mr-2 group-hover:rotate-12 transform transition-all duration-300 ease-in-out">local_hospital</span>
-            <span className="relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 group-hover:after:w-full after:bg-gradient-to-r after:from-blue-300 after:to-green-300 dark:after:from-blue-400 dark:after:to-green-400 after:transition-all after:duration-300 after:ease-in-out">
-              TriageNow
-              <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-gradient-to-r from-blue-300/0 via-blue-300/50 to-green-300/0 dark:from-blue-400/0 dark:via-blue-400/50 dark:to-green-400/0 animate-shimmer"></span>
+          <div className="flex items-center">
+            <span className="material-icons text-blue-300 dark:text-green-400 mr-2 text-2xl md:text-3xl group-hover:rotate-12 transform transition-all duration-300 ease-in-out animate-pulse">
+              local_hospital
             </span>
+            <div className="relative">
+              <span className="bg-gradient-to-r from-blue-400 to-green-400 dark:from-blue-300 dark:to-green-400 bg-clip-text text-transparent text-xl md:text-2xl font-bold relative z-10">
+                TriageNow
+              </span>
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-green-400 dark:from-blue-300 dark:to-green-400 group-hover:w-full transition-all duration-500 ease-in-out"></span>
+              {/* Glow effect for dark mode */}
+              <span className="absolute inset-0 dark:bg-blue-500/20 dark:group-hover:bg-blue-500/30 rounded-lg blur-sm transition-all duration-300 -z-10"></span>
+            </div>
           </div>
         </Link>
         <div className="flex items-center space-x-4">
           <div className="text-white">
             {role === 'patient' && (
               <div className="flex items-center opacity-0 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
-                <span className="material-icons mr-1">person</span> 
-                <span className="relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all after:duration-300">Patient Mode</span>
+                <span className="material-icons mr-1 text-white dark:text-green-400">person</span> 
+                <span className="relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white dark:after:bg-green-400 after:transition-all after:duration-300">
+                  Patient Mode
+                </span>
               </div>
             )}
             {role === 'medical-staff' && (
               <div className="flex items-center opacity-0 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
-                <span className="material-icons mr-1">medical_services</span>
-                <span className="relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white after:transition-all after:duration-300">Medical Staff Mode</span>
+                <span className="material-icons mr-1 text-white dark:text-green-400">medical_services</span>
+                <span className="relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white dark:after:bg-green-400 after:transition-all after:duration-300">
+                  Medical Staff Mode
+                </span>
               </div>
             )}
           </div>
