@@ -226,7 +226,7 @@ const useStore = create<StoreState>((set, get) => ({
   
   updateTriageStatus: (additionalSeverity = 0) => {
     // Calculate base severity from patient option
-    const { patientOption } = get();
+    const { patientOption, healthMetrics, questionnaireData } = get();
     
     let baseSeverity = 2; // Medium by default
     if (patientOption === 'ambulance') baseSeverity = 4;
@@ -246,33 +246,170 @@ const useStore = create<StoreState>((set, get) => ({
       triageStatus = 'low';
     }
     
+    // Update health metrics based on symptoms if available and additionalSeverity exists
+    if (additionalSeverity > 0 && healthMetrics) {
+      // Create a copy of current health metrics
+      const updatedMetrics = { ...healthMetrics };
+      
+      // Adjust health metrics based on symptoms
+      if (questionnaireData.breathing === 'severe' || questionnaireData.breathing === 'moderate') {
+        // Decrease oxygen levels for breathing difficulties
+        updatedMetrics.bloodOxygen = Math.max(updatedMetrics.bloodOxygen - (Math.random() * 4 + 2), 85);
+        // Increase heart rate for breathing difficulties
+        updatedMetrics.heartRate += Math.floor(Math.random() * 15 + 5);
+      }
+      
+      if (questionnaireData.pain === 'severe' || questionnaireData.pain === 'moderate') {
+        // Increase heart rate for pain
+        updatedMetrics.heartRate += Math.floor(Math.random() * 10 + 5);
+        // Increase blood pressure for pain
+        updatedMetrics.bloodPressure.systolic += Math.floor(Math.random() * 15 + 5);
+        updatedMetrics.bloodPressure.diastolic += Math.floor(Math.random() * 10 + 3);
+      }
+      
+      if (questionnaireData.symptoms.includes('fever')) {
+        // Increase temperature for fever
+        updatedMetrics.temperature += Math.random() * 1.5 + 0.5;
+        // Increase heart rate slightly for fever
+        updatedMetrics.heartRate += Math.floor(Math.random() * 8 + 3);
+      }
+      
+      if (questionnaireData.symptoms.includes('dizziness')) {
+        // Lower blood pressure for dizziness
+        updatedMetrics.bloodPressure.systolic -= Math.floor(Math.random() * 10 + 5);
+        // Increase heart rate for compensatory response
+        updatedMetrics.heartRate += Math.floor(Math.random() * 10 + 5);
+      }
+      
+      // Update health metrics in state
+      set({ healthMetrics: updatedMetrics });
+      
+      // Also update health statuses based on new metrics
+      const heartRateStatus: HealthStatus = 
+        updatedMetrics.heartRate > 120 ? 'critical' :
+        updatedMetrics.heartRate > 100 ? 'warning' :
+        updatedMetrics.heartRate > 90 ? 'elevated' : 'normal';
+      
+      const bloodPressureStatus: HealthStatus = 
+        updatedMetrics.bloodPressure.systolic > 160 || updatedMetrics.bloodPressure.diastolic > 100 ? 'critical' :
+        updatedMetrics.bloodPressure.systolic > 140 || updatedMetrics.bloodPressure.diastolic > 90 ? 'warning' :
+        updatedMetrics.bloodPressure.systolic > 130 || updatedMetrics.bloodPressure.diastolic > 85 ? 'elevated' : 'normal';
+      
+      const bloodOxygenStatus: HealthStatus = 
+        updatedMetrics.bloodOxygen < 90 ? 'critical' :
+        updatedMetrics.bloodOxygen < 94 ? 'warning' : 'normal';
+      
+      const temperatureStatus: HealthStatus = 
+        updatedMetrics.temperature > 102 ? 'critical' :
+        updatedMetrics.temperature > 100.4 ? 'warning' :
+        updatedMetrics.temperature > 99.0 ? 'elevated' : 'normal';
+      
+      set({
+        healthStatuses: {
+          heartRate: heartRateStatus,
+          bloodPressure: bloodPressureStatus,
+          bloodOxygen: bloodOxygenStatus,
+          temperature: temperatureStatus
+        }
+      });
+    }
+    
     set({ triageStatus, triageSeverity: totalSeverity });
     
     // Add AI message about the assessment if there was additional severity (from questionnaire)
     if (additionalSeverity > 0) {
       const { addChatMessage } = get();
       
+      // Get more specific advice based on symptoms and triage status
+      const getSpecificAdvice = () => {
+        const { healthStatuses, questionnaireData } = get();
+        
+        if (!healthStatuses) return "";
+        
+        let advice = "";
+        
+        // Add specific advice based on health status
+        if (healthStatuses.heartRate === 'critical' || healthStatuses.heartRate === 'warning') {
+          advice += " Your heart rate is elevated. ";
+        }
+        
+        if (healthStatuses.bloodPressure === 'critical') {
+          advice += " Your blood pressure is dangerously high. ";
+        } else if (healthStatuses.bloodPressure === 'warning') {
+          advice += " Your blood pressure is higher than normal. ";
+        }
+        
+        if (healthStatuses.bloodOxygen === 'critical') {
+          advice += " Your oxygen levels are concerning and require immediate attention. ";
+        } else if (healthStatuses.bloodOxygen === 'warning') {
+          advice += " Your oxygen levels are below optimal. ";
+        }
+        
+        // Add advice based on symptoms
+        if (questionnaireData.breathing === 'severe') {
+          advice += " Your breathing difficulties are significant. Try to remain calm and take slow, deep breaths if possible. ";
+        }
+        
+        if (questionnaireData.pain === 'severe') {
+          advice += " The severe pain you're experiencing requires proper medical evaluation. ";
+        }
+        
+        return advice;
+      };
+      
       // Pick a message based on the triage status
       if (triageStatus === 'critical') {
         addChatMessage(
-          "Based on your vitals and symptoms, you have been classified as CRITICAL PRIORITY. Please seek immediate medical attention. If available, emergency services have been notified of your condition.",
+          `Based on your vitals and symptoms, you have been classified as CRITICAL PRIORITY. ${getSpecificAdvice()} Please seek immediate medical attention. If available, emergency services have been notified of your condition.`,
           'ai'
         );
+        
+        // Add a follow-up message with actionable advice
+        setTimeout(() => {
+          addChatMessage(
+            "While waiting for emergency services: Stay as still as possible, focus on breathing slowly, and don't eat or drink anything until medically advised. Keep this app open so medical staff can access your vital signs when they arrive.",
+            'ai'
+          );
+        }, 3000);
       } else if (triageStatus === 'high') {
         addChatMessage(
-          "Your assessment indicates HIGH PRIORITY. You should seek medical attention promptly. Your data will be prioritized for emergency staff.",
+          `Your assessment indicates HIGH PRIORITY. ${getSpecificAdvice()} You should seek medical attention promptly. Your data will be prioritized for emergency staff.`,
           'ai'
         );
+        
+        // Add a follow-up message with next steps
+        setTimeout(() => {
+          addChatMessage(
+            "I recommend heading to the nearest emergency department. If your condition worsens, call emergency services immediately. Continue monitoring your symptoms and update this app with any changes.",
+            'ai'
+          );
+        }, 3000);
       } else if (triageStatus === 'medium') {
         addChatMessage(
-          "Your assessment shows MEDIUM PRIORITY. You should be seen by medical staff, but your condition doesn't appear to be immediately life-threatening.",
+          `Your assessment shows MEDIUM PRIORITY. ${getSpecificAdvice()} You should be seen by medical staff, but your condition doesn't appear to be immediately life-threatening.`,
           'ai'
         );
+        
+        // Add a follow-up message with recommendations
+        setTimeout(() => {
+          addChatMessage(
+            "Consider visiting an urgent care center or scheduling a same-day appointment with your doctor. Continue to monitor your symptoms and use this app to track any changes.",
+            'ai'
+          );
+        }, 3000);
       } else {
         addChatMessage(
-          "Your assessment indicates LOW PRIORITY. Your vitals are generally within normal ranges. Consider scheduling a regular appointment or continue monitoring your symptoms.",
+          `Your assessment indicates LOW PRIORITY. ${getSpecificAdvice()} Your vitals are generally within normal ranges. Consider scheduling a regular appointment or continue monitoring your symptoms.`,
           'ai'
         );
+        
+        // Add a follow-up message with home care advice
+        setTimeout(() => {
+          addChatMessage(
+            "While your condition appears stable, continue to rest and stay hydrated. If your symptoms persist for more than 24-48 hours or worsen, please seek medical attention.",
+            'ai'
+          );
+        }, 3000);
       }
     }
   },
