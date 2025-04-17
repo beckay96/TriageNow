@@ -119,14 +119,21 @@ const NoWatchPatientDashboard: FC = () => {
     }
   };
 
-  // Handle questionnaire changes
+  // Local state for form values
+  const [formData, setFormData] = useState({
+    pain: questionnaireData.pain,
+    breathing: questionnaireData.breathing,
+    symptoms: [...questionnaireData.symptoms]
+  });
+  
+  // Handle questionnaire changes without submitting immediately
   const handlePainChange = (value: string) => {
-    submitQuestionnaire({
-      ...questionnaireData,
+    setFormData({
+      ...formData,
       pain: value as 'none' | 'mild' | 'moderate' | 'severe'
     });
     
-    // Update triage severity based on pain level
+    // Just update the UI indication of severity without submitting the form
     const painSeverityMap = {
       'none': 0,
       'mild': 1,
@@ -137,12 +144,12 @@ const NoWatchPatientDashboard: FC = () => {
   };
 
   const handleBreathingChange = (value: string) => {
-    submitQuestionnaire({
-      ...questionnaireData,
+    setFormData({
+      ...formData,
       breathing: value as 'none' | 'slight' | 'moderate' | 'severe'
     });
     
-    // Update triage severity based on breathing difficulty
+    // Just update UI indication of severity without submitting
     const breathingSeverityMap = {
       'none': 0,
       'slight': 1,
@@ -156,7 +163,7 @@ const NoWatchPatientDashboard: FC = () => {
     const symptom = e.target.value;
     const isChecked = e.target.checked;
     
-    let newSymptoms = [...questionnaireData.symptoms];
+    let newSymptoms = [...formData.symptoms];
     
     if (isChecked && !newSymptoms.includes(symptom)) {
       newSymptoms.push(symptom);
@@ -164,12 +171,12 @@ const NoWatchPatientDashboard: FC = () => {
       newSymptoms = newSymptoms.filter(s => s !== symptom);
     }
     
-    submitQuestionnaire({
-      ...questionnaireData,
+    setFormData({
+      ...formData,
       symptoms: newSymptoms
     });
     
-    // Update triage severity based on critical symptoms
+    // Update triage severity based on critical symptoms just for UI indication
     if (isChecked) {
       const criticalSymptoms = ['chest_pain', 'severe_bleeding', 'stroke_symptoms'];
       const seriousSymptoms = ['fever', 'dizziness', 'fainting'];

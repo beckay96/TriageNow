@@ -65,18 +65,6 @@ const PatientDashboard: FC = () => {
           onClick={() => handlePatientOption('at-er')}
         />
       </div>
-
-      {/* No Smartwatch Option */}
-      <div className="mt-10 text-center">
-        <div className="text-neutral-600 mb-2 dark:text-white">Don't have a smartwatch or wearable device?</div>
-        <button 
-          className="bg-white border border-primary text-primary hover:bg-primary-light/10 dark:bg-black px-4 py-2 rounded-md font-medium transition-colors inline-flex items-center"
-          onClick={() => navigate('/no-watch')}
-        >
-          <span className="material-icons mr-2 text-sm">help_outline</span>
-          Continue without a smartwatch
-        </button>
-      </div>
     </div>
   );
 };
