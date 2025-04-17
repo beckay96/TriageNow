@@ -9,15 +9,15 @@ const Header: FC = () => {
 
 
   return (
-    <header className="bg-gradient-to-r from-zinc-900 to-blue-600 dark:bg-gradient-to-br dark:from-blue-900 dark:to-zinc-800 shadow-md py-4 transition-all duration-300 no-overflow">
+    <header className="bg-gradient-to-r from-zinc-900 to-blue-600 dark:bg-gradient-to-br dark:from-blue-800 dark:to-zinc-900 shadow-md py-4 transition-all duration-300 no-overflow">
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="group">
           <div className="flex items-center">
-            <span className="material-icons text-blue-300 after:dark:text-green-400 mr-2 text-2xl md:text-3xl group-hover:rotate-12 transform transition-all duration-300 ease-in-out hover:scale-110">
+            <span className="material-icons text-blue-300 dark:text-green-400 mr-2 text-2xl md:text-3xl group-hover:rotate-12 transform transition-all duration-300 ease-in-out hover:scale-110">
               local_hospital
             </span>
             <div className="relative">
-              <span className="bg-gradient-to-r from-blue-400 to-green-400 after:dark:from-blue-300 to-green-400 bg-clip-text text-transparent text-xl md:text-2xl font-bold relative z-10">
+              <span className="bg-gradient-to-r from-blue-400 to-green-400 dark:from-blue-300 dark:to-green-400 bg-clip-text text-transparent text-xl md:text-2xl font-bold relative z-10">
                 TriageNow
               </span>
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-green-400 dark:from-blue-300 dark:to-green-400 group-hover:w-full transition-all duration-500 ease-in-out"></span>

@@ -2,7 +2,8 @@ import { FC, useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 
 // Custom hook to expose dark mode state
-export const useIsDarkMode = () => {
+// Defined separately for consistency with React's Fast Refresh
+function useIsDarkMode() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   
   useEffect(() => {
@@ -13,7 +14,9 @@ export const useIsDarkMode = () => {
   }, []);
   
   return isDarkMode;
-};
+}
+
+export { useIsDarkMode };
 
 const ThemeToggle: FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -45,8 +48,9 @@ const ThemeToggle: FC = () => {
   return (
     <button 
       onClick={toggleTheme}
-      className="p-2 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-300 animate-fade-in"
+      className={`p-2 rounded-full ${isDarkMode ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'} transition-all duration-300 animate-fade-in`}
       aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {isDarkMode ? (
         <Sun className="h-5 w-5" />
