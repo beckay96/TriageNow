@@ -22,8 +22,8 @@ const PatientDashboard: FC = () => {
   return (
     <div className="mx-auto max-w-4xl">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-neutral-700 mb-3">How can we help you today?</h2>
-        <p className="text-neutral-600 max-w-2xl mx-auto">
+        <h2 className="text-2xl md:text-3xl dark:text-white font-bold text-neutral-700 mb-3">How can we help you today?</h2>
+        <p className="text-neutral-600 dark:text-white max-w-2xl mx-auto">
           Select your current situation so we can provide appropriate assistance
         </p>
       </div>
@@ -68,9 +68,9 @@ const PatientDashboard: FC = () => {
 
       {/* No Smartwatch Option */}
       <div className="mt-10 text-center">
-        <div className="text-neutral-600 mb-2">Don't have a smartwatch or wearable device?</div>
+        <div className="text-neutral-600 mb-2 dark:text-white">Don't have a smartwatch or wearable device?</div>
         <button 
-          className="bg-white border border-primary text-primary hover:bg-primary-light/10 px-4 py-2 rounded-md font-medium transition-colors inline-flex items-center"
+          className="bg-white border border-primary text-primary hover:bg-primary-light/10 dark:bg-black px-4 py-2 rounded-md font-medium transition-colors inline-flex items-center"
           onClick={() => navigate('/no-watch')}
         >
           <span className="material-icons mr-2 text-sm">help_outline</span>

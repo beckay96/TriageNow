@@ -122,13 +122,13 @@ const ConnectWatch: FC = () => {
             <div className="bg-primary-light/10 rounded-full p-6 inline-block mb-4">
               <span className="material-icons text-primary text-5xl">watch</span>
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-neutral-700 mb-3">Connect Your Wearable Device</h2>
-            <p className="text-neutral-600 max-w-2xl mx-auto">
+            <h2 className="dark:text-white text-2xl md:text-3xl font-bold text-neutral-700 mb-3">Connect Your Wearable Device</h2>
+            <p className="dark:text-white text-neutral-600 max-w-2xl mx-auto">
               Please put on your smartwatch or fitness tracker so we can monitor your health metrics in real-time
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-lg p-8 mb-8 max-w-md mx-auto">
+          <div className="dark:bg-black bg-white rounded-lg shadow-lg p-8 mb-8 max-w-md mx-auto">
             <div className="flex flex-col items-center">
               <div className="relative mb-6">
                 <div className="w-40 h-40 rounded-full bg-primary-light/20 flex items-center justify-center">
@@ -136,11 +136,11 @@ const ConnectWatch: FC = () => {
                 </div>
                 <div className="absolute top-0 left-0 w-full h-full rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
               </div>
-              <p className="text-neutral-600 mb-6">
+              <p className="dark:text-white text-neutral-600 mb-6">
                 Make sure your device is properly positioned and powered on.
               </p>
               <button 
-                className="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-md font-medium transition-colors"
+                className="w-full bg-primary hover:bg-green-600 text-white py-3 rounded-md font-medium transition-colors"
                 onClick={handleWatchConnected}
               >
                 My Watch Is On
@@ -149,10 +149,7 @@ const ConnectWatch: FC = () => {
           </div>
 
           <div className="text-neutral-500 flex justify-center">
-            <button 
-              className="text-sm underline"
-              onClick={() => navigate('/no-watch')}
-            >
+            <button className="dark:text-white text-sm underline">
               I don't have a smartwatch
             </button>
           </div>

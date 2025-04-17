@@ -26,8 +26,8 @@ const RoleSelection: FC = () => {
   return (
     <div className="mx-auto max-w-4xl">
       <div className="text-center mb-10">
-        <h2 className="text-2xl md:text-3xl font-bold text-neutral-700 mb-3">Welcome to <span className="bg-gradient-to-r from-blue-800 to-green-800 bg-clip-text text-transparent">TriageNow</span></h2>
-        <p className="text-neutral-600 max-w-2xl mx-auto">
+        <h2 className="text-2xl md:text-3xl font-bold dark:text-white text-neutral-700 mb-3">Welcome to <span className="bg-gradient-to-r from-blue-800 to-green-800 bg-clip-text text-transparent dark:bg-gradient-to-r dark:from-blue-500 dark:to-green-400">TriageNow</span></h2>
+        <p className="dark:text-white text-[16px] lg:text-[24px] text-neutral-600 max-w-2xl mx-auto">
           A smart health triage system that uses wearable data to assist in prioritizing emergency care
         </p>
       </div>
