@@ -61,14 +61,14 @@ const Header: FC = () => {
               </div>
             )}
           </div>
-          <div>
-            {!isDarkMode && (
-            <p>
-              <em>Headache</em>?
-              Try Dark Mode 👉
-            </p>
-            )}
-          </div>
+          {!isDarkMode && (
+            <div>
+              <p>
+                <em>Headache</em>?
+                Try Dark Mode 👉
+              </p>
+            </div>
+          )}
           <ThemeToggle />
         </div>
       </div>
