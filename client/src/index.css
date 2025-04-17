@@ -252,4 +252,52 @@
   .health-card {
     @apply rounded-lg border transition-all duration-300 hover:shadow-md hover:-translate-y-1;
   }
+  
+  /* Hover Gradient Background Effects */
+  .hover-gradient {
+    background-size: 200% 200%;
+    transition: all 0.5s ease;
+  }
+  
+  .hover-gradient-blue-purple {
+    @apply bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 transition-all duration-300;
+  }
+  
+  .hover-gradient-green-blue {
+    @apply bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-400 hover:to-blue-500 transition-all duration-300;
+  }
+  
+  .hover-gradient-orange-red {
+    @apply bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500 transition-all duration-300;
+  }
+  
+  .hover-gradient-dark {
+    @apply bg-gradient-to-br from-zinc-800 to-blue-900 hover:from-zinc-700 hover:to-blue-800 transition-all duration-300;
+  }
+  
+  .hover-gradient-shimmer {
+    background: linear-gradient(135deg, 
+                          rgba(59, 130, 246, 0.8) 0%, 
+                          rgba(99, 102, 241, 0.8) 50%, 
+                          rgba(59, 130, 246, 0.8) 100%);
+    background-size: 200% 200%;
+    animation: shimmer-background 3s ease infinite;
+  }
+  
+  .hover-gradient-shimmer:hover {
+    animation-play-state: paused;
+    background-position: 100% 100%;
+  }
+  
+  @keyframes shimmer-background {
+    0% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+    100% {
+      background-position: 0% 0%;
+    }
+  }
 }

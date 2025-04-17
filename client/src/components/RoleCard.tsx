@@ -23,10 +23,10 @@ const RoleCard: React.FC<RoleCardProps> = ({
 }) => {
   return (
     <Card 
-      className="hover:shadow-lg transition-shadow duration-300 cursor-pointer" 
+      className="hover:shadow-lg dark:bg-black transition-shadow duration-300 cursor-pointer" 
       onClick={onClick}
     >
-      <CardContent className="p-8 flex flex-col items-center text-center">
+      <CardContent className="p-8 flex flex-col dark:bg-black items-center text-center">
         <div className={`${bgColor} p-4 rounded-full mb-4`}>
           {icon}
         </div>

@@ -34,7 +34,7 @@ const EmergencyOptionCard: FC<EmergencyOptionCardProps> = ({
 
   return (
     <div 
-      className={`bg-white rounded-lg shadow p-6 border-l-4 hover:border-green-500 hover:shadow-md transition-shadow cursor-pointer`}
+      className={`bg-white rounded-lg shadow p-6 border-l-4 dark:bg-black hover:border-green-500 hover:shadow-md transition-shadow cursor-pointer`}
       onClick={onClick}
     >
       <div className="flex items-center mb-3">

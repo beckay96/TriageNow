@@ -9,7 +9,7 @@ const Header: FC = () => {
 
 
   return (
-    <header className="bg-gradient-to-r from-zinc-800 to-blue-900 dark:bg-gradient-to-br dark:from-blue-800 dark:to-zinc-800 shadow-md py-4 transition-all duration-300">
+    <header className="bg-gradient-to-r from-zinc-900 to-indigo-900 dark:bg-gradient-to-br dark:from-blue-800 dark:to-zinc-800 shadow-md py-4 transition-all duration-300">
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="group">
           <div className="flex items-center">
@@ -62,10 +62,14 @@ const Header: FC = () => {
             )}
           </div>
           {!isDarkMode && (
-            <div>
-              <p>
-                <em>Headache</em>?
-                Try Dark Mode 👉
+            <div className="hover-gradient-blue-purple px-3 py-1 rounded-lg shadow-lg">
+              <p className="text-white text-sm font-medium flex items-center">
+                <span className="material-icons text-yellow-300 text-xs mr-1">lightbulb</span>
+                <span>
+                  <em>Headache</em>?
+                  <span className="ml-1 font-bold">Try Dark Mode</span>
+                  <span className="inline-block ml-1 animate-bounce-light">👉</span>
+                </span>
               </p>
             </div>
           )}
