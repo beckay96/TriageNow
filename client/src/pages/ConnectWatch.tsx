@@ -149,7 +149,10 @@ const ConnectWatch: FC = () => {
           </div>
 
           <div className="text-neutral-500 flex justify-center">
-            <button className="text-sm underline">
+            <button 
+              className="text-sm underline"
+              onClick={() => navigate('/no-watch')}
+            >
               I don't have a smartwatch
             </button>
           </div>

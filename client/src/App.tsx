@@ -4,6 +4,7 @@ import NotFound from "@/pages/not-found";
 import RoleSelection from "@/pages/RoleSelection";
 import PatientDashboard from "@/pages/PatientDashboard";
 import ConnectWatch from "@/pages/ConnectWatch";
+import NoWatchPatientDashboard from "@/pages/NoWatchPatientDashboard";
 import MedicalStaffDashboard from "@/pages/MedicalStaffDashboard";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/select-role" component={RoleSelection} />
       <Route path="/patient-dashboard" component={PatientDashboard} />
       <Route path="/connect-watch" component={ConnectWatch} />
+      <Route path="/no-watch" component={NoWatchPatientDashboard} />
       <Route path="/er-dashboard" component={MedicalStaffDashboard} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
