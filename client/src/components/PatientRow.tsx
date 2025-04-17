@@ -11,12 +11,32 @@ interface PatientRowProps {
 
 // Generate a realistic AI note based on patient data
 const generateAINote = (patient: PatientEntry): string => {
+  // Status text based on patient's current status
+  const statusText = () => {
+    if (patient.status === 'waiting-ambulance') return 'awaiting ambulance';
+    if (patient.status === 'ambulance-dispatched') return 'with ambulance en route';
+    if (patient.status === 'ambulance-arriving') return 'arriving via ambulance';
+    return 'self-presented';
+  };
+  
+  // Calculate estimated arrival text if ambulance info exists
+  const arrivalInfo = () => {
+    if (patient.status.includes('ambulance') && patient.ambulanceInfo) {
+      return `ETA ${patient.ambulanceInfo.estimatedArrivalTime} min (queue position: ${patient.ambulanceInfo.queuePosition}).`;
+    }
+    return '';
+  };
+  
   const notes = [
-    `Patient presenting with ${patient.symptoms.join(', ')}. Vital signs indicate ${patient.priority} priority.`,
-    `Initial assessment shows ${patient.vitals.heartRate.status === 'critical' ? 'concerning' : 'stable'} heart rate at ${patient.vitals.heartRate.value} BPM. ${patient.priority === 'critical' ? 'Immediate attention recommended.' : 'Monitoring advised.'}`,
-    `BP ${patient.vitals.bloodPressure.value} mmHg (${patient.vitals.bloodPressure.status}), SpO2 ${patient.vitals.bloodOxygen.value}% (${patient.vitals.bloodOxygen.status}). ${patient.symptoms.includes('chest pain') ? 'Consider cardiac evaluation.' : ''}`,
-    `${patient.age} y.o. ${patient.status === 'ambulance' ? 'arriving via ambulance' : 'self-presented'} with ${patient.symptoms[0]}. ${patient.priority === 'critical' || patient.priority === 'high' ? 'Expedite treatment.' : 'Standard protocols apply.'}`,
-    `${patient.status === 'ambulance' ? 'EMS reports' : 'Patient states'} ${patient.symptoms.join(' and ')}. Vitals show ${patient.vitals.bloodPressure.status === 'critical' ? 'critical hypertension' : patient.vitals.bloodPressure.status === 'warning' ? 'hypertension' : 'BP within acceptable range'}.`
+    `Patient presenting with ${patient.symptoms.join(', ')}. Vital signs indicate ${patient.priority} priority. ${statusText()}. ${arrivalInfo()}`,
+    
+    `Initial assessment shows ${patient.vitals.heartRate.status === 'critical' ? 'concerning' : 'stable'} heart rate at ${patient.vitals.heartRate.value} BPM. ${patient.priority === 'critical' ? 'Immediate attention recommended.' : 'Monitoring advised.'} ${statusText()}.`,
+    
+    `BP ${patient.vitals.bloodPressure.value} mmHg (${patient.vitals.bloodPressure.status}), SpO2 ${patient.vitals.bloodOxygen.value}% (${patient.vitals.bloodOxygen.status}). ${patient.symptoms.includes('chest pain') ? 'Consider cardiac evaluation.' : ''} Patient ${statusText()}.`,
+    
+    `${patient.age} y.o. ${statusText()} with ${patient.symptoms[0]}. ${patient.priority === 'critical' || patient.priority === 'high' ? 'Expedite treatment.' : 'Standard protocols apply.'} ${arrivalInfo()}`,
+    
+    `${patient.status.includes('ambulance') ? 'EMS reports' : 'Patient states'} ${patient.symptoms.join(' and ')}. Vitals show ${patient.vitals.bloodPressure.status === 'critical' ? 'critical hypertension' : patient.vitals.bloodPressure.status === 'warning' ? 'hypertension' : 'BP within acceptable range'}. ${arrivalInfo()}`
   ];
   
   // Return a deterministic note based on patient ID to keep it consistent
@@ -87,17 +107,31 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
   };
 
   const getStatusBadgeClass = (status: string) => {
-    return status === 'ambulance' 
-      ? 'bg-accent-light/20 text-accent' 
-      : 'bg-neutral-200 text-neutral-700';
+    if (status.includes('ambulance')) {
+      return 'bg-accent-light/20 text-accent dark:bg-blue-900/40 dark:text-blue-300 transition-all duration-300 hover:scale-105 transform';
+    } else {
+      return 'bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300 transition-all duration-300';
+    }
   };
 
   const getStatusIcon = (status: string) => {
-    return status === 'ambulance' ? 'notifications' : 'person';
+    if (status === 'waiting-ambulance') return 'pending';
+    if (status === 'ambulance-dispatched') return 'local_shipping';
+    if (status === 'ambulance-arriving') return 'notifications';
+    return 'person';
   };
 
   const getStatusLabel = (status: string) => {
-    return status === 'ambulance' ? 'Ambulance Arriving' : 'Self-Presented';
+    switch (status) {
+      case 'waiting-ambulance': 
+        return 'Waiting for Ambulance';
+      case 'ambulance-dispatched': 
+        return 'Ambulance Dispatched';
+      case 'ambulance-arriving': 
+        return 'Ambulance Arriving';
+      default:
+        return 'Self-Presented';
+    }
   };
 
   const getMetricIconClass = (status: string) => {
@@ -136,39 +170,64 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
 
   return (
     <>
-      <tr className={`hover:bg-neutral-50 border-l-4 ${getPriorityColor(patient.priority)}`}>
+      <tr className={`hover:bg-neutral-50 dark:hover:bg-neutral-800/50 border-l-4 ${getPriorityColor(patient.priority)} 
+        transition-colors duration-300 animate-fade-in`} style={{animationDelay: '0.1s', animationFillMode: 'backwards'}}>
         <td className="px-4 py-4 whitespace-nowrap">
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityBadgeClass(patient.priority)}`}>
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+            ${getPriorityBadgeClass(patient.priority)} hover:scale-110 transition-transform duration-300`}>
             {patient.priority.charAt(0).toUpperCase() + patient.priority.slice(1)}
           </span>
         </td>
         <td className="px-4 py-4">
           <div className="flex items-center">
-            <div className="flex-shrink-0 h-10 w-10 bg-neutral-200 rounded-full flex items-center justify-center">
-              <span className="material-icons text-neutral-500">person</span>
+            <div className={`flex-shrink-0 h-10 w-10 bg-neutral-200 dark:bg-neutral-700 rounded-full 
+              flex items-center justify-center relative group ${patient.priority === 'critical' ? 'animate-pulse' : ''}`}>
+              <span className="material-icons text-neutral-500 dark:text-neutral-300 group-hover:scale-125 transition-transform duration-300">
+                person
+              </span>
+              {patient.priority === 'critical' && (
+                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-critical opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-status-critical"></span>
+                </span>
+              )}
             </div>
             <div className="ml-4">
-              <div className="text-sm font-medium text-neutral-900">
-                {patient.name}, {patient.age}
+              <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100 group flex items-center">
+                <span className="hover:text-primary dark:hover:text-primary-light transition-colors duration-300">
+                  {patient.name}, {patient.age}
+                </span>
+                {patient.status === 'waiting-ambulance' && (
+                  <span className="ml-2 inline-flex h-2 w-2 rounded-full bg-accent-light animate-pulse"></span>
+                )}
               </div>
-              <div className="text-xs text-neutral-500">
+              <div className="text-xs text-neutral-500 dark:text-neutral-400">
                 #{patient.id}
               </div>
             </div>
           </div>
         </td>
         <td className="px-4 py-4">
-          <div className="flex flex-col text-sm text-neutral-500">
-            <div className="flex items-center">
-              <span className={`material-icons ${getMetricIconClass(patient.vitals.heartRate.status)} mr-1 text-base`}>favorite</span>
+          <div className="flex flex-col text-sm text-neutral-500 dark:text-neutral-400 animate-stagger-delay">
+            <div className="flex items-center hover-scale">
+              <span className={`material-icons ${getMetricIconClass(patient.vitals.heartRate.status)} mr-1 text-base 
+                ${patient.vitals.heartRate.status === 'critical' ? 'animate-pulse' : ''}`}>
+                favorite
+              </span>
               <span>{vitalData.heartRate} BPM</span>
             </div>
-            <div className="flex items-center">
-              <span className={`material-icons ${getMetricIconClass(patient.vitals.bloodPressure.status)} mr-1 text-base`}>speed</span>
+            <div className="flex items-center hover-scale">
+              <span className={`material-icons ${getMetricIconClass(patient.vitals.bloodPressure.status)} mr-1 text-base
+                ${patient.vitals.bloodPressure.status === 'critical' ? 'animate-pulse' : ''}`}>
+                speed
+              </span>
               <span>{vitalData.bloodPressure} mmHg</span>
             </div>
-            <div className="flex items-center">
-              <span className={`material-icons ${getMetricIconClass(patient.vitals.bloodOxygen.status)} mr-1 text-base`}>air</span>
+            <div className="flex items-center hover-scale">
+              <span className={`material-icons ${getMetricIconClass(patient.vitals.bloodOxygen.status)} mr-1 text-base
+                ${patient.vitals.bloodOxygen.status === 'critical' ? 'animate-pulse' : ''}`}>
+                air
+              </span>
               <span>{vitalData.bloodOxygen}% O₂</span>
             </div>
           </div>
@@ -190,18 +249,20 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
                 {isExpanded ? 'Less' : 'More'} <span className="material-icons text-xs ml-1">{isExpanded ? 'expand_less' : 'expand_more'}</span>
               </button>
             </div>
-            <div className="text-neutral-500">
+            <div className="text-neutral-500 dark:text-neutral-400">
               {patient.symptoms.join(', ')}
             </div>
             
             {/* AI Note - only visible when expanded */}
             {isExpanded && (
-              <div className={`mt-2 p-2 rounded-md text-xs ${getPriorityColor(patient.priority)} bg-neutral-50 border`}>
-                <div className="flex items-center text-neutral-700 mb-1">
-                  <span className="material-icons text-primary text-xs mr-1">smart_toy</span>
+              <div className={`mt-2 p-2 rounded-md text-xs ${getPriorityColor(patient.priority)} 
+                bg-neutral-50 dark:bg-neutral-800 border dark:border-neutral-700 
+                transition-all duration-300 transform animate-fade-in`}>
+                <div className="flex items-center text-neutral-700 dark:text-neutral-300 mb-1">
+                  <span className="material-icons text-primary dark:text-primary-light text-xs mr-1 animate-bounce-light">smart_toy</span>
                   <span className="font-medium">AI Assessment Note</span>
                 </div>
-                <div className="text-neutral-600">{aiNote}</div>
+                <div className="text-neutral-600 dark:text-neutral-400">{aiNote}</div>
               </div>
             )}
           </div>
@@ -209,20 +270,26 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
         <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium space-y-2">
           <div className="flex flex-col sm:flex-row gap-2">
             <button 
-              className="bg-primary text-white px-3 py-1 rounded-md hover:bg-primary-dark transition-colors"
+              className="bg-primary text-white px-3 py-1 rounded-md 
+                hover:bg-primary-dark hover:shadow-lg transition-all duration-300 hover-lift"
               onClick={handleViewDetails}
             >
-              View Details
+              <span className="relative inline-block">
+                View Details
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white/30 transform scale-x-0 origin-left 
+                  transition-transform group-hover:scale-x-100"></span>
+              </span>
             </button>
             
             {/* Show ambulance actions for patients not already with ambulance dispatched */}
-            {patient.status !== 'ambulance' && patient.priority === 'critical' && (
+            {!patient.status.includes('ambulance') && patient.priority === 'critical' && (
               <div className="relative">
                 <button 
-                  className="bg-status-critical text-white px-3 py-1 rounded-md hover:bg-status-critical/90 transition-colors flex items-center"
+                  className="bg-status-critical text-white px-3 py-1 rounded-md hover:bg-status-critical/90 transition-colors 
+                    flex items-center hover-lift transition-all duration-300"
                   onClick={() => setShowAmbulanceActions(!showAmbulanceActions)}
                 >
-                  <Ambulance className="h-3 w-3 mr-1" />
+                  <Ambulance className="h-3 w-3 mr-1 animate-bounce-light" />
                   Ambulance
                 </button>
                 
@@ -271,16 +338,20 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
       
       {/* If patient is critical, show a highlighted notification row */}
       {patient.priority === 'critical' && !isExpanded && (
-        <tr className="bg-status-critical/5">
+        <tr className="bg-status-critical/5 dark:bg-status-critical/10 animate-pulse">
           <td colSpan={6} className="px-4 py-2">
-            <div className="flex items-center text-status-critical text-sm">
-              <span className="material-icons text-status-critical mr-1">priority_high</span>
-              <span className="font-medium">Urgent Attention Needed</span>
+            <div className="flex items-center text-status-critical text-sm animate-slide-up">
+              <span className="material-icons text-status-critical mr-1 animate-pulse">priority_high</span>
+              <span className="font-medium relative">
+                Urgent Attention Needed
+                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-status-critical/30 animate-shimmer"></span>
+              </span>
               <button 
-                className="ml-2 underline text-xs"
+                className="ml-2 text-xs hover:text-status-critical group transition-colors duration-300 relative"
                 onClick={() => setIsExpanded(true)}
               >
                 View Assessment
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-status-critical group-hover:w-full transition-all duration-300"></span>
               </button>
             </div>
           </td>
@@ -291,13 +362,13 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
       {showActionConfirmation && (
         <tr>
           <td colSpan={6} className="p-0">
-            <div className="bg-black/5 p-4">
-              <div className="bg-white rounded-lg p-4 max-w-2xl mx-auto border-status-critical border shadow-md">
+            <div className="bg-black/20 dark:bg-black/50 p-4 animate-fade-in">
+              <div className="bg-white dark:bg-neutral-900 rounded-lg p-4 max-w-2xl mx-auto border-status-critical border shadow-lg animate-slide-up">
                 <div className="flex items-center text-status-critical mb-4">
-                  <AlertCircle className="h-5 w-5 mr-2" />
+                  <AlertCircle className="h-5 w-5 mr-2 animate-pulse" />
                   <h3 className="font-bold">Confirm {ambulanceActionType === 'rush' ? 'Rush Ambulance' : 'Next in Line'}</h3>
                 </div>
-                <p className="mb-4 text-sm">
+                <p className="mb-4 text-sm dark:text-neutral-300">
                   {ambulanceActionType === 'rush'
                     ? `Are you sure you want to rush an ambulance for ${patient.name}? This will override existing ambulance assignments.`
                     : `Are you sure you want to set ${patient.name} as next in line for ambulance dispatch?`}
@@ -306,12 +377,13 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
                   <Button 
                     variant="outline" 
                     onClick={() => setShowActionConfirmation(false)}
-                    className="text-sm py-1 px-3 h-auto"
+                    className="text-sm py-1 px-3 h-auto hover-lift"
                   >
                     Cancel
                   </Button>
                   <Button 
-                    className="bg-status-critical hover:bg-status-critical/90 text-white text-sm py-1 px-3 h-auto"
+                    className="bg-status-critical hover:bg-status-critical/90 text-white text-sm py-1 px-3 h-auto
+                      relative overflow-hidden group"
                     onClick={() => {
                       ambulanceActionType === 'rush'
                         ? handleRushAmbulance(patient.id)
@@ -319,7 +391,8 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
                       setShowActionConfirmation(false);
                     }}
                   >
-                    Confirm
+                    <span className="absolute inset-0 w-full h-full bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></span>
+                    <span className="relative z-10">Confirm</span>
                   </Button>
                 </div>
               </div>

@@ -25,7 +25,11 @@ export const mockPatientEntries: PatientEntry[] = [
         status: 'warning'
       }
     },
-    status: 'ambulance',
+    status: 'ambulance-arriving',
+    ambulanceInfo: {
+      queuePosition: 1,
+      estimatedArrivalTime: 3
+    },
     symptoms: ['chest pain', 'shortness of breath', 'nausea', 'sweating']
   },
   {
@@ -77,7 +81,11 @@ export const mockPatientEntries: PatientEntry[] = [
         status: 'elevated'
       }
     },
-    status: 'ambulance',
+    status: 'ambulance-dispatched',
+    ambulanceInfo: {
+      queuePosition: 2,
+      estimatedArrivalTime: 7
+    },
     symptoms: ['dizziness', 'weakness', 'confusion']
   },
   {
