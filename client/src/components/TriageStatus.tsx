@@ -63,7 +63,7 @@ const TriageStatus: FC<TriageStatusProps> = ({
   };
   
   return (
-    <span className={`inline-flex items-center rounded-full font-medium border ${getStatusClass()} ${getSizeClass()}`}>
+    <span className={`inline-flex items-center rounded-full font-medium border bg-white dark:bg-black ${getStatusClass()} ${getSizeClass()}`}>
       {showIcon && (
         <span className="material-icons text-current mr-1" style={{ fontSize: 'inherit' }}>
           {getStatusIcon()}

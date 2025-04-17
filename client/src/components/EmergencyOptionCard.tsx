@@ -41,7 +41,7 @@ const EmergencyOptionCard: FC<EmergencyOptionCardProps> = ({
         <span className={`material-icons ${getIconColor()} mr-3 text-2xl`}>{icon}</span>
         <h3 className="text-lg font-semibold">{title}</h3>
       </div>
-      <p className="text-neutral-600 mb-4">
+      <p className="text-neutral-600 mb-4 dark:text-white">
         {description}
       </p>
       <div className="flex justify-end">

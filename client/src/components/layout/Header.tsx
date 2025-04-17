@@ -55,7 +55,7 @@ const Header: FC = () => {
                 <span className="material-icons mr-1 text-white dark:text-green-400">
                   medical_services
                 </span>
-                <span className="relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white dark:after:bg-green-400 after:transition-all after:duration-300">
+                <span className="text-white relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-white dark:after:bg-green-400 after:transition-all after:duration-300">
                   Medical Staff Mode
                 </span>
               </div>

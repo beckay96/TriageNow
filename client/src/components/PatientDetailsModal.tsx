@@ -114,17 +114,17 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-auto">
+      <div className="bg-white dark:bg-black rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-auto">
         {/* Header */}
         <div className={`p-4 border-b ${getPriorityColorClass(patient.priority)}`}>
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <div className="bg-neutral-100 h-14 w-14 rounded-full flex items-center justify-center mr-4">
-                <span className="material-icons text-neutral-500 text-2xl">person</span>
+                <span className="material-icons text-black text-2xl dark:text-black">person</span>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-neutral-900">{patient.name}</h2>
-                <div className="flex items-center text-sm text-neutral-500">
+                <h2 className="text-xl font-bold text-neutral-900 dark:text-white">{patient.name}</h2>
+                <div className="flex items-center text-sm text-neutral-500 dark:text-white">
                   <span>#{patient.id}</span>
                   <span className="mx-2">•</span>
                   <span>{patient.age} years old</span>
@@ -169,13 +169,13 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
             </div>
 
             {/* Patient status */}
-            <div className="p-4 rounded-lg border border-neutral-200">
+            <div className="p-4 rounded-lg border border-green-200">
               <h3 className="font-medium mb-2">Patient Status</h3>
               <div className="flex items-center space-x-2 mb-2">
                 <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
                   ${patient.status.includes('ambulance') 
-                    ? 'bg-accent-light/20 text-accent dark:bg-blue-900/40 dark:text-blue-300' 
-                    : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'}
+                    ? 'bg-accent-light/20 text-accent bg-white text-green-600 dark:bg-black dark:text-green-500 border border-green-600/30' 
+                    : 'bg-accent-light/20 text-accent bg-white text-red-600 dark:bg-black dark:text-red-500 border border-red-600/30'}
                   transition-colors duration-300 hover:scale-105 transform`}>
                   {patient.status === 'waiting-ambulance' ? (
                     <><Ambulance className="h-3 w-3 mr-1" /> Waiting For Ambulance</>
@@ -191,19 +191,19 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
               
               {/* Ambulance info if applicable */}
               {patient.status.includes('ambulance') && patient.ambulanceInfo && (
-                <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md animate-fade-in transition-colors duration-300">
-                  <div className="text-sm text-blue-700 dark:text-blue-300 font-medium mb-1">
+                <div className="mt-2 p-2 bg-zinc-300 dark:bg-zinc-800/80 rounded-md animate-fade-in transition-colors duration-300">
+                  <div className="text-sm text-orange-700 dark:text-yellow-500 font-medium mb-1">
                     Ambulance Information
                   </div>
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center space-x-1">
-                      <span className="material-icons text-blue-500 dark:text-blue-400 text-sm">queue</span>
+                      <span className="material-icons text-red-500 dark:text-red-400 text-sm">queue</span>
                       <span className="text-neutral-600 dark:text-neutral-300">
                         Position: <span className="font-semibold">{patient.ambulanceInfo.queuePosition}</span>
                       </span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <span className="material-icons text-blue-500 dark:text-blue-400 text-sm">schedule</span>
+                      <span className="material-icons text-green-600 dark:text-green-400 text-sm">schedule</span>
                       <span className="text-neutral-600 dark:text-neutral-300">
                         Est. wait: <span className="font-semibold">{patient.ambulanceInfo.estimatedArrivalTime} min</span>
                       </span>
@@ -214,7 +214,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
               
               <div className="mt-4">
                 <div className="flex items-center space-x-2">
-                  <MapPin className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+                  <MapPin className="h-4 w-4 text-green-500 dark:text-green-400" />
                   <span className="text-sm text-neutral-600 dark:text-neutral-300 hover-scale">
                     {patient.status.includes('ambulance')
                       ? 'Location being tracked via smartwatch GPS' 
@@ -224,8 +224,8 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
               </div>
             </div>
 
-            {/* Actions buttons - only show for patients waiting for ambulance */}
-            {patient.status === 'waiting-ambulance' && (
+            {/* Actions buttons - only show for patients with ambulance dispatched */}
+            {patient.status === 'ambulance-dispatched' && (
               <div className="space-y-3 animate-fade-in">
                 <h3 className="font-medium">Emergency Actions</h3>
                 <Button 
@@ -413,8 +413,8 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
               <h3 className="font-medium mb-3 dark:text-neutral-300">Symptoms & Notes</h3>
               <div className="p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 
                 transition-all duration-300 hover:shadow-md">
-                <div className="mb-3">
-                  <h4 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Reported Symptoms</h4>
+                <div className="">
+                  <h4 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Reported Symptoms</h4>
                   <div className="flex flex-wrap gap-2 animate-stagger-delay">
                     {patient.symptoms.map((symptom, index) => (
                       <span 
@@ -439,7 +439,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                   </h4>
                   <div className={`p-3 rounded-md border text-sm transition-all duration-300 hover:shadow-inner
                     ${patient.priority === 'critical' 
-                      ? 'bg-red-50/50 dark:bg-red-950/20 border-red-200 dark:border-red-900/30 text-red-800 dark:text-red-300' 
+                      ? 'bg-red-50/50 dark:bg-red-950/20 border-red-200 dark:border-red-900/30 text-red-800 dark:text-white' 
                       : patient.priority === 'high'
                       ? 'bg-orange-50/50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-900/30 text-orange-800 dark:text-orange-300'
                       : patient.priority === 'medium'
@@ -449,9 +449,9 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                     {patient.priority === 'critical' ?
                       <div className="animate-fade-in">
                         <span className="font-semibold">Critical condition alert:</span> Patient's vital signs indicate immediate intervention required. 
-                        {patient.vitals.heartRate.status === 'critical' && <span className="animate-pulse inline-block mx-1">❗ Heart rate dangerously elevated.</span>} 
-                        {patient.vitals.bloodPressure.status === 'critical' && <span className="animate-pulse inline-block mx-1">❗ BP readings very concerning.</span>} 
-                        {patient.vitals.bloodOxygen.status === 'critical' && <span className="animate-pulse inline-block mx-1">❗ O₂ saturation critically low.</span>} 
+                        {patient.vitals.heartRate.status === 'critical' && <span className="animate-pulse inline-block mx-1 hover:animate-none">❗ Heart rate dangerously elevated.</span>} 
+                        {patient.vitals.bloodPressure.status === 'critical' && <span className="animate-pulse inline-block mx-1 hover:animate-none">❗ BP readings very concerning.</span>} 
+                        {patient.vitals.bloodOxygen.status === 'critical' && <span className="animate-pulse inline-block mx-1 hover:animate-none">❗ O₂ saturation critically low.</span>} 
                         <span className="font-semibold block mt-1">Immediate medical attention required.</span>
                       </div> 
                       : patient.priority === 'high' ?
@@ -480,7 +480,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                     
                     {/* Ambulance information if applicable */}
                     {patient.status.includes('ambulance') && patient.ambulanceInfo && (
-                      <div className="mt-2 pt-2 border-t border-neutral-200 dark:border-neutral-700">
+                      <div className="mt-2 pt-2 border-t border-neutral-200 dark:border-neutral-700 text-black dark:text-white">
                         <span className="font-semibold">Ambulance status:</span> {patient.status === 'waiting-ambulance' 
                           ? 'Waiting for ambulance dispatch' 
                           : patient.status === 'ambulance-dispatched' 
@@ -489,7 +489,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                         <div className="flex items-center mt-1">
                           <span className="material-icons text-sm mr-1 text-accent-light dark:text-accent">pending_actions</span>
                           <span>ETA: {patient.ambulanceInfo.estimatedArrivalTime} minutes</span>
-                          <span className="ml-3 text-xs px-1.5 py-0.5 rounded bg-accent-light/20 text-accent dark:bg-accent/20">
+                          <span className="ml-3 text-xs px-1.5 py-0.5 border border-white rounded-full bg-black text-white dark:bg-black">
                             Queue position: {patient.ambulanceInfo.queuePosition}
                           </span>
                         </div>

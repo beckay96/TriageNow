@@ -9,7 +9,7 @@ interface PatientRowProps {
   onViewDetails: (patientId: string) => void;
 }
 
-// Generate a realistic AI note based on patient data
+// Generating a realistic AI note based on patient data
 const generateAINote = (patient: PatientEntry): string => {
   // Status text based on patient's current status
   const statusText = () => {
@@ -107,10 +107,12 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
   };
 
   const getStatusBadgeClass = (status: string) => {
-    if (status.includes('ambulance')) {
-      return 'bg-accent-light/20 text-accent dark:bg-blue-900/40 dark:text-blue-300 transition-all duration-300 hover:scale-105 transform';
-    } else {
-      return 'bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300 transition-all duration-300';
+    if (status.includes('ambulance-arriving')) {
+      return 'bg-red-400/30 text-black dark:bg-red-900/80 dark:text-white transition-all duration-300 hover:scale-105 transform';
+    } else if (status.includes('ambulance-dispatched')) {
+      return 'bg-green-400/50 text-black dark:bg-green-900/80 dark:text-white transition-all duration-300 hover:scale-105 transform'; }
+    else {
+      return 'bg-yellow-500/50 text-neutral-700 dark:bg-yellow-500/60 dark:text-white transition-all duration-300';
     }
   };
 
@@ -152,7 +154,7 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
     console.log(`Rushing ambulance for patient: ${patientId}`);
     setActionStatus('success');
     
-    // In a real app, this would make an API call to dispatch an ambulance
+    // In a production-ready app, this would make an API call to dispatch an ambulance
     setTimeout(() => {
       setActionStatus('idle');
     }, 3000);
@@ -162,7 +164,7 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
     console.log(`Setting patient as next in line: ${patientId}`);
     setActionStatus('success');
     
-    // In a real app, this would make an API call to update the ambulance queue
+    // In a production-ready app, this would make an API call to update the ambulance queue
     setTimeout(() => {
       setActionStatus('idle');
     }, 3000);
@@ -170,7 +172,7 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
 
   return (
     <>
-      <tr className={`hover:bg-neutral-50 dark:hover:bg-zinc-800 border-l-4 ${getPriorityColor(patient.priority)} 
+      <tr className={`hover:bg-neutral-50 dark:hover:bg-zinc-800 ${getPriorityColor(patient.priority)} 
         transition-colors duration-300 animate-fade-in dark-card`} style={{animationDelay: '0.1s', animationFillMode: 'backwards'}}>
         <td className="px-4 py-4 whitespace-nowrap">
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
@@ -207,17 +209,17 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
           </div>
         </td>
         <td className="px-4 py-4">
-          <div className="flex flex-col text-sm text-neutral-500 dark:text-neutral-400 animate-stagger-delay">
+          <div className="flex flex-col text-sm text-black dark:text-white">
             <div className="flex items-center hover-scale">
               <span className={`material-icons ${getMetricIconClass(patient.vitals.heartRate.status)} mr-1 text-base 
-                ${patient.vitals.heartRate.status === 'critical' ? 'critical-highlight' : ''} hover:scale-110 transition-transform duration-300`}>
+                hover:scale-110 transition-transform duration-300`}>
                 favorite
               </span>
               <span>{vitalData.heartRate} BPM</span>
             </div>
             <div className="flex items-center hover-scale">
               <span className={`material-icons ${getMetricIconClass(patient.vitals.bloodPressure.status)} mr-1 text-base
-                ${patient.vitals.bloodPressure.status === 'critical' ? 'critical-highlight' : ''} hover:scale-110 transition-transform duration-300`}>
+                hover:scale-110 transition-transform duration-300`}>
                 speed
               </span>
               <span>{vitalData.bloodPressure} mmHg</span>
@@ -240,7 +242,7 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
         <td className="px-4 py-4 text-sm">
           <div className="max-w-md">
             <div className="flex justify-between items-center">
-              <div className="font-medium text-neutral-700 mb-1">Symptoms</div>
+              <div className="font-medium text-neutral-700 dark:text-white mb-1">Symptoms</div>
               <button 
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="text-primary text-xs hover:underline flex items-center"
@@ -280,8 +282,8 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
               </span>
             </button>
             
-            {/* Show ambulance actions for patients not already with ambulance dispatched */}
-            {!patient.status.includes('ambulance') && patient.priority === 'critical' && (
+            {/* Show ambulance actions only for patients with ambulance dispatched status */}
+            {patient.status === 'ambulance-dispatched' && (
               <div className="relative">
                 <button 
                   className="bg-status-critical text-white px-3 py-1 rounded-md hover:bg-status-critical/90 transition-colors 

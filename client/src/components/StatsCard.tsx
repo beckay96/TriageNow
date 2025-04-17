@@ -37,11 +37,11 @@ const StatsCard: FC<StatsCardProps> = ({ type, count }) => {
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow p-4 border-l-4 ${getBorderClass(type)}`}>
-      <h3 className="text-neutral-500 text-sm font-medium">{getTitle(type)}</h3>
+    <div className={`bg-white dark:bg-black dark:text-white rounded-lg shadow p-4 border-l-4 ${getBorderClass(type)}`}>
+      <h3 className="text-neutral-500 dark:text-white text-sm font-medium">{getTitle(type)}</h3>
       <div className="flex items-baseline mt-1">
         <span className={`text-3xl font-bold ${getTextClass(type)}`}>{count}</span>
-        <span className="ml-2 text-neutral-500 text-sm">patients</span>
+        <span className="ml-2 text-neutral-500 text-sm dark:text-white/80">patients</span>
       </div>
     </div>
   );

@@ -121,9 +121,9 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
   else if (painLevel > 2) painIndicatorColor = "bg-blue-500";
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 max-h-[90vh] overflow-auto">
-        <div className="p-5 border-b border-b-red-50 bg-gradient-to-r from-red-50 to-white flex justify-between items-center">
+    <div className="fixed inset-0 bg-white dark:bg-black bg-opacity-50 dark:bg-black flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-black rounded-xl shadow-2xl max-w-md w-full mx-4 max-h-[90vh] overflow-auto">
+        <div className="p-5 border border-red-50 bg-gradient-to-r from-red-50 to-white dark:bg-black flex justify-between items-center">
           <div className="flex items-center">
             <Stethoscope className="h-6 w-6 text-red-500 mr-2" />
             <h3 className="text-xl font-medium text-gray-900">Health Assessment</h3>
@@ -314,7 +314,7 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
               </div>
             </div>
             
-            <div className="mt-8 flex justify-end">
+            <div className="mt-8 flex justify-end bg-white dark:bg-black">
               <Button 
                 type="button" 
                 variant="outline" 

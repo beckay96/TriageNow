@@ -158,8 +158,8 @@ const ConnectWatch: FC = () => {
         <div>
           <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
             <div>
-              <h2 className="text-2xl font-bold text-neutral-700">Your Health Dashboard</h2>
-              <p className="text-neutral-600">
+              <h2 className="text-2xl font-bold text-neutral-700 dark:text-white">Your Health Dashboard</h2>
+              <p className="text-neutral-600 dark:text-white">
                 <span>{getContextMessage()}</span>
               </p>
             </div>
@@ -175,15 +175,15 @@ const ConnectWatch: FC = () => {
               <div className={`
                 p-4 mb-4 rounded-lg border-l-4
                 ${triageStatus === 'critical' ? 'bg-red-50 border-red-500' : 
-                  triageStatus === 'high' ? 'bg-orange-50 border-orange-500' :
-                  triageStatus === 'medium' ? 'bg-amber-50 border-amber-500' :
-                  'bg-green-50 border-green-500'}
+                  triageStatus === 'high' ? 'bg-orange-50 border-orange-600 dark:bg-zinc-800 dark:border-orange-400' :
+                  triageStatus === 'medium' ? 'bg-amber-50 border-amber-600 dark:bg-zinc-800 dark:border-amber-400' :
+                  'bg-green-50 border-green-500 dark:bg-zinc-800 dark:border-green-400'}
               `}>
                 <div className="flex items-center">
                   <span className={`material-icons mr-3 text-2xl
                     ${triageStatus === 'critical' ? 'text-red-500' : 
-                      triageStatus === 'high' ? 'text-orange-500' :
-                      triageStatus === 'medium' ? 'text-amber-500' :
+                      triageStatus === 'high' ? 'text-orange-700 dark:text-orange-500' :
+                      triageStatus === 'medium' ? 'text-amber-600' :
                       'text-green-600'}
                   `}>
                     {triageStatus === 'critical' || triageStatus === 'high' ? 'warning' : 
@@ -201,7 +201,7 @@ const ConnectWatch: FC = () => {
                        triageStatus === 'medium' ? 'Moderate Health Alert' :
                        'Stable Health Status'}
                     </h3>
-                    <p className="text-neutral-700">
+                    <p className="text-neutral-700 dark:text-white">
                       {triageStatus === 'critical' ? 'Multiple readings indicate an urgent health concern that requires immediate medical attention.' : 
                        triageStatus === 'high' ? 'Your vital signs suggest a health concern that needs prompt medical evaluation.' :
                        triageStatus === 'medium' ? 'Some readings are outside normal ranges, medical consultation recommended.' :
@@ -249,14 +249,14 @@ const ConnectWatch: FC = () => {
           )}
 
           {/* AI Chat Box */}
-          <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
+          <div className="bg-white rounded-lg shadow overflow-hidden mb-8 dark:bg-black">
             <div className="bg-primary p-4">
               <h3 className="text-white font-semibold flex items-center">
                 <span className="material-icons mr-2">smart_toy</span>
                 Health Assistant
               </h3>
             </div>
-            <div className="p-4 h-60 overflow-y-auto bg-neutral-50">
+            <div className="p-4 h-60 overflow-y-auto bg-neutral-50 dark:bg-black dark:text-white">
               {chatMessages.map(message => (
                 <ChatMessage key={message.id} message={message} />
               ))}
@@ -267,13 +267,13 @@ const ConnectWatch: FC = () => {
                 <input 
                   type="text" 
                   placeholder="Type your symptoms or questions here..." 
-                  className="flex-1 border border-neutral-300 rounded-l-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="flex-1 border border-blue-500 rounded-l-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-zinc-800 dark:text-white"
                   value={userMessage}
                   onChange={(e) => setUserMessage(e.target.value)}
                   onKeyUp={handleKeyUp}
                 />
                 <button 
-                  className="bg-primary text-white px-4 rounded-r-md hover:bg-primary-dark transition-colors"
+                  className="bg-primary border border-transparent text-white px-4 rounded-r-md hover:bg-primary-dark transition-colors dark:bg-zinc-800 dark:text-white dark:border-blue-500 dark:hover:bg-blue-900"
                   onClick={handleSendMessage}
                 >
                   <span className="material-icons">send</span>
@@ -284,9 +284,9 @@ const ConnectWatch: FC = () => {
 
           {/* Triage Questionnaire */}
           {showQuestionnaire && (
-            <div className="bg-white rounded-lg shadow p-6 mb-8">
-              <h3 className="text-lg font-semibold text-neutral-700 mb-4 flex items-center">
-                <span className="material-icons text-primary mr-2">quiz</span>
+            <div className="bg-white rounded-lg shadow p-6 mb-8 dark:bg-black dark:text-white">
+              <h3 className="text-lg font-semibold text-neutral-700 dark:text-white mb-4 flex items-center">
+                <span className="material-icons text-blue-500 mr-2">quiz</span>
                 Quick Symptom Assessment
               </h3>
               
@@ -319,9 +319,9 @@ const ConnectWatch: FC = () => {
 
                 {/* Additional symptoms */}
                 <div className="mb-6">
-                  <label className="block text-neutral-700 mb-2">Select any other symptoms you're experiencing:</label>
+                  <label className="block text-zinc-700 dark:text-white mb-2">Select any other symptoms you're experiencing:</label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                    <label className="inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400">
                       <input 
                         type="checkbox" 
                         name="symptoms" 
@@ -332,7 +332,7 @@ const ConnectWatch: FC = () => {
                       />
                       Fever
                     </label>
-                    <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                    <label className="inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400">
                       <input 
                         type="checkbox" 
                         name="symptoms" 
@@ -343,7 +343,7 @@ const ConnectWatch: FC = () => {
                       />
                       Dizziness
                     </label>
-                    <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                    <label className="inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400">
                       <input 
                         type="checkbox" 
                         name="symptoms" 
@@ -354,7 +354,7 @@ const ConnectWatch: FC = () => {
                       />
                       Nausea/Vomiting
                     </label>
-                    <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                    <label className="inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400">
                       <input 
                         type="checkbox" 
                         name="symptoms" 
@@ -365,7 +365,7 @@ const ConnectWatch: FC = () => {
                       />
                       Cough
                     </label>
-                    <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                    <label className="inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400">
                       <input 
                         type="checkbox" 
                         name="symptoms" 
@@ -376,7 +376,7 @@ const ConnectWatch: FC = () => {
                       />
                       Rash
                     </label>
-                    <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                    <label className="inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400">
                       <input 
                         type="checkbox" 
                         name="symptoms" 
@@ -393,7 +393,7 @@ const ConnectWatch: FC = () => {
                 <div className="flex justify-end">
                   <button 
                     type="submit" 
-                    className="bg-primary hover:bg-primary-dark text-white py-2 px-4 rounded-md font-medium transition-colors"
+                    className="bg-primary hover:bg-primary-dark dark:bg-black border border-blue-500 text-white py-2 px-4 rounded-md font-medium transition-colors"
                   >
                     Submit
                   </button>
@@ -403,7 +403,7 @@ const ConnectWatch: FC = () => {
           )}
 
           {!showQuestionnaire && (
-            <div className="bg-gradient-to-r from-red-50 to-white border-l-4 border-red-500 p-5 rounded-lg shadow-md mb-8 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-red-50 to-white dark:bg-black border-l-4 border-red-500 p-5 rounded-lg shadow-md mb-8 flex items-center justify-between">
               <div className="flex items-start">
                 <span className="material-icons text-red-500 mr-3 text-2xl">medical_services</span>
                 <div>
@@ -426,7 +426,7 @@ const ConnectWatch: FC = () => {
           {showQuestionnaire && (
             <div className="flex justify-center mb-8">
               <button 
-                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md shadow-sm transition-colors flex items-center"
+                className="flex items-center inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400 transition-colors"
                 onClick={toggleQuestionnaire}
               >
                 <span className="material-icons mr-1">close</span>
