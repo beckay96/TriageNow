@@ -168,41 +168,84 @@ const ConnectWatch: FC = () => {
             </div>
           </div>
 
-          {/* Health Metrics Grid */}
+          {/* Health Metrics Grid with Summary Banner */}
           {healthMetrics && healthStatuses && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <HealthMetricCard 
-                title="Heart Rate"
-                value={healthMetrics.heartRate}
-                unit="BPM"
-                icon="favorite"
-                status={healthStatuses.heartRate}
-              />
+            <>
+              {/* Health Status Summary Banner */}
+              <div className={`
+                p-4 mb-4 rounded-lg border-l-4
+                ${triageStatus === 'critical' ? 'bg-status-critical/10 border-status-critical' : 
+                  triageStatus === 'high' ? 'bg-status-warning/10 border-status-warning' :
+                  triageStatus === 'medium' ? 'bg-status-caution/10 border-status-caution' :
+                  'bg-status-healthy/10 border-status-healthy'}
+              `}>
+                <div className="flex items-center">
+                  <span className={`material-icons mr-3 text-2xl
+                    ${triageStatus === 'critical' ? 'text-status-critical' : 
+                      triageStatus === 'high' ? 'text-status-warning' :
+                      triageStatus === 'medium' ? 'text-status-caution' :
+                      'text-status-healthy'}
+                  `}>
+                    {triageStatus === 'critical' || triageStatus === 'high' ? 'warning' : 
+                     triageStatus === 'medium' ? 'info' : 'check_circle'}
+                  </span>
+                  <div>
+                    <h3 className={`font-semibold text-lg
+                      ${triageStatus === 'critical' ? 'text-status-critical' : 
+                        triageStatus === 'high' ? 'text-status-warning' :
+                        triageStatus === 'medium' ? 'text-status-caution' :
+                        'text-status-healthy'}
+                    `}>
+                      {triageStatus === 'critical' ? 'Critical Health Status' : 
+                       triageStatus === 'high' ? 'Elevated Health Concern' :
+                       triageStatus === 'medium' ? 'Moderate Health Alert' :
+                       'Stable Health Status'}
+                    </h3>
+                    <p className="text-neutral-700">
+                      {triageStatus === 'critical' ? 'Multiple readings indicate an urgent health concern that requires immediate medical attention.' : 
+                       triageStatus === 'high' ? 'Your vital signs suggest a health concern that needs prompt medical evaluation.' :
+                       triageStatus === 'medium' ? 'Some readings are outside normal ranges, medical consultation recommended.' :
+                       'Your vital signs are generally within normal ranges.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
               
-              <HealthMetricCard 
-                title="Blood Pressure"
-                value={`${healthMetrics.bloodPressure.systolic}/${healthMetrics.bloodPressure.diastolic}`}
-                unit="mmHg"
-                icon="speed"
-                status={healthStatuses.bloodPressure}
-              />
-              
-              <HealthMetricCard 
-                title="Blood Oxygen"
-                value={healthMetrics.bloodOxygen}
-                unit="%"
-                icon="air"
-                status={healthStatuses.bloodOxygen}
-              />
-              
-              <HealthMetricCard 
-                title="Temperature"
-                value={healthMetrics.temperature}
-                unit="°F"
-                icon="thermostat"
-                status={healthStatuses.temperature}
-              />
-            </div>
+              {/* Health Metrics Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <HealthMetricCard 
+                  title="Heart Rate"
+                  value={healthMetrics.heartRate}
+                  unit="BPM"
+                  icon="favorite"
+                  status={healthStatuses.heartRate}
+                />
+                
+                <HealthMetricCard 
+                  title="Blood Pressure"
+                  value={`${healthMetrics.bloodPressure.systolic}/${healthMetrics.bloodPressure.diastolic}`}
+                  unit="mmHg"
+                  icon="speed"
+                  status={healthStatuses.bloodPressure}
+                />
+                
+                <HealthMetricCard 
+                  title="Blood Oxygen"
+                  value={healthMetrics.bloodOxygen}
+                  unit="%"
+                  icon="air"
+                  status={healthStatuses.bloodOxygen}
+                />
+                
+                <HealthMetricCard 
+                  title="Temperature"
+                  value={healthMetrics.temperature}
+                  unit="°F"
+                  icon="thermostat"
+                  status={healthStatuses.temperature}
+                />
+              </div>
+            </>
           )}
 
           {/* AI Chat Box */}
