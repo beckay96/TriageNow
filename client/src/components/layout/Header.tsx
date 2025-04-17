@@ -11,7 +11,7 @@ const Header: FC = () => {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="group">
           <div className="flex items-center">
-            <span className="material-icons text-blue-300 dark:text-green-400 mr-2 text-2xl md:text-3xl group-hover:rotate-12 transform transition-all duration-300 ease-in-out animate-pulse">
+            <span className="material-icons text-blue-300 dark:text-green-400 mr-2 text-2xl md:text-3xl group-hover:rotate-12 transform transition-all duration-300 ease-in-out hover:scale-110">
               local_hospital
             </span>
             <div className="relative">

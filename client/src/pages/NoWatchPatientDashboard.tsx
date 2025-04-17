@@ -234,8 +234,8 @@ const NoWatchPatientDashboard: FC = () => {
     <div className="mx-auto max-w-4xl">
       <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
-          <h2 className="text-2xl font-bold text-neutral-700">Symptom Assessment</h2>
-          <p className="text-neutral-600">
+          <h2 className="text-2xl font-bold text-neutral-700 dark:text-white">Symptom Assessment</h2>
+          <p className="text-neutral-600 dark:text-zinc-200">
             <span>{getContextMessage()}</span>
           </p>
         </div>
@@ -247,35 +247,38 @@ const NoWatchPatientDashboard: FC = () => {
       {/* Status Summary Banner */}
       {triageStatus && (
         <div className={`
-          p-4 mb-4 rounded-lg border-l-4
-          ${triageStatus === 'critical' ? 'bg-red-50 border-red-500' : 
-            triageStatus === 'high' ? 'bg-orange-50 border-orange-500' :
-            triageStatus === 'medium' ? 'bg-amber-50 border-amber-500' :
-            'bg-green-50 border-green-500'}
+          p-4 mb-4 rounded-lg border-l-4 transition-colors duration-300
+          ${triageStatus === 'critical' 
+            ? 'bg-red-50 border-red-500 dark:bg-red-950/30 dark:border-red-600' : 
+            triageStatus === 'high' 
+            ? 'bg-orange-50 border-orange-500 dark:bg-orange-950/30 dark:border-orange-600' :
+            triageStatus === 'medium' 
+            ? 'bg-amber-50 border-amber-500 dark:bg-amber-950/30 dark:border-amber-600' :
+            'bg-green-50 border-green-500 dark:bg-green-950/30 dark:border-green-600'}
         `}>
           <div className="flex items-center">
             <span className={`material-icons mr-3 text-2xl
-              ${triageStatus === 'critical' ? 'text-red-500' : 
-                triageStatus === 'high' ? 'text-orange-500' :
-                triageStatus === 'medium' ? 'text-amber-500' :
-                'text-green-600'}
+              ${triageStatus === 'critical' ? 'text-red-500 dark:text-red-400' : 
+                triageStatus === 'high' ? 'text-orange-500 dark:text-orange-400' :
+                triageStatus === 'medium' ? 'text-amber-500 dark:text-amber-400' :
+                'text-green-600 dark:text-green-400'}
             `}>
               {triageStatus === 'critical' || triageStatus === 'high' ? 'warning' : 
                triageStatus === 'medium' ? 'info' : 'check_circle'}
             </span>
             <div>
               <h3 className={`font-semibold text-lg
-                ${triageStatus === 'critical' ? 'text-red-500' : 
-                  triageStatus === 'high' ? 'text-orange-500' :
-                  triageStatus === 'medium' ? 'text-amber-500' :
-                  'text-green-600'}
+                ${triageStatus === 'critical' ? 'text-red-500 dark:text-red-400' : 
+                  triageStatus === 'high' ? 'text-orange-500 dark:text-orange-400' :
+                  triageStatus === 'medium' ? 'text-amber-500 dark:text-amber-400' :
+                  'text-green-600 dark:text-green-400'}
               `}>
                 {triageStatus === 'critical' ? 'Critical Health Status' : 
                  triageStatus === 'high' ? 'Elevated Health Concern' :
                  triageStatus === 'medium' ? 'Moderate Health Alert' :
                  'Stable Health Status'}
               </h3>
-              <p className="text-neutral-700">
+              <p className="text-neutral-700 dark:text-zinc-200">
                 {triageStatus === 'critical' ? 'Your symptoms indicate an urgent health concern that requires immediate medical attention.' : 
                  triageStatus === 'high' ? 'Your symptoms suggest a health concern that needs prompt medical evaluation.' :
                  triageStatus === 'medium' ? 'Some symptoms are concerning, medical consultation recommended.' :
@@ -287,31 +290,31 @@ const NoWatchPatientDashboard: FC = () => {
       )}
 
       {/* AI Chat Box */}
-      <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
-        <div className="bg-primary p-4">
+      <div className="bg-white dark:bg-zinc-900 dark:border dark:border-zinc-800 rounded-lg shadow overflow-hidden mb-8 transition-colors duration-300">
+        <div className="bg-primary dark:bg-gradient-to-r dark:from-blue-800 dark:to-zinc-800 p-4">
           <h3 className="text-white font-semibold flex items-center">
-            <span className="material-icons mr-2">smart_toy</span>
+            <span className="material-icons mr-2 transition-transform duration-300 hover:scale-110 hover:rotate-12">smart_toy</span>
             Health Assistant
           </h3>
         </div>
-        <div className="p-4 h-60 overflow-y-auto bg-neutral-50">
+        <div className="p-4 h-60 overflow-y-auto bg-neutral-50 dark:bg-zinc-900">
           {chatMessages.map(message => (
             <ChatMessage key={message.id} message={message} />
           ))}
           <div ref={chatEndRef} />
         </div>
-        <div className="p-4 border-t">
+        <div className="p-4 border-t dark:border-zinc-800">
           <div className="flex">
             <input 
               type="text" 
               placeholder="Type your symptoms or questions here..." 
-              className="flex-1 border border-neutral-300 rounded-l-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="flex-1 border border-neutral-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white rounded-l-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-green-400 focus:border-transparent"
               value={userMessage}
               onChange={(e) => setUserMessage(e.target.value)}
               onKeyUp={handleKeyUp}
             />
             <button 
-              className="bg-primary text-white px-4 rounded-r-md hover:bg-primary-dark transition-colors"
+              className="bg-primary dark:bg-blue-700 text-white px-4 rounded-r-md hover:bg-primary-dark dark:hover:bg-blue-600 transition-colors"
               onClick={handleSendMessage}
             >
               <span className="material-icons">send</span>
@@ -322,9 +325,9 @@ const NoWatchPatientDashboard: FC = () => {
 
       {/* Triage Questionnaire */}
       {showQuestionnaire && (
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h3 className="text-lg font-semibold text-neutral-700 mb-4 flex items-center">
-            <span className="material-icons text-primary mr-2">quiz</span>
+        <div className="bg-white dark:bg-zinc-900 dark:border dark:border-zinc-800 rounded-lg shadow p-6 mb-8 transition-colors duration-300">
+          <h3 className="text-lg font-semibold text-neutral-700 dark:text-white mb-4 flex items-center">
+            <span className="material-icons text-primary dark:text-green-400 mr-2 transition-transform duration-300 hover:scale-110 hover:rotate-12">quiz</span>
             Quick Symptom Assessment
           </h3>
           
@@ -357,9 +360,9 @@ const NoWatchPatientDashboard: FC = () => {
 
             {/* Critical symptoms */}
             <div className="mb-6">
-              <label className="block text-neutral-700 mb-2 font-medium">Select any critical symptoms you're experiencing:</label>
+              <label className="block text-neutral-700 dark:text-zinc-200 mb-2 font-medium">Select any critical symptoms you're experiencing:</label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
-                <label className="inline-flex items-center bg-white border border-red-200 rounded-md px-3 py-2 cursor-pointer hover:bg-red-50">
+                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-red-200 dark:border-red-900 rounded-md px-3 py-2 cursor-pointer hover:bg-red-50 dark:hover:bg-red-950/30 dark:text-zinc-200 transition-colors duration-300">
                   <input 
                     type="checkbox" 
                     name="symptoms" 
@@ -370,7 +373,7 @@ const NoWatchPatientDashboard: FC = () => {
                   />
                   Chest pain or pressure
                 </label>
-                <label className="inline-flex items-center bg-white border border-red-200 rounded-md px-3 py-2 cursor-pointer hover:bg-red-50">
+                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-red-200 dark:border-red-900 rounded-md px-3 py-2 cursor-pointer hover:bg-red-50 dark:hover:bg-red-950/30 dark:text-zinc-200 transition-colors duration-300">
                   <input 
                     type="checkbox" 
                     name="symptoms" 
@@ -381,7 +384,7 @@ const NoWatchPatientDashboard: FC = () => {
                   />
                   Severe bleeding
                 </label>
-                <label className="inline-flex items-center bg-white border border-red-200 rounded-md px-3 py-2 cursor-pointer hover:bg-red-50">
+                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-red-200 dark:border-red-900 rounded-md px-3 py-2 cursor-pointer hover:bg-red-50 dark:hover:bg-red-950/30 dark:text-zinc-200 transition-colors duration-300">
                   <input 
                     type="checkbox" 
                     name="symptoms" 
@@ -395,9 +398,9 @@ const NoWatchPatientDashboard: FC = () => {
               </div>
               
               {/* Other common symptoms */}
-              <label className="block text-neutral-700 mb-2 font-medium">Select any other symptoms you're experiencing:</label>
+              <label className="block text-neutral-700 dark:text-zinc-200 mb-2 font-medium">Select any other symptoms you're experiencing:</label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50 dark:hover:bg-zinc-700 dark:text-zinc-200 transition-colors duration-300">
                   <input 
                     type="checkbox" 
                     name="symptoms" 
@@ -408,7 +411,7 @@ const NoWatchPatientDashboard: FC = () => {
                   />
                   Fever
                 </label>
-                <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50 dark:hover:bg-zinc-700 dark:text-zinc-200 transition-colors duration-300">
                   <input 
                     type="checkbox" 
                     name="symptoms" 
@@ -419,7 +422,7 @@ const NoWatchPatientDashboard: FC = () => {
                   />
                   Dizziness
                 </label>
-                <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50 dark:hover:bg-zinc-700 dark:text-zinc-200 transition-colors duration-300">
                   <input 
                     type="checkbox" 
                     name="symptoms" 
@@ -430,7 +433,7 @@ const NoWatchPatientDashboard: FC = () => {
                   />
                   Nausea/Vomiting
                 </label>
-                <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50 dark:hover:bg-zinc-700 dark:text-zinc-200 transition-colors duration-300">
                   <input 
                     type="checkbox" 
                     name="symptoms" 
@@ -441,7 +444,7 @@ const NoWatchPatientDashboard: FC = () => {
                   />
                   Cough
                 </label>
-                <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50 dark:hover:bg-zinc-700 dark:text-zinc-200 transition-colors duration-300">
                   <input 
                     type="checkbox" 
                     name="symptoms" 
@@ -452,7 +455,7 @@ const NoWatchPatientDashboard: FC = () => {
                   />
                   Rash
                 </label>
-                <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50 dark:hover:bg-zinc-700 dark:text-zinc-200 transition-colors duration-300">
                   <input 
                     type="checkbox" 
                     name="symptoms" 
@@ -469,7 +472,7 @@ const NoWatchPatientDashboard: FC = () => {
             <div className="flex justify-end">
               <button 
                 type="submit"
-                className="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-md transition-colors"
+                className="bg-primary dark:bg-blue-700 hover:bg-primary-dark dark:hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-colors"
               >
                 Submit Assessment
               </button>
