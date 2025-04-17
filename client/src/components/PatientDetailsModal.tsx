@@ -305,25 +305,35 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                 </div>
 
                 {/* Blood Pressure */}
-                <div className={`p-4 rounded-lg border ${patient.vitals.bloodPressure.status === 'critical' ? 'border-status-critical' : 'border-neutral-200'}`}>
+                <div className={`p-4 rounded-lg border transition-all duration-300 hover:shadow-md 
+                  ${patient.vitals.bloodPressure.status === 'critical' 
+                    ? 'border-status-critical dark:border-red-700 bg-red-50/30 dark:bg-red-950/20' 
+                    : 'border-neutral-200 dark:border-neutral-700 dark:bg-neutral-800/50'}`}>
                   <div className="flex justify-between items-start">
-                    <div>
-                      <span className="text-sm text-neutral-500">Blood Pressure</span>
+                    <div className="group">
+                      <span className="text-sm text-neutral-500 dark:text-neutral-400">Blood Pressure</span>
                       <div className="flex items-baseline">
-                        <span className={`text-2xl font-bold ${getStatusColorClass(patient.vitals.bloodPressure.status)}`}>
+                        <span className={`text-2xl font-bold transition-all duration-300 
+                          ${getStatusColorClass(patient.vitals.bloodPressure.status)} 
+                          group-hover:scale-110 transform origin-left`}>
                           {patient.vitals.bloodPressure.value}
                         </span>
-                        <span className="ml-1 text-neutral-500">mmHg</span>
+                        <span className="ml-1 text-neutral-500 dark:text-neutral-400">mmHg</span>
                       </div>
-                      <span className={`text-xs ${getStatusColorClass(patient.vitals.bloodPressure.status)}`}>
+                      <span className={`text-xs opacity-0 animate-fade-in ${getStatusColorClass(patient.vitals.bloodPressure.status)}`} 
+                        style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
                         {patient.vitals.bloodPressure.status === 'critical' ? 'Critical' : 
                          patient.vitals.bloodPressure.status === 'warning' ? 'Warning' : 
                          patient.vitals.bloodPressure.status === 'elevated' ? 'Elevated' : 'Normal'}
                       </span>
                     </div>
-                    <div className="w-20 h-12 bg-neutral-50 rounded">
+                    <div className="w-20 h-12 bg-neutral-50 dark:bg-neutral-900 rounded overflow-hidden relative">
+                      {/* Pulse animation for critical status */}
+                      {patient.vitals.bloodPressure.status === 'critical' && (
+                        <div className="absolute inset-0 bg-red-500/10 dark:bg-red-700/20 animate-pulse"></div>
+                      )}
                       {/* Simple chart visualization */}
-                      <svg viewBox="0 0 100 40" className="w-full h-full">
+                      <svg viewBox="0 0 100 40" className="w-full h-full relative z-10">
                         <polyline
                           points={systolicHistory.map((val, i) => 
                             `${i * (100 / (systolicHistory.length - 1))},${40 - (val - Math.min(...systolicHistory)) / (Math.max(...systolicHistory) - Math.min(...systolicHistory)) * 30}`
@@ -333,6 +343,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                                   patient.vitals.bloodPressure.status === 'warning' ? '#f97316' : 
                                   patient.vitals.bloodPressure.status === 'elevated' ? '#f59e0b' : '#10b981'}
                           strokeWidth="2"
+                          className={patient.vitals.bloodPressure.status === 'critical' ? 'animate-pulse' : ''}
                         />
                         <polyline
                           points={diastolicHistory.map((val, i) => 
@@ -350,25 +361,35 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                 </div>
 
                 {/* Blood Oxygen */}
-                <div className={`p-4 rounded-lg border ${patient.vitals.bloodOxygen.status === 'critical' ? 'border-status-critical' : 'border-neutral-200'}`}>
+                <div className={`p-4 rounded-lg border transition-all duration-300 hover:shadow-md 
+                  ${patient.vitals.bloodOxygen.status === 'critical' 
+                    ? 'border-status-critical dark:border-red-700 bg-red-50/30 dark:bg-red-950/20' 
+                    : 'border-neutral-200 dark:border-neutral-700 dark:bg-neutral-800/50'}`}>
                   <div className="flex justify-between items-start">
-                    <div>
-                      <span className="text-sm text-neutral-500">Blood Oxygen</span>
+                    <div className="group">
+                      <span className="text-sm text-neutral-500 dark:text-neutral-400">Blood Oxygen</span>
                       <div className="flex items-baseline">
-                        <span className={`text-2xl font-bold ${getStatusColorClass(patient.vitals.bloodOxygen.status)}`}>
+                        <span className={`text-2xl font-bold transition-all duration-300 
+                          ${getStatusColorClass(patient.vitals.bloodOxygen.status)} 
+                          group-hover:scale-110 transform origin-left`}>
                           {patient.vitals.bloodOxygen.value}
                         </span>
-                        <span className="ml-1 text-neutral-500">%</span>
+                        <span className="ml-1 text-neutral-500 dark:text-neutral-400">%</span>
                       </div>
-                      <span className={`text-xs ${getStatusColorClass(patient.vitals.bloodOxygen.status)}`}>
+                      <span className={`text-xs opacity-0 animate-fade-in ${getStatusColorClass(patient.vitals.bloodOxygen.status)}`} 
+                        style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
                         {patient.vitals.bloodOxygen.status === 'critical' ? 'Critical' : 
                          patient.vitals.bloodOxygen.status === 'warning' ? 'Warning' : 
                          patient.vitals.bloodOxygen.status === 'elevated' ? 'Elevated' : 'Normal'}
                       </span>
                     </div>
-                    <div className="w-20 h-12 bg-neutral-50 rounded">
+                    <div className="w-20 h-12 bg-neutral-50 dark:bg-neutral-900 rounded overflow-hidden relative">
+                      {/* Pulse animation for critical status */}
+                      {patient.vitals.bloodOxygen.status === 'critical' && (
+                        <div className="absolute inset-0 bg-red-500/10 dark:bg-red-700/20 animate-pulse"></div>
+                      )}
                       {/* Simple chart visualization */}
-                      <svg viewBox="0 0 100 40" className="w-full h-full">
+                      <svg viewBox="0 0 100 40" className="w-full h-full relative z-10">
                         <polyline
                           points={oxygenHistory.map((val, i) => 
                             `${i * (100 / (oxygenHistory.length - 1))},${40 - (val - Math.min(...oxygenHistory)) / (Math.max(...oxygenHistory) - Math.min(...oxygenHistory)) * 30}`
@@ -378,6 +399,7 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                                   patient.vitals.bloodOxygen.status === 'warning' ? '#f97316' : 
                                   patient.vitals.bloodOxygen.status === 'elevated' ? '#f59e0b' : '#10b981'}
                           strokeWidth="2"
+                          className={patient.vitals.bloodOxygen.status === 'critical' ? 'animate-pulse' : ''}
                         />
                       </svg>
                     </div>
@@ -387,16 +409,21 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
             </div>
 
             {/* Symptoms and notes */}
-            <div>
-              <h3 className="font-medium mb-3">Symptoms & Notes</h3>
-              <div className="p-4 rounded-lg border border-neutral-200 bg-neutral-50">
+            <div className="animate-fade-in" style={{animationDelay: '0.2s', animationFillMode: 'backwards'}}>
+              <h3 className="font-medium mb-3 dark:text-neutral-300">Symptoms & Notes</h3>
+              <div className="p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50 
+                transition-all duration-300 hover:shadow-md">
                 <div className="mb-3">
-                  <h4 className="text-sm font-medium text-neutral-700 mb-2">Reported Symptoms</h4>
-                  <div className="flex flex-wrap gap-2">
+                  <h4 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Reported Symptoms</h4>
+                  <div className="flex flex-wrap gap-2 animate-stagger-delay">
                     {patient.symptoms.map((symptom, index) => (
                       <span 
                         key={index} 
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-200 text-neutral-800"
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                          bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200
+                          hover:scale-105 transition-transform duration-300 
+                          hover:bg-primary-light/20 dark:hover:bg-primary-light/20"
+                        style={{animationDelay: `${0.1 * index}s`}}
                       >
                         {symptom}
                       </span>
@@ -405,20 +432,69 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                 </div>
                 
                 {/* AI Assessment */}
-                <div className="mt-4">
-                  <h4 className="text-sm font-medium text-neutral-700 mb-2 flex items-center">
-                    <span className="material-icons text-primary text-sm mr-1">smart_toy</span>
-                    AI Assessment
+                <div className="mt-4 animate-fade-in" style={{animationDelay: '0.4s', animationFillMode: 'backwards'}}>
+                  <h4 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2 flex items-center">
+                    <span className="material-icons text-primary dark:text-primary-light text-sm mr-1 animate-bounce-light">smart_toy</span>
+                    <span className="relative inline-block text-shimmer">AI Assessment</span>
                   </h4>
-                  <div className="bg-white p-3 rounded-md border border-neutral-200 text-sm text-neutral-700">
+                  <div className={`p-3 rounded-md border text-sm transition-all duration-300 hover:shadow-inner
+                    ${patient.priority === 'critical' 
+                      ? 'bg-red-50/50 dark:bg-red-950/20 border-red-200 dark:border-red-900/30 text-red-800 dark:text-red-300' 
+                      : patient.priority === 'high'
+                      ? 'bg-orange-50/50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-900/30 text-orange-800 dark:text-orange-300'
+                      : patient.priority === 'medium'
+                      ? 'bg-yellow-50/50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-900/30 text-yellow-800 dark:text-yellow-300'
+                      : 'bg-green-50/50 dark:bg-green-950/20 border-green-200 dark:border-green-900/30 text-green-800 dark:text-green-300'
+                    }`}>
                     {patient.priority === 'critical' ?
-                      `Patient's vital signs indicate a critical condition. ${patient.vitals.heartRate.status === 'critical' ? 'Heart rate is dangerously elevated. ' : ''} ${patient.vitals.bloodPressure.status === 'critical' ? 'Blood pressure readings are very concerning. ' : ''} ${patient.vitals.bloodOxygen.status === 'critical' ? 'Blood oxygen saturation is critically low. ' : ''} Immediate medical attention required.` 
+                      <div className="animate-fade-in">
+                        <span className="font-semibold">Critical condition alert:</span> Patient's vital signs indicate immediate intervention required. 
+                        {patient.vitals.heartRate.status === 'critical' && <span className="animate-pulse inline-block mx-1">❗ Heart rate dangerously elevated.</span>} 
+                        {patient.vitals.bloodPressure.status === 'critical' && <span className="animate-pulse inline-block mx-1">❗ BP readings very concerning.</span>} 
+                        {patient.vitals.bloodOxygen.status === 'critical' && <span className="animate-pulse inline-block mx-1">❗ O₂ saturation critically low.</span>} 
+                        <span className="font-semibold block mt-1">Immediate medical attention required.</span>
+                      </div> 
                       : patient.priority === 'high' ?
-                      `Patient presenting with concerning vital signs. ${patient.symptoms.slice(0,2).join(' and ')} require prompt medical evaluation. Monitor for changes in ${patient.vitals.heartRate.status === 'warning' ? 'heart rate' : patient.vitals.bloodPressure.status === 'warning' ? 'blood pressure' : 'blood oxygen'}.`
+                      <div>
+                        <span className="font-semibold">High priority alert:</span> Patient presenting with concerning vital signs. 
+                        <span className="font-medium">{patient.symptoms.slice(0,2).join(' and ')}</span> require prompt medical evaluation. 
+                        Monitor for changes in <span className="italic">{patient.vitals.heartRate.status === 'warning' 
+                          ? 'heart rate' 
+                          : patient.vitals.bloodPressure.status === 'warning' 
+                          ? 'blood pressure' 
+                          : 'blood oxygen'}</span>.
+                      </div>
                       : patient.priority === 'medium' ?
-                      `Patient's condition appears stable but should be monitored. ${patient.symptoms[0]} may indicate ${patient.symptoms.length > 1 ? patient.symptoms[1] + '.' : 'minor condition.'} Recommend standard protocols and re-evaluation in 30 minutes.`
-                      : `Patient's vital signs are within normal ranges. Reporting ${patient.symptoms.join(', ')}. Recommend standard evaluation procedures and low priority triage.`
+                      <div>
+                        <span className="font-semibold">Medium priority assessment:</span> Patient's condition appears stable but should be monitored. 
+                        <span className="font-medium">{patient.symptoms[0]}</span> may indicate 
+                        <span className="italic">{patient.symptoms.length > 1 ? ' ' + patient.symptoms[1] + '.' : ' minor condition.'}</span> 
+                        Recommend standard protocols and re-evaluation in 30 minutes.
+                      </div>
+                      : <div>
+                          <span className="font-semibold">Low priority assessment:</span> Patient's vital signs are within normal ranges. 
+                          Reporting <span className="font-medium">{patient.symptoms.join(', ')}</span>. 
+                          Recommend standard evaluation procedures and low priority triage.
+                        </div>
                     }
+                    
+                    {/* Ambulance information if applicable */}
+                    {patient.status.includes('ambulance') && patient.ambulanceInfo && (
+                      <div className="mt-2 pt-2 border-t border-neutral-200 dark:border-neutral-700">
+                        <span className="font-semibold">Ambulance status:</span> {patient.status === 'waiting-ambulance' 
+                          ? 'Waiting for ambulance dispatch' 
+                          : patient.status === 'ambulance-dispatched' 
+                          ? 'Ambulance en route' 
+                          : 'Ambulance arriving shortly'}. 
+                        <div className="flex items-center mt-1">
+                          <span className="material-icons text-sm mr-1 text-accent-light dark:text-accent">pending_actions</span>
+                          <span>ETA: {patient.ambulanceInfo.estimatedArrivalTime} minutes</span>
+                          <span className="ml-3 text-xs px-1.5 py-0.5 rounded bg-accent-light/20 text-accent dark:bg-accent/20">
+                            Queue position: {patient.ambulanceInfo.queuePosition}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -428,30 +504,46 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
 
         {/* Confirmation Modal */}
         {confirmationVisible && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <div className="bg-white rounded-lg p-6 max-w-md mx-auto">
+          <div className="absolute inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center animate-fade-in">
+            <div className="bg-white dark:bg-neutral-900 rounded-lg p-6 max-w-md mx-auto shadow-lg animate-slide-up
+                border border-red-200 dark:border-red-800">
               <div className="flex items-center text-status-critical mb-4">
-                <AlertCircle className="h-6 w-6 mr-2" />
-                <h3 className="text-lg font-bold">Confirm Emergency Action</h3>
+                <AlertCircle className="h-6 w-6 mr-2 animate-pulse" />
+                <h3 className="text-lg font-bold dark:text-white text-shimmer">Confirm Emergency Action</h3>
               </div>
-              <p className="mb-6">
+              <p className="mb-6 dark:text-neutral-300 animate-fade-in" style={{animationDelay: '0.1s', animationFillMode: 'backwards'}}>
                 {actionType === 'rush' ?
-                  `Are you sure you want to rush an ambulance for ${patient.name}? This will override other ambulance assignments.` 
-                  : `Are you sure you want to set ${patient.name} as next in line for ambulance dispatch?`
+                  <>
+                    <span className="font-semibold">Rush ambulance request</span>: Are you sure you want to rush an ambulance for 
+                    <span className="font-semibold mx-1">{patient.name}</span>? 
+                    <span className="block mt-2 text-red-600 dark:text-red-400 text-sm animate-pulse">
+                      ⚠️ This action will override existing ambulance assignments.
+                    </span>
+                  </> 
+                  : <>
+                    <span className="font-semibold">Ambulance prioritization</span>: Are you sure you want to set 
+                    <span className="font-semibold mx-1">{patient.name}</span> as next in line for ambulance dispatch?
+                    <span className="block mt-2 text-amber-600 dark:text-amber-400 text-sm">
+                      This patient will be moved to the front of the dispatch queue.
+                    </span>
+                  </>
                 }
               </p>
-              <div className="flex justify-end space-x-3">
+              <div className="flex justify-end space-x-3 animate-fade-in" style={{animationDelay: '0.2s', animationFillMode: 'backwards'}}>
                 <Button 
                   variant="outline" 
                   onClick={handleCancelAction}
+                  className="hover-lift dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
                 >
                   Cancel
                 </Button>
                 <Button 
-                  className="bg-status-critical hover:bg-status-critical/90 text-white"
+                  className="bg-status-critical hover:bg-status-critical/90 text-white
+                    hover-lift relative overflow-hidden group"
                   onClick={handleConfirmAction}
                 >
-                  Confirm
+                  <span className="absolute inset-0 w-full h-full bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></span>
+                  <span className="relative z-10">Confirm</span>
                 </Button>
               </div>
             </div>

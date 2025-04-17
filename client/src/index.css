@@ -154,4 +154,84 @@
   .hover-lift {
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-neutral-950/20;
   }
+  
+  .critical-pulse {
+    animation: critical-pulse 2s infinite;
+  }
+  
+  @keyframes critical-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(229, 62, 62, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(229, 62, 62, 0);
+    }
+  }
+  
+  .hover-grow-shadow {
+    @apply transition-all duration-300;
+  }
+  
+  .hover-grow-shadow:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    @apply dark:shadow-neutral-950/20;
+  }
+  
+  .text-shimmer {
+    background: linear-gradient(to right, 
+                              theme('colors.primary.DEFAULT') 20%, 
+                              theme('colors.primary.light') 40%, 
+                              theme('colors.primary.light') 60%, 
+                              theme('colors.primary.DEFAULT') 80%);
+    background-size: 200% auto;
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    animation: text-shimmer 2s linear infinite;
+  }
+  
+  @keyframes text-shimmer {
+    to {
+      background-position: 200% center;
+    }
+  }
+  
+  .transition-theme {
+    @apply transition-colors duration-300;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:bg-neutral-100/70 dark:hover:bg-neutral-800/70;
+  }
+  
+  .button-glow {
+    @apply relative overflow-hidden;
+  }
+  
+  .button-glow::after {
+    content: '';
+    @apply absolute inset-0 rounded-md opacity-0 transition-opacity duration-500;
+    box-shadow: 0 0 20px 5px theme('colors.primary.DEFAULT');
+  }
+  
+  .button-glow:hover::after {
+    @apply opacity-30;
+  }
+  
+  .data-row {
+    @apply border-b border-neutral-200 dark:border-neutral-800 transition-colors duration-300
+           hover:bg-neutral-50 dark:hover:bg-neutral-800/50;
+  }
+  
+  .critical-badge {
+    @apply bg-status-critical text-white animate-pulse;
+  }
+  
+  .health-card {
+    @apply rounded-lg border transition-all duration-300 hover:shadow-md hover:-translate-y-1;
+  }
 }
