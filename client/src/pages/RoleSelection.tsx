@@ -2,6 +2,7 @@ import { FC, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import RoleSelectionCard from '@/components/RoleSelectionCard';
 import useStore from '@/store';
+import { person, medical_services } from 'lucide-react'
 
 const RoleSelection: FC = () => {
   const [, navigate] = useLocation();
