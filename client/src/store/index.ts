@@ -45,7 +45,11 @@ export interface PatientEntry {
       status: HealthStatus;
     };
   };
-  status: 'ambulance' | 'self-presented';
+  status: 'waiting-ambulance' | 'ambulance-dispatched' | 'ambulance-arriving' | 'self-presented';
+  ambulanceInfo?: {
+    queuePosition: number;
+    estimatedArrivalTime: number; // in minutes
+  };
   symptoms: string[];
 }
 
