@@ -224,7 +224,7 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
             </div>
             <div className="flex items-center hover-scale">
               <span className={`material-icons ${getMetricIconClass(patient.vitals.bloodOxygen.status)} mr-1 text-base
-                ${patient.vitals.bloodOxygen.status === 'critical' ? 'animate-pulse' : ''}`}>
+                ${patient.vitals.bloodOxygen.status === 'critical' ? 'critical-highlight' : ''} hover:scale-110 transition-transform duration-300`}>
                 air
               </span>
               <span>{vitalData.bloodOxygen}% O₂</span>
@@ -258,7 +258,7 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
                 bg-neutral-50 dark:bg-zinc-800 border dark:border-zinc-700 
                 transition-all duration-300 transform animate-fade-in dark-gradient-bg`}>
                 <div className="flex items-center text-neutral-700 dark:text-green-400 mb-1">
-                  <span className="material-icons text-primary dark:text-green-400 text-xs mr-1 animate-bounce-light">smart_toy</span>
+                  <span className="material-icons text-primary dark:text-green-400 text-xs mr-1 transition-transform duration-300 hover:scale-110 hover:rotate-12">smart_toy</span>
                   <span className="font-medium text-shimmer">AI Assessment Note</span>
                 </div>
                 <div className="text-neutral-600 dark:text-white">{aiNote}</div>
@@ -288,7 +288,7 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
                     flex items-center hover-lift transition-all duration-300"
                   onClick={() => setShowAmbulanceActions(!showAmbulanceActions)}
                 >
-                  <Ambulance className="h-3 w-3 mr-1 animate-bounce-light" />
+                  <Ambulance className="h-3 w-3 mr-1 transition-transform duration-300 hover:scale-110" />
                   Ambulance
                 </button>
                 
@@ -346,13 +346,13 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
       
       {/* If patient is critical, show a highlighted notification row */}
       {patient.priority === 'critical' && !isExpanded && (
-        <tr className="bg-status-critical/5 dark:bg-status-critical/10 animate-pulse">
+        <tr className="bg-status-critical/5 dark:bg-status-critical/10 transition-all duration-300 hover:bg-status-critical/10 dark:hover:bg-status-critical/20 critical-highlight">
           <td colSpan={6} className="px-4 py-2">
             <div className="flex items-center text-status-critical text-sm animate-slide-up">
-              <span className="material-icons text-status-critical mr-1 animate-pulse">priority_high</span>
+              <span className="material-icons text-status-critical mr-1 transition-transform duration-300 hover:scale-110">priority_high</span>
               <span className="font-medium relative">
                 Urgent Attention Needed
-                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-status-critical/30 animate-shimmer"></span>
+                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-status-critical/30"></span>
               </span>
               <button 
                 className="ml-2 text-xs hover:text-status-critical group transition-colors duration-300 relative"
@@ -373,7 +373,7 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
             <div className="bg-black/20 dark:bg-black/70 p-4 animate-fade-in">
               <div className="bg-white dark:bg-zinc-900 rounded-lg p-4 max-w-2xl mx-auto border-status-critical border dark:border-red-800 shadow-lg animate-slide-up dark-gradient-bg">
                 <div className="flex items-center text-status-critical mb-4">
-                  <AlertCircle className="h-5 w-5 mr-2 animate-pulse" />
+                  <AlertCircle className="h-5 w-5 mr-2 transition-transform duration-300 hover:scale-110" />
                   <h3 className="font-bold dark:text-white text-shimmer">Confirm {ambulanceActionType === 'rush' ? 'Rush Ambulance' : 'Next in Line'}</h3>
                 </div>
                 <p className="mb-4 text-sm dark:text-white">
@@ -381,7 +381,7 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
                     ? <>
                         <span className="font-semibold dark:text-green-400">Rush ambulance request</span>: Are you sure you want to rush an ambulance for 
                         <span className="font-semibold mx-1">{patient.name}</span>? 
-                        <span className="block mt-2 text-red-600 dark:text-red-400 text-sm animate-pulse">
+                        <span className="block mt-2 text-red-600 dark:text-red-400 text-sm border-l-2 border-red-600 dark:border-red-400 pl-2 transition-all duration-300 hover:pl-3">
                           ⚠️ This action will override existing ambulance assignments.
                         </span>
                       </>
