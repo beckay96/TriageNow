@@ -181,14 +181,13 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
         <td className="px-4 py-4">
           <div className="flex items-center">
             <div className={`flex-shrink-0 h-10 w-10 bg-neutral-200 dark:bg-neutral-700 rounded-full 
-              flex items-center justify-center relative group ${patient.priority === 'critical' ? 'animate-pulse' : ''}`}>
+              flex items-center justify-center relative group ${patient.priority === 'critical' ? 'critical-highlight' : ''}`}>
               <span className="material-icons text-neutral-500 dark:text-neutral-300 group-hover:scale-125 transition-transform duration-300">
                 person
               </span>
               {patient.priority === 'critical' && (
                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-critical opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-status-critical"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-status-critical shadow-sm transition-all duration-300 hover:shadow-md"></span>
                 </span>
               )}
             </div>
@@ -198,7 +197,7 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
                   {patient.name}, {patient.age}
                 </span>
                 {patient.status === 'waiting-ambulance' && (
-                  <span className="ml-2 inline-flex h-2 w-2 rounded-full bg-accent-light animate-pulse"></span>
+                  <span className="ml-2 inline-flex h-2 w-2 rounded-full bg-accent-light hover:bg-accent transition-colors duration-300"></span>
                 )}
               </div>
               <div className="text-xs text-neutral-500 dark:text-neutral-400">
@@ -211,14 +210,14 @@ const PatientRow: FC<PatientRowProps> = ({ patient, onViewDetails }) => {
           <div className="flex flex-col text-sm text-neutral-500 dark:text-neutral-400 animate-stagger-delay">
             <div className="flex items-center hover-scale">
               <span className={`material-icons ${getMetricIconClass(patient.vitals.heartRate.status)} mr-1 text-base 
-                ${patient.vitals.heartRate.status === 'critical' ? 'animate-pulse' : ''}`}>
+                ${patient.vitals.heartRate.status === 'critical' ? 'critical-highlight' : ''} hover:scale-110 transition-transform duration-300`}>
                 favorite
               </span>
               <span>{vitalData.heartRate} BPM</span>
             </div>
             <div className="flex items-center hover-scale">
               <span className={`material-icons ${getMetricIconClass(patient.vitals.bloodPressure.status)} mr-1 text-base
-                ${patient.vitals.bloodPressure.status === 'critical' ? 'animate-pulse' : ''}`}>
+                ${patient.vitals.bloodPressure.status === 'critical' ? 'critical-highlight' : ''} hover:scale-110 transition-transform duration-300`}>
                 speed
               </span>
               <span>{vitalData.bloodPressure} mmHg</span>

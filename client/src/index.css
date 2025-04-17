@@ -175,20 +175,13 @@
     @apply dark:text-green-400;
   }
   
-  .critical-pulse {
-    animation: critical-pulse 2s infinite;
+  .critical-highlight {
+    box-shadow: 0 0 8px 2px rgba(229, 62, 62, 0.3);
+    transition: box-shadow 0.5s ease-in-out;
   }
   
-  @keyframes critical-pulse {
-    0% {
-      box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.4);
-    }
-    70% {
-      box-shadow: 0 0 0 10px rgba(229, 62, 62, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(229, 62, 62, 0);
-    }
+  .critical-highlight:hover {
+    box-shadow: 0 0 12px 4px rgba(229, 62, 62, 0.4);
   }
   
   .hover-grow-shadow {
@@ -248,7 +241,12 @@
   }
   
   .critical-badge {
-    @apply bg-status-critical text-white animate-pulse;
+    @apply bg-status-critical text-white;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .critical-badge:hover {
+    @apply bg-status-critical/90;
   }
   
   .health-card {
