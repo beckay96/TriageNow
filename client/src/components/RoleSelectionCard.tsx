@@ -1,0 +1,41 @@
+import { FC } from 'react';
+
+interface RoleSelectionCardProps {
+  role: 'patient' | 'medical-staff';
+  title: string;
+  icon: string;
+  features: string[];
+  onClick: () => void;
+}
+
+const RoleSelectionCard: FC<RoleSelectionCardProps> = ({ role, title, icon, features, onClick }) => {
+  return (
+    <div 
+      className="bg-white rounded-lg shadow-lg p-6 flex-1 border-2 border-transparent hover:border-primary-light transition-all cursor-pointer flex flex-col"
+      onClick={onClick}
+    >
+      <div className="text-center mb-6">
+        <div className="bg-primary-light/10 rounded-full p-4 inline-block mb-4">
+          <span className="material-icons text-primary text-4xl">{icon}</span>
+        </div>
+        <h3 className="text-xl font-bold text-primary">{title}</h3>
+      </div>
+      <ul className="space-y-3 mb-8 flex-1">
+        {features.map((feature, index) => (
+          <li key={index} className="flex items-start">
+            <span className="material-icons text-primary mr-2 text-sm">check_circle</span>
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+      <button 
+        className="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-md font-medium transition-colors"
+        onClick={onClick}
+      >
+        Select {role === 'patient' ? 'Patient' : 'Medical Staff'}
+      </button>
+    </div>
+  );
+};
+
+export default RoleSelectionCard;

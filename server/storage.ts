@@ -1,4 +1,9 @@
-import { patients, type Patient, type InsertPatient, vitals, type Vitals, type InsertVitals, questionnaires, type Questionnaire, type InsertQuestionnaire, users, type User, type InsertUser } from "@shared/schema";
+import { 
+  users, type User, type InsertUser,
+  patients, type Patient, type InsertPatient,
+  healthMetrics, type HealthMetrics, type InsertHealthMetrics,
+  triageRecords, type TriageRecord, type InsertTriageRecord
+} from "@shared/schema";
 
 export interface IStorage {
   // User methods
@@ -9,41 +14,41 @@ export interface IStorage {
   // Patient methods
   getPatients(): Promise<Patient[]>;
   getPatient(id: number): Promise<Patient | undefined>;
+  getPatientByPatientId(patientId: string): Promise<Patient | undefined>;
   createPatient(patient: InsertPatient): Promise<Patient>;
   updatePatient(id: number, patient: Partial<InsertPatient>): Promise<Patient | undefined>;
 
-  // Vitals methods
-  getVitals(patientId: number): Promise<Vitals[]>;
-  getLatestVitals(patientId: number): Promise<Vitals | undefined>;
-  createVitals(vitals: InsertVitals): Promise<Vitals>;
+  // Health metrics methods
+  getHealthMetrics(patientId: number): Promise<HealthMetrics[]>;
+  createHealthMetrics(metrics: InsertHealthMetrics): Promise<HealthMetrics>;
 
-  // Questionnaire methods
-  getQuestionnaire(patientId: number): Promise<Questionnaire | undefined>;
-  createQuestionnaire(questionnaire: InsertQuestionnaire): Promise<Questionnaire>;
+  // Triage methods
+  getTriageRecord(patientId: number): Promise<TriageRecord | undefined>;
+  createTriageRecord(record: InsertTriageRecord): Promise<TriageRecord>;
+  updateTriageRecord(id: number, record: Partial<InsertTriageRecord>): Promise<TriageRecord | undefined>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private patients: Map<number, Patient>;
-  private vitalsRecords: Map<number, Vitals[]>;
-  private questionnaireRecords: Map<number, Questionnaire>;
-  private userId: number;
-  private patientId: number;
-  private vitalsId: number;
-  private questionnaireId: number;
+  private healthMetrics: Map<number, HealthMetrics[]>;
+  private triageRecords: Map<number, TriageRecord>;
+  
+  private currentUserId: number;
+  private currentPatientId: number;
+  private currentHealthMetricsId: number;
+  private currentTriageRecordId: number;
 
   constructor() {
     this.users = new Map();
     this.patients = new Map();
-    this.vitalsRecords = new Map();
-    this.questionnaireRecords = new Map();
-    this.userId = 1;
-    this.patientId = 1;
-    this.vitalsId = 1;
-    this.questionnaireId = 1;
-
-    // Initialize with mock data
-    this.initializeMockData();
+    this.healthMetrics = new Map();
+    this.triageRecords = new Map();
+    
+    this.currentUserId = 1;
+    this.currentPatientId = 1;
+    this.currentHealthMetricsId = 1;
+    this.currentTriageRecordId = 1;
   }
 
   // User methods
@@ -58,7 +63,7 @@ export class MemStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userId++;
+    const id = this.currentUserId++;
     const user: User = { ...insertUser, id };
     this.users.set(id, user);
     return user;
@@ -73,159 +78,77 @@ export class MemStorage implements IStorage {
     return this.patients.get(id);
   }
 
+  async getPatientByPatientId(patientId: string): Promise<Patient | undefined> {
+    return Array.from(this.patients.values()).find(
+      (patient) => patient.patientId === patientId,
+    );
+  }
+
   async createPatient(insertPatient: InsertPatient): Promise<Patient> {
-    const id = this.patientId++;
-    const patient: Patient = { ...insertPatient, id };
+    const id = this.currentPatientId++;
+    const patient: Patient = { 
+      ...insertPatient, 
+      id, 
+      createdAt: new Date() 
+    };
     this.patients.set(id, patient);
     return patient;
   }
 
-  async updatePatient(id: number, patientData: Partial<InsertPatient>): Promise<Patient | undefined> {
-    const patient = this.patients.get(id);
-    if (!patient) return undefined;
-    
-    const updatedPatient = { ...patient, ...patientData };
+  async updatePatient(id: number, patientUpdate: Partial<InsertPatient>): Promise<Patient | undefined> {
+    const existingPatient = this.patients.get(id);
+    if (!existingPatient) return undefined;
+
+    const updatedPatient = { ...existingPatient, ...patientUpdate };
     this.patients.set(id, updatedPatient);
     return updatedPatient;
   }
 
-  // Vitals methods
-  async getVitals(patientId: number): Promise<Vitals[]> {
-    return this.vitalsRecords.get(patientId) || [];
+  // Health metrics methods
+  async getHealthMetrics(patientId: number): Promise<HealthMetrics[]> {
+    return this.healthMetrics.get(patientId) || [];
   }
 
-  async getLatestVitals(patientId: number): Promise<Vitals | undefined> {
-    const patientVitals = this.vitalsRecords.get(patientId) || [];
-    if (patientVitals.length === 0) return undefined;
+  async createHealthMetrics(insertMetrics: InsertHealthMetrics): Promise<HealthMetrics> {
+    const id = this.currentHealthMetricsId++;
+    const metrics: HealthMetrics = { 
+      ...insertMetrics, 
+      id, 
+      timestamp: new Date() 
+    };
     
-    return patientVitals.reduce((latest, current) => {
-      return latest.timestamp > current.timestamp ? latest : current;
-    });
-  }
-
-  async createVitals(insertVitals: InsertVitals): Promise<Vitals> {
-    const id = this.vitalsId++;
-    const vitals: Vitals = { ...insertVitals, id };
+    const patientMetrics = this.healthMetrics.get(insertMetrics.patientId) || [];
+    patientMetrics.push(metrics);
+    this.healthMetrics.set(insertMetrics.patientId, patientMetrics);
     
-    const patientVitals = this.vitalsRecords.get(vitals.patientId) || [];
-    patientVitals.push(vitals);
-    this.vitalsRecords.set(vitals.patientId, patientVitals);
-    
-    return vitals;
+    return metrics;
   }
 
-  // Questionnaire methods
-  async getQuestionnaire(patientId: number): Promise<Questionnaire | undefined> {
-    return this.questionnaireRecords.get(patientId);
+  // Triage methods
+  async getTriageRecord(patientId: number): Promise<TriageRecord | undefined> {
+    return Array.from(this.triageRecords.values()).find(
+      (record) => record.patientId === patientId
+    );
   }
 
-  async createQuestionnaire(insertQuestionnaire: InsertQuestionnaire): Promise<Questionnaire> {
-    const id = this.questionnaireId++;
-    const questionnaire: Questionnaire = { ...insertQuestionnaire, id };
-    this.questionnaireRecords.set(questionnaire.patientId, questionnaire);
-    return questionnaire;
+  async createTriageRecord(insertRecord: InsertTriageRecord): Promise<TriageRecord> {
+    const id = this.currentTriageRecordId++;
+    const record: TriageRecord = { 
+      ...insertRecord, 
+      id, 
+      timestamp: new Date() 
+    };
+    this.triageRecords.set(id, record);
+    return record;
   }
 
-  // Mock data initialization
-  private initializeMockData() {
-    // Create mock patients with vitals
-    const mockPatientData = [
-      {
-        name: "Robert Johnson",
-        age: 67,
-        gender: "M",
-        condition: "Chest Pain",
-        priority: 1,
-        status: "Ambulance Inbound",
-        arrivalTime: new Date(Date.now() - 5 * 60000), // 5 minutes ago
-        vitals: {
-          heartRate: 132,
-          oxygenLevel: 92,
-          temperature: "38.5",
-          bloodPressure: "165/95"
-        }
-      },
-      {
-        name: "Maria Garcia",
-        age: 42,
-        gender: "F",
-        condition: "Severe Migraine",
-        priority: 2,
-        status: "Self-Presented",
-        arrivalTime: new Date(Date.now() - 23 * 60000), // 23 minutes ago
-        vitals: {
-          heartRate: 98,
-          oxygenLevel: 97,
-          temperature: "37.1",
-          bloodPressure: "135/85"
-        }
-      },
-      {
-        name: "David Lee",
-        age: 28,
-        gender: "M",
-        condition: "Sprained Ankle",
-        priority: 3,
-        status: "Self-Presented",
-        arrivalTime: new Date(Date.now() - 47 * 60000), // 47 minutes ago
-        vitals: {
-          heartRate: 72,
-          oxygenLevel: 99,
-          temperature: "36.8",
-          bloodPressure: "120/80"
-        }
-      },
-      {
-        name: "Emily Wong",
-        age: 52,
-        gender: "F",
-        condition: "Abdominal Pain",
-        priority: 2,
-        status: "Self-Presented",
-        arrivalTime: new Date(Date.now() - 35 * 60000), // 35 minutes ago
-        vitals: {
-          heartRate: 105,
-          oxygenLevel: 96,
-          temperature: "37.8",
-          bloodPressure: "140/90"
-        }
-      },
-      {
-        name: "James Smith",
-        age: 75,
-        gender: "M",
-        condition: "Difficulty Breathing",
-        priority: 1,
-        status: "Ambulance On Way",
-        arrivalTime: new Date(Date.now() - 8 * 60000), // 8 minutes ago
-        vitals: {
-          heartRate: 120,
-          oxygenLevel: 88,
-          temperature: "37.9",
-          bloodPressure: "155/90"
-        }
-      }
-    ];
+  async updateTriageRecord(id: number, recordUpdate: Partial<InsertTriageRecord>): Promise<TriageRecord | undefined> {
+    const existingRecord = this.triageRecords.get(id);
+    if (!existingRecord) return undefined;
 
-    mockPatientData.forEach(data => {
-      const id = this.patientId++;
-      const patient: Patient = { ...data, id };
-      this.patients.set(id, patient);
-      
-      // Create vitals record
-      const vitalsId = this.vitalsId++;
-      const vitalsRecord: Vitals = {
-        id: vitalsId,
-        patientId: id,
-        heartRate: data.vitals.heartRate,
-        oxygenLevel: data.vitals.oxygenLevel,
-        temperature: data.vitals.temperature,
-        bloodPressure: data.vitals.bloodPressure,
-        timestamp: new Date()
-      };
-      
-      this.vitalsRecords.set(id, [vitalsRecord]);
-    });
+    const updatedRecord = { ...existingRecord, ...recordUpdate };
+    this.triageRecords.set(id, updatedRecord);
+    return updatedRecord;
   }
 }
 

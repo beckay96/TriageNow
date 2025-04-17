@@ -1,198 +1,383 @@
-import React, { useState } from "react";
-import { useLocation } from "wouter";
-import { Clock } from "lucide-react";
-import VitalSign from "@/components/VitalSign";
-import ChatMessage from "@/components/ChatMessage";
-import QuestionnaireModal from "@/components/QuestionnaireModal";
-import { useStore } from "@/store/store";
-import { useToast } from "@/hooks/use-toast";
+import { FC, useEffect, useState, useRef } from 'react';
+import { useLocation } from 'wouter';
+import HealthMetricCard from '@/components/HealthMetricCard';
+import ChatMessage from '@/components/ChatMessage';
+import QuestionnaireItem from '@/components/QuestionnaireItem';
+import TriageStatus from '@/components/TriageStatus';
+import useStore from '@/store';
 
-const ConnectWatch: React.FC = () => {
-  const [, setLocation] = useLocation();
-  const { mockVitals, patientOption } = useStore();
-  const [watchConnected, setWatchConnected] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const { toast } = useToast();
+const ConnectWatch: FC = () => {
+  const [, navigate] = useLocation();
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  const [userMessage, setUserMessage] = useState('');
+  
+  const { 
+    role, 
+    patientOption, 
+    watchConnected, 
+    setWatchConnected,
+    healthMetrics, 
+    healthStatuses,
+    triageStatus,
+    chatMessages, 
+    addChatMessage,
+    showQuestionnaire,
+    toggleQuestionnaire,
+    questionnaireData,
+    submitQuestionnaire
+  } = useStore();
+
+  // Scroll to bottom of chat whenever messages change
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages]);
+
+  // Redirect if not in patient role or no option selected
+  useEffect(() => {
+    if (role !== 'patient') {
+      navigate('/select-role');
+    } else if (!patientOption) {
+      navigate('/patient-dashboard');
+    }
+  }, [role, patientOption, navigate]);
 
   const handleWatchConnected = () => {
     setWatchConnected(true);
-    toast({
-      title: "Watch connected successfully",
-      description: "Your health data is now being monitored",
+  };
+
+  const handleSendMessage = () => {
+    if (userMessage.trim()) {
+      addChatMessage(userMessage, 'user');
+      setUserMessage('');
+    }
+  };
+
+  const handleKeyUp = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && userMessage.trim()) {
+      handleSendMessage();
+    }
+  };
+
+  const getContextMessage = () => {
+    if (!patientOption) return '';
+    
+    switch (patientOption) {
+      case 'need-hospital':
+        return "We'll analyze your vitals to determine if you should go to the hospital.";
+      case 'check-health':
+        return "Here are your current health metrics based on your smartwatch data.";
+      case 'ambulance':
+        return "Your health data will be shared with paramedics to prepare for your arrival.";
+      case 'at-er':
+        return "Your health data will help ER staff prioritize care based on urgency.";
+      default:
+        return "Here are your current health metrics based on your smartwatch data.";
+    }
+  };
+
+  // Handle questionnaire changes
+  const handlePainChange = (value: string) => {
+    submitQuestionnaire({
+      ...questionnaireData,
+      pain: value as 'none' | 'mild' | 'moderate' | 'severe'
     });
   };
 
-  const handleBackToPatientDashboard = () => {
-    setLocation("/patient-dashboard");
-  };
-
-  const handleOpenQuestionnaire = () => {
-    setShowModal(true);
-  };
-
-  const handleSkipQuestionnaire = () => {
-    toast({
-      title: "Questionnaire skipped",
-      description: "You can always complete it later if needed",
+  const handleBreathingChange = (value: string) => {
+    submitQuestionnaire({
+      ...questionnaireData,
+      breathing: value as 'none' | 'slight' | 'moderate' | 'severe'
     });
   };
 
-  const handleSubmitQuestionnaire = (data: any) => {
-    setShowModal(false);
-    toast({
-      title: "Questionnaire submitted",
-      description: "Thank you for providing additional information",
-    });
+  const handleSymptomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const symptom = e.target.value;
+    const isChecked = e.target.checked;
+    
+    if (isChecked && !questionnaireData.symptoms.includes(symptom)) {
+      submitQuestionnaire({
+        ...questionnaireData,
+        symptoms: [...questionnaireData.symptoms, symptom]
+      });
+    } else if (!isChecked && questionnaireData.symptoms.includes(symptom)) {
+      submitQuestionnaire({
+        ...questionnaireData,
+        symptoms: questionnaireData.symptoms.filter(s => s !== symptom)
+      });
+    }
+  };
+
+  const handleQuestionnaireSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toggleQuestionnaire();
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold text-neutral-900 mb-4">Connect Your Watch</h2>
-        <p className="text-lg text-neutral-600">
-          Please put on your smartwatch so we can collect your health data.
-        </p>
-      </div>
+    <div className="mx-auto max-w-4xl">
+      {!watchConnected ? (
+        <div className="text-center">
+          <div className="mb-8">
+            <div className="bg-primary-light/10 rounded-full p-6 inline-block mb-4">
+              <span className="material-icons text-primary text-5xl">watch</span>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-neutral-700 mb-3">Connect Your Wearable Device</h2>
+            <p className="text-neutral-600 max-w-2xl mx-auto">
+              Please put on your smartwatch or fitness tracker so we can monitor your health metrics in real-time
+            </p>
+          </div>
 
-      <div className="bg-white rounded-xl shadow-md overflow-hidden p-8 text-center">
-        <div className="flex justify-center mb-6">
-          <div className="relative">
-            <Clock className="h-24 w-24 text-neutral-300" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-primary pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+          <div className="bg-white rounded-lg shadow-lg p-8 mb-8 max-w-md mx-auto">
+            <div className="flex flex-col items-center">
+              <div className="relative mb-6">
+                <div className="w-40 h-40 rounded-full bg-primary-light/20 flex items-center justify-center">
+                  <span className="material-icons text-primary text-6xl animate-pulse">watch</span>
+                </div>
+                <div className="absolute top-0 left-0 w-full h-full rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+              </div>
+              <p className="text-neutral-600 mb-6">
+                Make sure your device is properly positioned and powered on.
+              </p>
+              <button 
+                className="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-md font-medium transition-colors"
+                onClick={handleWatchConnected}
+              >
+                My Watch Is On
+              </button>
             </div>
           </div>
-        </div>
-        
-        <p className="text-neutral-700 mb-8">
-          Make sure your watch is properly fitted and powered on.
-          This will allow us to measure vital information like heart rate, blood oxygen levels, and more.
-        </p>
-        
-        {!watchConnected && (
-          <button 
-            className="w-full md:w-auto py-3 px-8 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors duration-300"
-            onClick={handleWatchConnected}
-          >
-            Watch is on
-          </button>
-        )}
-      </div>
 
-      {/* Health data panel */}
-      {watchConnected && (
-        <div className="mt-8">
-          <div className="bg-white rounded-xl shadow-md overflow-hidden p-6">
-            <h3 className="text-xl font-medium text-neutral-900 mb-4">Your Current Health Data</h3>
-            
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <VitalSign 
-                type="heart-rate"
-                icon="heart"
-                label="Heart Rate"
-                value={mockVitals.heartRate.toString()}
+          <div className="text-neutral-500 flex justify-center">
+            <button className="text-sm underline">
+              I don't have a smartwatch
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div>
+              <h2 className="text-2xl font-bold text-neutral-700">Your Health Dashboard</h2>
+              <p className="text-neutral-600">
+                <span>{getContextMessage()}</span>
+              </p>
+            </div>
+            <div className="mt-4 md:mt-0">
+              <TriageStatus status={triageStatus || 'processing'} />
+            </div>
+          </div>
+
+          {/* Health Metrics Grid */}
+          {healthMetrics && healthStatuses && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <HealthMetricCard 
+                title="Heart Rate"
+                value={healthMetrics.heartRate}
                 unit="BPM"
-                status="normal"
-                chartData="M0,15 Q10,5 20,15 T40,15 T60,15 T80,10 T100,15"
-                chartColor="#EF4444"
+                icon="favorite"
+                status={healthStatuses.heartRate}
               />
               
-              <VitalSign 
-                type="oxygen"
-                icon="droplet"
-                label="Oxygen"
-                value={`${mockVitals.oxygenLevel}%`}
-                unit="SpO₂"
-                status="excellent"
-                chartData="M0,10 Q10,8 20,12 T40,12 T60,10 T80,8 T100,10"
-                chartColor="#0063B9"
-              />
-              
-              <VitalSign 
-                type="temperature"
-                icon="thermometer"
-                label="Temperature"
-                value={mockVitals.temperature}
-                unit="°C"
-                status="slightly-elevated"
-                chartData="M0,15 Q10,12 20,16 T40,17 T60,15 T80,15 T100,14"
-                chartColor="#F59E0B"
-              />
-              
-              <VitalSign 
-                type="blood-pressure"
-                icon="activity"
-                label="Blood Pressure"
-                value={mockVitals.bloodPressure}
+              <HealthMetricCard 
+                title="Blood Pressure"
+                value={`${healthMetrics.bloodPressure.systolic}/${healthMetrics.bloodPressure.diastolic}`}
                 unit="mmHg"
-                status="slightly-elevated"
-                chartData="M0,15 Q10,18 20,12 T40,10 T60,15 T80,12 T100,15"
-                chartColor="#10B981"
+                icon="speed"
+                status={healthStatuses.bloodPressure}
+              />
+              
+              <HealthMetricCard 
+                title="Blood Oxygen"
+                value={healthMetrics.bloodOxygen}
+                unit="%"
+                icon="air"
+                status={healthStatuses.bloodOxygen}
+              />
+              
+              <HealthMetricCard 
+                title="Temperature"
+                value={healthMetrics.temperature}
+                unit="°F"
+                icon="thermostat"
+                status={healthStatuses.temperature}
               />
             </div>
+          )}
 
-            {/* AI Chat Box */}
-            <div className="mt-6 border rounded-lg overflow-hidden">
-              <div className="bg-neutral-50 py-3 px-4 border-b">
-                <div className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="font-medium text-neutral-800">HealthTriage AI Assistant</span>
-                </div>
-              </div>
-              
-              <div className="p-4 max-h-60 overflow-y-auto bg-white">
-                <ChatMessage 
-                  text="Based on your readings, your vital signs are generally within normal ranges. Your heart rate is normal, oxygen levels are excellent, but your temperature is slightly elevated at 37.2°C and your blood pressure is borderline high at 128/85 mmHg." 
+          {/* AI Chat Box */}
+          <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
+            <div className="bg-primary p-4">
+              <h3 className="text-white font-semibold flex items-center">
+                <span className="material-icons mr-2">smart_toy</span>
+                Health Assistant
+              </h3>
+            </div>
+            <div className="p-4 h-60 overflow-y-auto bg-neutral-50">
+              {chatMessages.map(message => (
+                <ChatMessage key={message.id} message={message} />
+              ))}
+              <div ref={chatEndRef} />
+            </div>
+            <div className="p-4 border-t">
+              <div className="flex">
+                <input 
+                  type="text" 
+                  placeholder="Type your symptoms or questions here..." 
+                  className="flex-1 border border-neutral-300 rounded-l-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  value={userMessage}
+                  onChange={(e) => setUserMessage(e.target.value)}
+                  onKeyUp={handleKeyUp}
                 />
-                
-                <ChatMessage 
-                  text="Would you like to answer some additional questions to help us better assess your condition?" 
-                />
-              </div>
-              
-              <div className="p-3 border-t flex">
-                <div className="flex-grow">
-                  <button 
-                    className="py-2 px-4 mr-2 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors duration-300"
-                    onClick={handleOpenQuestionnaire}
-                  >
-                    Start Questionnaire
-                  </button>
-                  <button 
-                    className="py-2 px-4 bg-neutral-200 text-neutral-700 font-medium rounded-lg hover:bg-neutral-300 transition-colors duration-300"
-                    onClick={handleSkipQuestionnaire}
-                  >
-                    Not Now
-                  </button>
-                </div>
+                <button 
+                  className="bg-primary text-white px-4 rounded-r-md hover:bg-primary-dark transition-colors"
+                  onClick={handleSendMessage}
+                >
+                  <span className="material-icons">send</span>
+                </button>
               </div>
             </div>
           </div>
+
+          {/* Triage Questionnaire */}
+          {showQuestionnaire && (
+            <div className="bg-white rounded-lg shadow p-6 mb-8">
+              <h3 className="text-lg font-semibold text-neutral-700 mb-4 flex items-center">
+                <span className="material-icons text-primary mr-2">quiz</span>
+                Quick Symptom Assessment
+              </h3>
+              
+              <form id="symptom-form" onSubmit={handleQuestionnaireSubmit}>
+                <QuestionnaireItem 
+                  question="Are you experiencing any pain?"
+                  name="pain"
+                  options={[
+                    { value: 'none', label: 'No pain' },
+                    { value: 'mild', label: 'Mild pain' },
+                    { value: 'moderate', label: 'Moderate pain' },
+                    { value: 'severe', label: 'Severe pain' }
+                  ]}
+                  selected={questionnaireData.pain}
+                  onChange={handlePainChange}
+                />
+
+                <QuestionnaireItem 
+                  question="Are you having trouble breathing?"
+                  name="breathing"
+                  options={[
+                    { value: 'none', label: 'No difficulty' },
+                    { value: 'slight', label: 'Slight difficulty' },
+                    { value: 'moderate', label: 'Moderate difficulty' },
+                    { value: 'severe', label: 'Severe difficulty' }
+                  ]}
+                  selected={questionnaireData.breathing}
+                  onChange={handleBreathingChange}
+                />
+
+                {/* Additional symptoms */}
+                <div className="mb-6">
+                  <label className="block text-neutral-700 mb-2">Select any other symptoms you're experiencing:</label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                      <input 
+                        type="checkbox" 
+                        name="symptoms" 
+                        value="fever" 
+                        checked={questionnaireData.symptoms.includes('fever')}
+                        onChange={handleSymptomChange}
+                        className="mr-2" 
+                      />
+                      Fever
+                    </label>
+                    <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                      <input 
+                        type="checkbox" 
+                        name="symptoms" 
+                        value="dizziness" 
+                        checked={questionnaireData.symptoms.includes('dizziness')}
+                        onChange={handleSymptomChange}
+                        className="mr-2" 
+                      />
+                      Dizziness
+                    </label>
+                    <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                      <input 
+                        type="checkbox" 
+                        name="symptoms" 
+                        value="nausea" 
+                        checked={questionnaireData.symptoms.includes('nausea')}
+                        onChange={handleSymptomChange}
+                        className="mr-2" 
+                      />
+                      Nausea/Vomiting
+                    </label>
+                    <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                      <input 
+                        type="checkbox" 
+                        name="symptoms" 
+                        value="cough" 
+                        checked={questionnaireData.symptoms.includes('cough')}
+                        onChange={handleSymptomChange}
+                        className="mr-2" 
+                      />
+                      Cough
+                    </label>
+                    <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                      <input 
+                        type="checkbox" 
+                        name="symptoms" 
+                        value="rash" 
+                        checked={questionnaireData.symptoms.includes('rash')}
+                        onChange={handleSymptomChange}
+                        className="mr-2" 
+                      />
+                      Rash
+                    </label>
+                    <label className="inline-flex items-center bg-white border border-neutral-300 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50">
+                      <input 
+                        type="checkbox" 
+                        name="symptoms" 
+                        value="weakness" 
+                        checked={questionnaireData.symptoms.includes('weakness')}
+                        onChange={handleSymptomChange}
+                        className="mr-2" 
+                      />
+                      Weakness
+                    </label>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <button 
+                    type="submit" 
+                    className="bg-primary hover:bg-primary-dark text-white py-2 px-4 rounded-md font-medium transition-colors"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          <div className="flex justify-center mb-8">
+            <button 
+              className="text-primary font-medium flex items-center"
+              onClick={toggleQuestionnaire}
+            >
+              {showQuestionnaire ? (
+                <>
+                  <span className="material-icons mr-1">close</span>
+                  Close Questionnaire
+                </>
+              ) : (
+                <>
+                  <span className="material-icons mr-1">assignment</span>
+                  Complete Symptom Questionnaire
+                </>
+              )}
+            </button>
+          </div>
         </div>
-      )}
-
-      <div className="mt-8 text-center">
-        <button 
-          className="inline-flex items-center text-neutral-600 hover:text-primary"
-          onClick={handleBackToPatientDashboard}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
-          </svg>
-          Back to options
-        </button>
-      </div>
-
-      {showModal && (
-        <QuestionnaireModal 
-          isOpen={showModal} 
-          onClose={() => setShowModal(false)} 
-          onSubmit={handleSubmitQuestionnaire}
-        />
       )}
     </div>
   );

@@ -1,35 +1,37 @@
 import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
-import Layout from "@/components/Layout";
-import SelectRole from "@/pages/SelectRole";
+import RoleSelection from "@/pages/RoleSelection";
 import PatientDashboard from "@/pages/PatientDashboard";
 import ConnectWatch from "@/pages/ConnectWatch";
-import ERDashboard from "@/pages/ERDashboard";
+import MedicalStaffDashboard from "@/pages/MedicalStaffDashboard";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 function Router() {
   return (
-    <Layout>
-      <Switch>
-        <Route path="/" component={SelectRole} />
-        <Route path="/select-role" component={SelectRole} />
-        <Route path="/patient-dashboard" component={PatientDashboard} />
-        <Route path="/connect-watch" component={ConnectWatch} />
-        <Route path="/er-dashboard" component={ERDashboard} />
-        <Route component={NotFound} />
-      </Switch>
-    </Layout>
+    <Switch>
+      <Route path="/" component={RoleSelection} />
+      <Route path="/select-role" component={RoleSelection} />
+      <Route path="/patient-dashboard" component={PatientDashboard} />
+      <Route path="/connect-watch" component={ConnectWatch} />
+      <Route path="/er-dashboard" component={MedicalStaffDashboard} />
+      {/* Fallback to 404 */}
+      <Route component={NotFound} />
+    </Switch>
   );
 }
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router />
+    <div className="min-h-screen flex flex-col bg-gray-50 text-neutral-700">
+      <Header />
+      <main className="flex-1 container mx-auto px-4 py-6">
+        <Router />
+      </main>
+      <Footer />
       <Toaster />
-    </QueryClientProvider>
+    </div>
   );
 }
 

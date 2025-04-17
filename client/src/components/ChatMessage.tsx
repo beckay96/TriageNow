@@ -1,20 +1,38 @@
-import React from "react";
+import { FC } from 'react';
+import { ChatMessage as ChatMessageType } from '@/store';
 
 interface ChatMessageProps {
-  text: string;
+  message: ChatMessageType;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ text }) => {
-  return (
-    <div className="flex mb-4">
-      <div className="bg-primary rounded-full h-8 w-8 flex items-center justify-center flex-shrink-0">
-        <span className="text-white text-sm font-bold">AI</span>
+const ChatMessage: FC<ChatMessageProps> = ({ message }) => {
+  if (message.sender === 'ai') {
+    return (
+      <div className="flex mb-4">
+        <div className="flex-shrink-0 mr-3">
+          <div className="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center">
+            <span className="material-icons text-sm">smart_toy</span>
+          </div>
+        </div>
+        <div className="bg-neutral-100 rounded-lg p-3 max-w-3xl">
+          <p className="text-neutral-700">{message.message}</p>
+        </div>
       </div>
-      <div className="ml-3 bg-neutral-100 rounded-lg py-2 px-3 max-w-md">
-        <p className="text-neutral-800">{text}</p>
+    );
+  } else {
+    return (
+      <div className="flex mb-4 justify-end">
+        <div className="bg-primary-light/10 rounded-lg p-3 max-w-3xl">
+          <p className="text-neutral-700">{message.message}</p>
+        </div>
+        <div className="flex-shrink-0 ml-3">
+          <div className="bg-neutral-200 w-8 h-8 rounded-full flex items-center justify-center">
+            <span className="material-icons text-neutral-500 text-sm">person</span>
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 };
 
 export default ChatMessage;
