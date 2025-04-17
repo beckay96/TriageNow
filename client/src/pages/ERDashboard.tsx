@@ -28,18 +28,19 @@ const ERDashboard: React.FC = () => {
     // Apply search filter
     const matchesSearch = !searchTerm || 
       patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.condition?.toLowerCase().includes(searchTerm.toLowerCase());
+      patient.symptoms?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // Apply priority filter
-    const matchesPriority = priorityFilter === null || patient.priority === priorityFilter;
+    // Apply priority filter - convert priority numbers to 1, 2, 3 for filtering
+    const patientPriority = parseInt(patient.status.charAt(0));
+    const matchesPriority = priorityFilter === null || patientPriority === priorityFilter;
     
     return matchesSearch && matchesPriority;
   });
   
   // Count patients by priority
-  const criticalCount = patients?.filter(p => p.priority === 1).length || 0;
-  const urgentCount = patients?.filter(p => p.priority === 2).length || 0;
-  const stableCount = patients?.filter(p => p.priority === 3).length || 0;
+  const criticalCount = patients?.filter(p => p.status.startsWith('1')).length || 0;
+  const urgentCount = patients?.filter(p => p.status.startsWith('2')).length || 0;
+  const stableCount = patients?.filter(p => p.status.startsWith('3') || p.status.startsWith('4')).length || 0;
 
   // Show critical alert notification periodically
   useEffect(() => {

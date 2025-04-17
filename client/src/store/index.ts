@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { mockPatientEntries, mockPatients } from '@/utils/mockData';
 
 // Define the patient's health metrics
 export interface HealthMetrics {
@@ -94,6 +95,7 @@ export type StoreState = {
   filteredPatients: PatientEntry[];
   searchTerm: string;
   priorityFilter: 'all' | 'critical' | 'high' | 'medium' | 'low';
+  mockPatients: any[]; // Mock data for the ER dashboard
   
   // Stats
   triageStats: {
