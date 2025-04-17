@@ -137,8 +137,7 @@ const initialQuestionnaireData: QuestionnaireData = {
   symptoms: []
 };
 
-// Mock patient entries for the ER dashboard
-import { mockPatientEntries } from '@/utils/mockData';
+// Note: mockPatientEntries already imported at the top
 
 // Create the Zustand store
 const useStore = create<StoreState>((set, get) => ({
@@ -161,6 +160,7 @@ const useStore = create<StoreState>((set, get) => ({
   filteredPatients: mockPatientEntries,
   searchTerm: '',
   priorityFilter: 'all',
+  mockPatients: mockPatients,
   
   triageStats: {
     critical: 2,
