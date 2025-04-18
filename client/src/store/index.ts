@@ -150,6 +150,7 @@ export type StoreState = {
   updateTriageStatus: (additionalSeverity?: number) => void;
   addChatMessage: (message: string, sender: 'user' | 'ai') => void;
   toggleQuestionnaire: () => void;
+  updateQuestionnaireData: (data: QuestionnaireData) => void;
   submitQuestionnaire: (data: QuestionnaireData) => void;
   searchPatients: (term: string) => void;
   filterByPriority: (priority: 'all' | 'critical' | 'high' | 'medium' | 'low') => void;
@@ -601,6 +602,10 @@ const useStore = create<StoreState>((set, get) => ({
   
   toggleQuestionnaire: () => {
     set(state => ({ showQuestionnaire: !state.showQuestionnaire }));
+  },
+  
+  updateQuestionnaireData: (data) => {
+    set({ questionnaireData: data });
   },
   
   submitQuestionnaire: (data) => {

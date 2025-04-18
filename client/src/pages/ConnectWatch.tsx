@@ -24,6 +24,7 @@ const ConnectWatch: FC = () => {
     showQuestionnaire,
     toggleQuestionnaire,
     questionnaireData,
+    updateQuestionnaireData,
     submitQuestionnaire
   } = useStore();
 
@@ -79,14 +80,14 @@ const ConnectWatch: FC = () => {
 
   // Handle questionnaire changes
   const handlePainChange = (value: string) => {
-    submitQuestionnaire({
+    updateQuestionnaireData({
       ...questionnaireData,
       pain: value as 'none' | 'mild' | 'moderate' | 'severe'
     });
   };
 
   const handleBreathingChange = (value: string) => {
-    submitQuestionnaire({
+    updateQuestionnaireData({
       ...questionnaireData,
       breathing: value as 'none' | 'slight' | 'moderate' | 'severe'
     });
@@ -97,12 +98,12 @@ const ConnectWatch: FC = () => {
     const isChecked = e.target.checked;
     
     if (isChecked && !questionnaireData.symptoms.includes(symptom)) {
-      submitQuestionnaire({
+      updateQuestionnaireData({
         ...questionnaireData,
         symptoms: [...questionnaireData.symptoms, symptom]
       });
     } else if (!isChecked && questionnaireData.symptoms.includes(symptom)) {
-      submitQuestionnaire({
+      updateQuestionnaireData({
         ...questionnaireData,
         symptoms: questionnaireData.symptoms.filter(s => s !== symptom)
       });
@@ -111,7 +112,8 @@ const ConnectWatch: FC = () => {
 
   const handleQuestionnaireSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toggleQuestionnaire();
+    // Submit the current questionnaire data and close the form
+    submitQuestionnaire(questionnaireData);
   };
 
   return (
