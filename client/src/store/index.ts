@@ -1020,6 +1020,38 @@ const useStore = create<StoreState>((set, get) => ({
     return distressScore;
   },
   
+  // Recommend medical protocol based on symptoms
+  recommendMedicalProtocol: () => {
+    const { questionnaireData, symptomCombinations, medicalProtocols } = get();
+    
+    // Default protocol is basic assessment
+    let recommendedProtocol = "Basic Assessment Protocol";
+    
+    // Check for specific symptom patterns that map to protocols
+    if (questionnaireData.symptoms.includes('chest pain') || 
+        questionnaireData.painLocation?.toLowerCase().includes('chest')) {
+      return medicalProtocols['chest_pain']?.name || "Chest Pain Protocol";
+    }
+    
+    // Check for stroke symptoms
+    if ((questionnaireData.symptoms.includes('sudden severe headache') && 
+         questionnaireData.symptoms.includes('weakness')) ||
+        (questionnaireData.symptoms.includes('slurred speech') || 
+         questionnaireData.symptoms.includes('facial droop') ||
+         questionnaireData.symptomsDescription?.toLowerCase().includes('face drooping'))) {
+      return medicalProtocols['stroke']?.name || "Stroke Protocol";
+    }
+    
+    // Check for sepsis/infection
+    if (questionnaireData.symptoms.includes('fever') && 
+        (questionnaireData.levelOfConsciousness === 'confused' || 
+         questionnaireData.breathing === 'severe')) {
+      return medicalProtocols['sepsis']?.name || "Sepsis Protocol";
+    }
+    
+    return recommendedProtocol;
+  }
+  
 }));
 
 export default useStore;

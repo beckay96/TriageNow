@@ -36,15 +36,23 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
       symptomsDescription: "",
       symptomsStarted: "today",
       painLevel: 5,
+      painLocation: "",
+      painCharacteristics: [] as string[],
       conditions: {
         diabetes: false,
         hypertension: false,
         heart: false,
         asthma: false,
+        copd: false,
+        stroke: false,
+        seizures: false,
         other: false
       },
+      conditionsOther: "",
       allergies: "",
-      medications: ""
+      medications: "",
+      recentInjury: false,
+      levelOfConsciousness: 'alert' as const
     }
   });
 
@@ -94,11 +102,36 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
       breathingCategory = 'slight';
     }
     
+    // Process pain characteristics if not provided via checkboxes
+    if (!data.painCharacteristics || data.painCharacteristics.length === 0) {
+      const painDesc = data.symptomsDescription?.toLowerCase() || '';
+      const detectedPainCharacteristics = [];
+      
+      if (painDesc.includes('sharp') || painDesc.includes('stabbing')) {
+        detectedPainCharacteristics.push('sharp');
+      }
+      if (painDesc.includes('dull') || painDesc.includes('aching')) {
+        detectedPainCharacteristics.push('dull');
+      }
+      if (painDesc.includes('throbbing') || painDesc.includes('pulsing')) {
+        detectedPainCharacteristics.push('throbbing');
+      }
+      if (painDesc.includes('burning') || painDesc.includes('hot')) {
+        detectedPainCharacteristics.push('burning');
+      }
+      
+      if (detectedPainCharacteristics.length > 0) {
+        data.painCharacteristics = detectedPainCharacteristics;
+      }
+    }
+    
     const finalData: QuestionnaireData = {
       ...data,
       pain: painCategory,
       breathing: breathingCategory,
-      symptoms: autoDetectedSymptoms
+      symptoms: [...(data.symptoms || []), ...autoDetectedSymptoms],
+      painCharacteristics: data.painCharacteristics || [],
+      levelOfConsciousness: data.levelOfConsciousness || 'alert'
     };
     
     onSubmit(finalData);
@@ -214,12 +247,93 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
                     {painLevel}
                   </div>
                 </div>
-                <div className="text-center">
+                <div className="text-center mb-4">
                   <Badge variant={painLevel > 7 ? "destructive" : painLevel > 4 ? "default" : "outline"}>
                     {painLevel <= 2 ? 'Minimal' : 
                      painLevel <= 5 ? 'Mild' : 
                      painLevel <= 8 ? 'Moderate' : 'Severe'} Pain
                   </Badge>
+                </div>
+                
+                <div className="mt-4">
+                  <Label htmlFor="painLocation" className="block text-sm font-medium text-gray-700 mb-1">
+                    Where is your pain located?
+                  </Label>
+                  <Input 
+                    id="painLocation" 
+                    type="text" 
+                    placeholder="E.g., chest, abdomen, head, lower back, etc."
+                    className="w-full"
+                    {...register("painLocation")}
+                  />
+                </div>
+
+                <div className="mt-4">
+                  <Label className="block text-sm font-medium text-gray-700 mb-2">
+                    Pain characteristics (select all that apply)
+                  </Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex items-center bg-white p-2 rounded border border-gray-100">
+                      <Checkbox 
+                        id="pain-sharp" 
+                        className="mr-2" 
+                        onCheckedChange={(checked) => {
+                          const current = watch('painCharacteristics') || [];
+                          if (checked) {
+                            setValue('painCharacteristics', [...current, 'sharp']);
+                          } else {
+                            setValue('painCharacteristics', current.filter(c => c !== 'sharp'));
+                          }
+                        }}
+                      />
+                      <Label htmlFor="pain-sharp" className="text-sm text-gray-700">Sharp</Label>
+                    </div>
+                    <div className="flex items-center bg-white p-2 rounded border border-gray-100">
+                      <Checkbox 
+                        id="pain-dull" 
+                        className="mr-2" 
+                        onCheckedChange={(checked) => {
+                          const current = watch('painCharacteristics') || [];
+                          if (checked) {
+                            setValue('painCharacteristics', [...current, 'dull']);
+                          } else {
+                            setValue('painCharacteristics', current.filter(c => c !== 'dull'));
+                          }
+                        }}
+                      />
+                      <Label htmlFor="pain-dull" className="text-sm text-gray-700">Dull/Aching</Label>
+                    </div>
+                    <div className="flex items-center bg-white p-2 rounded border border-gray-100">
+                      <Checkbox 
+                        id="pain-throbbing" 
+                        className="mr-2" 
+                        onCheckedChange={(checked) => {
+                          const current = watch('painCharacteristics') || [];
+                          if (checked) {
+                            setValue('painCharacteristics', [...current, 'throbbing']);
+                          } else {
+                            setValue('painCharacteristics', current.filter(c => c !== 'throbbing'));
+                          }
+                        }}
+                      />
+                      <Label htmlFor="pain-throbbing" className="text-sm text-gray-700">Throbbing</Label>
+                    </div>
+                    <div className="flex items-center bg-white p-2 rounded border border-gray-100">
+                      <Checkbox 
+                        id="pain-burning" 
+                        className="mr-2" 
+                        onCheckedChange={(checked) => {
+                          const current = watch('painCharacteristics') || [];
+                          if (checked) {
+                            setValue('painCharacteristics', [...current, 'burning']);
+                          } else {
+                            setValue('painCharacteristics', current.filter(c => c !== 'burning'));
+                          }
+                        }}
+                      />
+                      <Label htmlFor="pain-burning" className="text-sm text-gray-700">Burning</Label>
+                    </div>
+                  </div>
                 </div>
               </div>
               
@@ -274,6 +388,36 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
                       </div>
                       <div className="flex items-center bg-white p-2 rounded border border-gray-100">
                         <Checkbox 
+                          id="condition-copd" 
+                          className="mr-2"
+                          {...register("conditions.copd")}
+                        />
+                        <Label htmlFor="condition-copd" className="text-sm text-gray-700">
+                          COPD
+                        </Label>
+                      </div>
+                      <div className="flex items-center bg-white p-2 rounded border border-gray-100">
+                        <Checkbox 
+                          id="condition-stroke" 
+                          className="mr-2"
+                          {...register("conditions.stroke")}
+                        />
+                        <Label htmlFor="condition-stroke" className="text-sm text-gray-700">
+                          Stroke History
+                        </Label>
+                      </div>
+                      <div className="flex items-center bg-white p-2 rounded border border-gray-100">
+                        <Checkbox 
+                          id="condition-seizures" 
+                          className="mr-2"
+                          {...register("conditions.seizures")}
+                        />
+                        <Label htmlFor="condition-seizures" className="text-sm text-gray-700">
+                          Seizures
+                        </Label>
+                      </div>
+                      <div className="flex items-center bg-white p-2 rounded border border-gray-100">
+                        <Checkbox 
                           id="condition-other" 
                           className="mr-2"
                           {...register("conditions.other")}
@@ -283,6 +427,21 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
                         </Label>
                       </div>
                     </div>
+                    
+                    {watch("conditions.other") && (
+                      <div className="mt-2">
+                        <Label htmlFor="conditionsOther" className="block text-sm font-medium text-gray-700 mb-1">
+                          Please specify other conditions
+                        </Label>
+                        <Input 
+                          id="conditionsOther" 
+                          type="text" 
+                          placeholder="List any other medical conditions"
+                          className="w-full"
+                          {...register("conditionsOther")}
+                        />
+                      </div>
+                    )}
                   </div>
                   
                   <div>
@@ -309,6 +468,39 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
                       rows={2}
                       {...register("medications")}
                     />
+                  </div>
+                  
+                  <div className="mt-4">
+                    <div className="flex items-center mb-2">
+                      <Checkbox 
+                        id="recent-injury" 
+                        className="mr-2"
+                        {...register("recentInjury")}
+                      />
+                      <Label htmlFor="recent-injury" className="text-sm text-gray-700">
+                        Have you experienced a recent injury or fall?
+                      </Label>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <Label className="block text-sm font-medium text-gray-700 mb-2">
+                      Current level of consciousness
+                    </Label>
+                    <Select 
+                      onValueChange={(value) => setValue("levelOfConsciousness", value as any)}
+                      defaultValue="alert"
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select consciousness level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="alert">Alert and fully aware</SelectItem>
+                        <SelectItem value="confused">Confused or disoriented</SelectItem>
+                        <SelectItem value="drowsy">Drowsy or sleepy</SelectItem>
+                        <SelectItem value="unresponsive">Unresponsive</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
