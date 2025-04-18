@@ -145,7 +145,9 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
   };
 
   const handleLevelOfConsciousnessChange = (value: string) => {
-    setValue("levelOfConsciousness", value as 'alert' | 'confused' | 'drowsy' | 'unresponsive');
+    if (value === 'alert' || value === 'confused' || value === 'drowsy' || value === 'unresponsive') {
+      setValue("levelOfConsciousness", value);
+    }
   };
 
   if (!isOpen) return null;

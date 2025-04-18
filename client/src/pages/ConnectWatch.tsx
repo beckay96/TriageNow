@@ -4,6 +4,8 @@ import HealthMetricCard from '@/components/HealthMetricCard';
 import ChatMessage from '@/components/ChatMessage';
 import ChatTypingIndicator from '@/components/ChatTypingIndicator';
 import QuestionnaireModal from '@/components/QuestionnaireModal';
+import VitalSignTrend from '@/components/VitalSignTrend';
+import DiagnosticInsights from '@/components/DiagnosticInsights';
 import TriageStatus from '@/components/TriageStatus';
 import useStore from '@/store';
 
@@ -80,43 +82,7 @@ const ConnectWatch: FC = () => {
     }
   };
 
-  // Handle questionnaire changes
-  const handlePainChange = (value: string) => {
-    updateQuestionnaireData({
-      ...questionnaireData,
-      pain: value as 'none' | 'mild' | 'moderate' | 'severe'
-    });
-  };
-
-  const handleBreathingChange = (value: string) => {
-    updateQuestionnaireData({
-      ...questionnaireData,
-      breathing: value as 'none' | 'slight' | 'moderate' | 'severe'
-    });
-  };
-
-  const handleSymptomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const symptom = e.target.value;
-    const isChecked = e.target.checked;
-    
-    if (isChecked && !questionnaireData.symptoms.includes(symptom)) {
-      updateQuestionnaireData({
-        ...questionnaireData,
-        symptoms: [...questionnaireData.symptoms, symptom]
-      });
-    } else if (!isChecked && questionnaireData.symptoms.includes(symptom)) {
-      updateQuestionnaireData({
-        ...questionnaireData,
-        symptoms: questionnaireData.symptoms.filter(s => s !== symptom)
-      });
-    }
-  };
-
-  const handleQuestionnaireSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Submit the current questionnaire data and close the form
-    submitQuestionnaire(questionnaireData);
-  };
+  // Handle questionnaire submission directly from the modal
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -247,6 +213,91 @@ const ConnectWatch: FC = () => {
                   unit="°F"
                   icon="thermostat"
                   status={healthStatuses.temperature}
+                />
+              </div>
+              
+              {/* Vital Signs Trends */}
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                  <span className="material-icons text-blue-500 mr-2">monitoring</span>
+                  Vital Sign Trends
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <VitalSignTrend
+                    title="Heart Rate History"
+                    data={[
+                      { id: 1, timestamp: new Date(), heartRate: 78, bloodPressure: { systolic: 120, diastolic: 80 }, bloodOxygen: 98, temperature: 98.6 },
+                      { id: 2, timestamp: new Date(), heartRate: 82, bloodPressure: { systolic: 122, diastolic: 81 }, bloodOxygen: 97, temperature: 98.7 },
+                      { id: 3, timestamp: new Date(), heartRate: 85, bloodPressure: { systolic: 125, diastolic: 82 }, bloodOxygen: 96, temperature: 99.0 }
+                    ]}
+                    metricType="heartRate"
+                    color="#ef4444"
+                    unit="BPM"
+                    normalRange={{ min: 60, max: 100 }}
+                  />
+                  
+                  <VitalSignTrend
+                    title="Blood Pressure History"
+                    data={[
+                      { id: 1, timestamp: new Date(), heartRate: 78, bloodPressure: { systolic: 120, diastolic: 80 }, bloodOxygen: 98, temperature: 98.6 },
+                      { id: 2, timestamp: new Date(), heartRate: 82, bloodPressure: { systolic: 122, diastolic: 81 }, bloodOxygen: 97, temperature: 98.7 },
+                      { id: 3, timestamp: new Date(), heartRate: 85, bloodPressure: { systolic: 125, diastolic: 82 }, bloodOxygen: 96, temperature: 99.0 }
+                    ]}
+                    metricType="bloodPressure"
+                    color="#3b82f6"
+                    unit="mmHg"
+                    normalRange={{ min: 90, max: 140 }}
+                  />
+                  
+                  <VitalSignTrend
+                    title="Blood Oxygen History"
+                    data={[
+                      { id: 1, timestamp: new Date(), heartRate: 78, bloodPressure: { systolic: 120, diastolic: 80 }, bloodOxygen: 98, temperature: 98.6 },
+                      { id: 2, timestamp: new Date(), heartRate: 82, bloodPressure: { systolic: 122, diastolic: 81 }, bloodOxygen: 97, temperature: 98.7 },
+                      { id: 3, timestamp: new Date(), heartRate: 85, bloodPressure: { systolic: 125, diastolic: 82 }, bloodOxygen: 96, temperature: 99.0 }
+                    ]}
+                    metricType="bloodOxygen"
+                    color="#22c55e"
+                    unit="%"
+                    normalRange={{ min: 95, max: 100 }}
+                  />
+                  
+                  <VitalSignTrend
+                    title="Temperature History"
+                    data={[
+                      { id: 1, timestamp: new Date(), heartRate: 78, bloodPressure: { systolic: 120, diastolic: 80 }, bloodOxygen: 98, temperature: 98.6 },
+                      { id: 2, timestamp: new Date(), heartRate: 82, bloodPressure: { systolic: 122, diastolic: 81 }, bloodOxygen: 97, temperature: 98.7 },
+                      { id: 3, timestamp: new Date(), heartRate: 85, bloodPressure: { systolic: 125, diastolic: 82 }, bloodOxygen: 96, temperature: 99.0 }
+                    ]}
+                    metricType="temperature"
+                    color="#f59e0b"
+                    unit="°F"
+                    normalRange={{ min: 97.7, max: 99.5 }}
+                  />
+                </div>
+              </div>
+              
+              {/* Diagnostic Insights */}
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                  <span className="material-icons text-indigo-500 mr-2">psychology</span>
+                  AI Diagnostic Insights
+                </h3>
+                <DiagnosticInsights 
+                  differentialDiagnoses={[
+                    "Hypertension - Elevated blood pressure readings suggest possible hypertension",
+                    "Stress Response - Elevated heart rate and blood pressure may indicate acute stress",
+                    "Mild Dehydration - Slight elevation in heart rate could suggest mild dehydration"
+                  ]}
+                  redFlags={[
+                    "Your systolic blood pressure is above normal range and requires monitoring",
+                    "Heart rate variability shows signs of increased stress response"
+                  ]}
+                  recommendedTests={[
+                    "24-hour blood pressure monitoring to evaluate for hypertension",
+                    "Basic metabolic panel to assess hydration status",
+                    "ECG to establish baseline heart function"
+                  ]}
                 />
               </div>
             </>
