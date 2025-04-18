@@ -1,36 +1,21 @@
-import { FC, useEffect, useState, useRef } from 'react';
+import { FC, useEffect } from 'react';
 import { useLocation } from 'wouter';
-import ChatMessage from '@/components/ChatMessage';
-import ChatTypingIndicator from '@/components/ChatTypingIndicator';
 import QuestionnaireModal from '@/components/QuestionnaireModal';
 import TriageStatus from '@/components/TriageStatus';
+import ChatPopup from '@/components/ChatPopup';
 import useStore from '@/store';
 
 const NoWatchPatientDashboard: FC = () => {
   const [, navigate] = useLocation();
-  const chatEndRef = useRef<HTMLDivElement>(null);
-  const [userMessage, setUserMessage] = useState('');
   
   const { 
     role, 
     patientOption, 
     triageStatus,
-    chatMessages, 
-    addChatMessage,
     showQuestionnaire,
     toggleQuestionnaire,
-    questionnaireData,
-    submitQuestionnaire,
-    updateTriageStatus,
-    processingUserInput
+    submitQuestionnaire
   } = useStore();
-
-  // Scroll to bottom of chat whenever messages change
-  useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [chatMessages]);
 
   // Redirect if not in patient role or no option selected
   useEffect(() => {
@@ -40,87 +25,6 @@ const NoWatchPatientDashboard: FC = () => {
       navigate('/patient-dashboard');
     }
   }, [role, patientOption, navigate]);
-
-  // Initial AI greeting based on patient option
-  useEffect(() => {
-    if (chatMessages.length === 0 && patientOption) {
-      let greeting = "Hello! I'm your virtual health assistant. I can help assess your symptoms and provide general health guidance.";
-      let followUp = "";
-      
-      switch (patientOption) {
-        case 'need-hospital':
-          followUp = " Let's discuss your symptoms to help determine what level of care would be appropriate for your situation. Can you tell me what you're experiencing?";
-          break;
-        case 'check-health':
-          followUp = " I can help you understand your symptoms better. What health concerns bring you here today?";
-          break;
-        case 'ambulance':
-          followUp = " While you wait for medical assistance, I can help gather information that may be helpful for healthcare providers. What symptoms are you experiencing?";
-          break;
-        case 'at-er':
-          followUp = " I can help organize information about your symptoms that you can share with medical staff. What symptoms brought you to seek care today?";
-          break;
-      }
-      
-      addChatMessage(greeting + followUp, 'ai');
-      
-      // Show questionnaire automatically after a short delay
-      setTimeout(() => {
-        if (!showQuestionnaire) {
-          toggleQuestionnaire();
-        }
-      }, 1000);
-    }
-  }, [addChatMessage, chatMessages.length, patientOption, showQuestionnaire, toggleQuestionnaire]);
-
-  const handleSendMessage = () => {
-    if (userMessage.trim()) {
-      addChatMessage(userMessage, 'user');
-      setUserMessage('');
-      
-      // Analyze user message and generate contextual response
-      setTimeout(() => {
-        const lowerCaseMsg = userMessage.toLowerCase();
-        let response = "Based on what you've described, please complete the symptom assessment below so I can better understand your situation.";
-        
-        // Check for specific symptom mentions
-        if (/pain|hurt|ache|sore/.test(lowerCaseMsg)) {
-          if (/chest|heart/.test(lowerCaseMsg)) {
-            response = "You mentioned chest pain, which can have various causes. To better understand your situation, please complete the symptom assessment below focusing on the nature and severity of your pain.";
-          } else if (/head|migraine/.test(lowerCaseMsg)) {
-            response = "I see you're experiencing head pain. The assessment below will help gather important details about your symptoms to provide appropriate guidance.";
-          } else if (/stomach|abdomen|belly/.test(lowerCaseMsg)) {
-            response = "For abdominal discomfort like you've described, completing the symptom assessment below will help determine appropriate next steps based on your specific situation.";
-          } else {
-            response = "Pain can have many causes. The symptom assessment below will help gather important details about what you're experiencing.";
-          }
-        } else if (/breath|cough|wheez|lung/.test(lowerCaseMsg)) {
-          response = "Breathing-related symptoms require careful assessment. Please complete the questionnaire below, paying particular attention to the breathing difficulty section.";
-        } else if (/fever|temperatur/.test(lowerCaseMsg)) {
-          response = "You mentioned fever symptoms. The assessment below will help gather more details about your condition, including other symptoms that might be related.";
-        } else if (/dizz|light-headed|faint|vertigo/.test(lowerCaseMsg)) {
-          response = "Dizziness can be related to various conditions. The symptom assessment below will help gather more context about what you're experiencing.";
-        } else if (/emergency|urgent|serious|severe|ambulance/.test(lowerCaseMsg)) {
-          response = "If you believe you're experiencing a medical emergency, please contact emergency services directly. For a non-emergency assessment, the questionnaire below can help evaluate your symptoms.";
-        } else if (/\?|should i|recommend|advice|help/.test(lowerCaseMsg)) {
-          response = "To better answer your question and provide appropriate guidance, I'll need some additional information. The assessment below will help me understand your specific situation.";
-        }
-        
-        addChatMessage(response, 'ai');
-        
-        // Show questionnaire if it's not already visible
-        if (!showQuestionnaire) {
-          toggleQuestionnaire();
-        }
-      }, 1000);
-    }
-  };
-
-  const handleKeyUp = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && userMessage.trim()) {
-      handleSendMessage();
-    }
-  };
 
   const getContextMessage = () => {
     if (!patientOption) return '';
@@ -257,47 +161,15 @@ const NoWatchPatientDashboard: FC = () => {
         </div>
       )}
 
-      {/* AI Chat Box */}
-      <div className="bg-white dark:bg-zinc-900 dark:border dark:border-zinc-800 rounded-lg shadow overflow-hidden mb-8 transition-colors duration-300">
-        <div className="bg-primary dark:bg-gradient-to-r dark:from-blue-800 dark:to-zinc-800 p-4">
-          <h3 className="text-white font-semibold flex items-center">
-            <span className="material-icons mr-2 transition-transform duration-300 hover:scale-110 hover:rotate-12">smart_toy</span>
-            Health Assistant
-          </h3>
-        </div>
-        <div className="p-4 h-60 overflow-y-auto bg-neutral-50 dark:bg-zinc-900">
-          {chatMessages.map(message => (
-            <ChatMessage key={message.id} message={message} />
-          ))}
-          {processingUserInput && <ChatTypingIndicator />}
-          <div ref={chatEndRef} />
-        </div>
-        <div className="p-4 border-t dark:border-zinc-800">
-          <div className="flex">
-            <input 
-              type="text" 
-              placeholder="Type your symptoms or questions here..." 
-              className="flex-1 border border-neutral-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white rounded-l-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-green-400 focus:border-transparent"
-              value={userMessage}
-              onChange={(e) => setUserMessage(e.target.value)}
-              onKeyUp={handleKeyUp}
-            />
-            <button 
-              className="bg-primary dark:bg-blue-700 text-white px-4 rounded-r-md hover:bg-primary-dark dark:hover:bg-blue-600 transition-colors"
-              onClick={handleSendMessage}
-            >
-              <span className="material-icons">send</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Triage Questionnaire Modal */}
       <QuestionnaireModal 
         isOpen={showQuestionnaire}
         onClose={toggleQuestionnaire}
         onSubmit={handleQuestionnaireSubmit}
       />
+
+      {/* Chat Popup */}
+      <ChatPopup patientOption={patientOption} showQuestionnaire={toggleQuestionnaire} />
     </div>
   );
 };
