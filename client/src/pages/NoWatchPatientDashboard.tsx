@@ -44,21 +44,21 @@ const NoWatchPatientDashboard: FC = () => {
   // Initial AI greeting based on patient option
   useEffect(() => {
     if (chatMessages.length === 0 && patientOption) {
-      let greeting = "Hello! I'm your virtual health assistant. Since you don't have a smartwatch, I'll need to ask you some questions about your symptoms to help assess your situation.";
+      let greeting = "Hello! I'm your virtual health assistant. I can help assess your symptoms and provide general health guidance.";
       let followUp = "";
       
       switch (patientOption) {
         case 'need-hospital':
-          followUp = " Let's determine if you should go to the hospital. Can you tell me what symptoms you're experiencing?";
+          followUp = " Let's discuss your symptoms to help determine what level of care would be appropriate for your situation. Can you tell me what you're experiencing?";
           break;
         case 'check-health':
-          followUp = " I'll help you check your health status. What brings you here today?";
+          followUp = " I can help you understand your symptoms better. What health concerns bring you here today?";
           break;
         case 'ambulance':
-          followUp = " While you wait for an ambulance, I can help gather information to share with paramedics when they arrive. What symptoms are you experiencing?";
+          followUp = " While you wait for medical assistance, I can help gather information that may be helpful for healthcare providers. What symptoms are you experiencing?";
           break;
         case 'at-er':
-          followUp = " I can help gather information to share with ER staff. What symptoms brought you to the emergency room today?";
+          followUp = " I can help organize information about your symptoms that you can share with medical staff. What symptoms brought you to seek care today?";
           break;
       }
       
@@ -81,10 +81,11 @@ const NoWatchPatientDashboard: FC = () => {
       // Simulate AI response based on user's message
       setTimeout(() => {
         const responses = [
-          "Based on what you've described, please complete the symptom assessment below so I can better understand your situation.",
-          "Thank you for that information. Could you also answer the questions in the assessment form?",
-          "I understand your concern. The symptom assessment below will help me provide better guidance.",
-          "I've noted your symptoms. To give you the most accurate advice, could you complete the quick assessment below?"
+          "Based on what you've described, please complete the symptom assessment below so I can better understand your situation. This will help determine the appropriate level of care you might need.",
+          "Thank you for that information. To make a more accurate assessment, could you answer a few questions in the form below? This helps me understand the full picture of what you're experiencing.",
+          "I understand your concern. The symptom assessment below will help me provide more specific guidance based on medical best practices.",
+          "I've noted your symptoms. To provide appropriate advice, could you complete the assessment below? This information helps determine if self-care is sufficient or if medical attention is recommended.",
+          "Thanks for sharing that. To better evaluate your symptoms, please fill out the brief questionnaire below. This helps differentiate between conditions that may have similar symptoms."
         ];
         
         const randomResponse = responses[Math.floor(Math.random() * responses.length)];
@@ -109,15 +110,15 @@ const NoWatchPatientDashboard: FC = () => {
     
     switch (patientOption) {
       case 'need-hospital':
-        return "We'll analyze your symptoms to determine if you should go to the hospital.";
+        return "Discussing your symptoms to help determine appropriate care options.";
       case 'check-health':
-        return "Let's assess your current health status based on your symptoms.";
+        return "Assessing your health concerns based on the information you provide.";
       case 'ambulance':
-        return "Your health information will be shared with paramedics to prepare for your arrival.";
+        return "Collecting health information that may be helpful for healthcare providers.";
       case 'at-er':
-        return "Your health information will help ER staff prioritize care based on urgency.";
+        return "Organizing your symptom information to share with medical staff.";
       default:
-        return "Let's assess your current health based on your symptoms.";
+        return "Reviewing your symptoms to provide appropriate health guidance.";
     }
   };
 
@@ -240,15 +241,15 @@ const NoWatchPatientDashboard: FC = () => {
     // Custom recommendations based on specific symptoms
     if (hasEmergencySymptoms || breathingLevel === 'severe') {
       if (hasChestPain) {
-        recommendation = "you're experiencing chest pain which could indicate several conditions ranging from muscle strain to more serious cardiac issues. Given your symptoms, it would be advisable to seek prompt medical evaluation at an emergency room to rule out serious conditions.";
+        recommendation = "chest pain can be caused by various conditions ranging from muscle strain to cardiac issues. If this is a new symptom for you, especially if it's severe, persistent, or accompanied by shortness of breath, speaking with a healthcare provider today would be advisable.";
       } else if (formData.symptoms.includes('stroke_symptoms')) {
-        recommendation = "the symptoms you're describing could be consistent with a stroke, which requires immediate medical attention. Please call emergency services (911) right away as prompt treatment is essential.";
+        recommendation = "the symptoms you've described (such as face drooping, arm weakness, or speech difficulties) should be evaluated promptly. These could potentially indicate a serious condition where timely medical care is beneficial.";
       } else {
-        recommendation = "your symptoms suggest a potentially serious condition that requires prompt medical attention. Please seek care at an emergency room or urgent care center immediately.";
+        recommendation = "based on your symptoms, speaking with a healthcare provider soon would be advisable. While many conditions can be managed effectively, prompt evaluation provides the best opportunity for appropriate treatment.";
       }
     } 
     else if (hasSeriousSymptoms) {
-      recommendation = "your symptoms indicate a condition that should be evaluated by a healthcare professional soon. I recommend seeking care at an urgent care center today or scheduling a same-day appointment with your doctor.";
+      recommendation = "your symptoms suggest a condition that would benefit from evaluation by a healthcare professional. Consider contacting your doctor's office for guidance about whether an appointment in the next day or two would be appropriate, or whether your symptoms can be managed at home with their advice.";
     }
     else if (hasModerateSymptoms) {
       if (hasBackPain) {
@@ -314,16 +315,16 @@ const NoWatchPatientDashboard: FC = () => {
                   triageStatus === 'medium' ? 'text-amber-500 dark:text-amber-400' :
                   'text-green-600 dark:text-green-400'}
               `}>
-                {triageStatus === 'critical' ? 'Critical Health Status' : 
-                 triageStatus === 'high' ? 'Elevated Health Concern' :
-                 triageStatus === 'medium' ? 'Moderate Health Alert' :
+                {triageStatus === 'critical' ? 'Priority Health Concern' : 
+                 triageStatus === 'high' ? 'Notable Health Concern' :
+                 triageStatus === 'medium' ? 'Health Concern' :
                  'Stable Health Status'}
               </h3>
               <p className="text-neutral-700 dark:text-zinc-200">
-                {triageStatus === 'critical' ? 'Your symptoms indicate an urgent health concern that requires immediate medical attention.' : 
-                 triageStatus === 'high' ? 'Your symptoms suggest a health concern that needs prompt medical evaluation.' :
-                 triageStatus === 'medium' ? 'Some symptoms are concerning, medical consultation recommended.' :
-                 'Your symptoms suggest a non-urgent condition.'}
+                {triageStatus === 'critical' ? 'Your symptoms suggest a condition that would benefit from prompt medical evaluation.' : 
+                 triageStatus === 'high' ? 'Your symptoms indicate a health concern that warrants discussing with a healthcare provider soon.' :
+                 triageStatus === 'medium' ? 'Consider following up with your healthcare provider in the next few days about these symptoms.' :
+                 'Your symptoms appear to be manageable with appropriate self-care. Monitor for any changes.'}
               </p>
             </div>
           </div>
