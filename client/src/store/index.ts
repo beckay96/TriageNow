@@ -61,35 +61,43 @@ export interface ChatMessage {
   timestamp: Date;
 }
 
-// Define the questionnaire entry
+// Define the questionnaire entry with enhanced fields
 export interface QuestionnaireData {
   pain: 'none' | 'mild' | 'moderate' | 'severe';
   breathing: 'none' | 'slight' | 'moderate' | 'severe';
   symptoms: string[];
-  
+
   // Additional fields for enhanced assessment
   symptomsDescription: string;
   symptomsStarted: string;
   painLevel: number;
+  painLocation: string; // New field for pain location
+  painCharacteristics: string[]; // New field for pain characteristics
   conditions: {
     diabetes: boolean;
     hypertension: boolean;
     heart: boolean;
     asthma: boolean;
+    copd: boolean; // Added COPD
+    stroke: boolean; // Added stroke history
+    seizures: boolean; // Added seizure history
     other: boolean;
   };
+  conditionsOther: string; // Description for other conditions
   allergies: string;
   medications: string;
+  recentInjury: boolean; // New field for recent injury
+  levelOfConsciousness: 'alert' | 'confused' | 'drowsy' | 'unresponsive'; // New field
 }
 
 export type StoreState = {
   // User role and navigation
   role: 'patient' | 'medical-staff' | null;
-  
+
   // Patient flow
   patientOption: 'need-hospital' | 'check-health' | 'ambulance' | 'at-er' | null;
   watchConnected: boolean;
-  
+
   // Health data
   healthMetrics: HealthMetrics | null;
   healthStatuses: {
@@ -100,21 +108,32 @@ export type StoreState = {
   } | null;
   triageStatus: 'critical' | 'high' | 'medium' | 'low' | null;
   triageSeverity: number;
-  
+  previousHealthMetrics: HealthMetrics[]; // Track vital sign changes over time
+  vitalSignsTrend: 'improving' | 'stable' | 'worsening' | null; // Track if patient is improving or deteriorating
+
   // Chat
   chatMessages: ChatMessage[];
-  
+  processingUserInput: boolean; // New flag to indicate AI is "thinking"
+  aiConfidence: number; // Confidence level of AI in its assessment (0-100)
+
   // Questionnaire
   showQuestionnaire: boolean;
   questionnaireData: QuestionnaireData;
-  
+  symptomCombinations: Record<string, number>; // Store for symptom combinations and their severity
+  medicalProtocols: Record<string, any>; // Store for medical protocols based on symptom clusters
+
+  // Decision support
+  differentialDiagnoses: string[]; // Possible conditions based on symptoms
+  redFlags: string[]; // Critical concerns detected
+  recommendedTests: string[]; // Potential diagnostics that might be needed
+
   // ER Dashboard
   patientEntries: PatientEntry[];
   filteredPatients: PatientEntry[];
   searchTerm: string;
   priorityFilter: 'all' | 'critical' | 'high' | 'medium' | 'low';
   mockPatients: any[]; // Mock data for the ER dashboard
-  
+
   // Stats
   triageStats: {
     critical: number;
@@ -122,7 +141,7 @@ export type StoreState = {
     medium: number;
     low: number;
   };
-  
+
   // Actions
   setRole: (role: 'patient' | 'medical-staff' | null) => void;
   setPatientOption: (option: 'need-hospital' | 'check-health' | 'ambulance' | 'at-er' | null) => void;
@@ -135,6 +154,16 @@ export type StoreState = {
   searchPatients: (term: string) => void;
   filterByPriority: (priority: 'all' | 'critical' | 'high' | 'medium' | 'low') => void;
   resetState: () => void;
+
+  // Enhanced AI functions
+  generateAIResponse: (userMessage: string) => Promise<string>;
+  analyzeSymptoms: (symptoms: string[], conditions: Record<string, boolean>, metrics: HealthMetrics | null) => number;
+  detectPatientDistress: (message: string) => number; // Emotion/distress detector
+  analyzeVitalsTrend: () => void; // Analyze if patient is improving or deteriorating
+  generateDifferentialDiagnoses: () => void; // Generate possible diagnoses based on data
+  detectRedFlags: () => void; // Identify critical medical concerns
+  estimateWaitTime: () => number; // Estimate wait time based on triage status
+  recommendMedicalProtocol: () => string; // Recommend standard medical protocol based on symptoms
 };
 
 // Initial health metrics for the mock data
@@ -147,28 +176,34 @@ const initialHealthMetrics: HealthMetrics = {
   bloodOxygen: 96,
   temperature: 99.1
 };
-
 // Define the initial questionnaire data
 const initialQuestionnaireData: QuestionnaireData = {
   pain: 'none',
   breathing: 'none',
   symptoms: [],
-  
+
   // Additional fields with default values
   symptomsDescription: '',
   symptomsStarted: 'today',
   painLevel: 0,
+  painLocation: '',
+  painCharacteristics: [],
   conditions: {
     diabetes: false,
     hypertension: false,
     heart: false,
     asthma: false,
+    copd: false,
+    stroke: false,
+    seizures: false,
     other: false
   },
+  conditionsOther: '',
   allergies: '',
-  medications: ''
+  medications: '',
+  recentInjury: false,
+  levelOfConsciousness: 'alert'
 };
-
 // Note: mockPatientEntries already imported at the top
 
 // Create the Zustand store
@@ -200,6 +235,93 @@ const useStore = create<StoreState>((set, get) => ({
     medium: 8,
     low: 4
   },
+
+  // Map of symptom combinations and their severity scores
+  symptomCombinations: {
+    // Red flag symptom combinations (potentially life-threatening)
+    'chest_pain+shortness_of_breath': 8,
+    'chest_pain+sweating+nausea': 7,
+    'chest_pain+radiating_pain': 7, // Classic angina/MI presentation
+    'sudden_severe_headache+vision_changes': 7,
+    'sudden_severe_headache+confusion': 8,
+    'sudden_severe_headache+vomiting': 7, // Potential intracranial pressure
+    'fever+stiff_neck+headache': 7, // Meningitis concern
+    'fever+stiff_neck+rash': 8, // Meningococcal concern
+    'dizziness+slurred_speech+weakness': 8, // Stroke concern
+    'dizziness+slurred_speech+facial_droop': 9, // Classic stroke presentation
+    'difficulty_breathing+blue_lips': 9,
+    'difficulty_breathing+wheezing+history_asthma': 7, // Asthma exacerbation
+    'severe_abdominal_pain+vomiting_blood': 8,
+    'severe_abdominal_pain+rigid_abdomen': 8, // Peritonitis concern
+    'seizure+unresponsive': 9,
+    'seizure+fever+stiff_neck': 9, // Potential meningitis with seizure
+    'weakness+one_sided+facial_droop': 8, // Stroke signs
+    'weakness+one_sided+speech_changes': 8, // More stroke signs
+
+    // Individual serious symptoms
+    'chest_pain': 5,
+    'difficulty_breathing': 5,
+    'shortness_of_breath': 4,
+    'severe_abdominal_pain': 4,
+    'sudden_severe_headache': 5,
+    'unresponsive': 9,
+    'seizure': 7,
+    'vomiting_blood': 6,
+    'paralysis': 7,
+    'slurred_speech': 6,
+
+    // Moderate severity symptoms
+    'fever': 2, 
+    'dizziness': 2,
+    'nausea': 1,
+    'vomiting': 2,
+    'headache': 1,
+    'weakness': 2,
+    'abdominal_pain': 2,
+    'back_pain': 1,
+    'joint_pain': 1,
+    'rash': 1,
+
+    // Symptom with condition combinations
+    'chest_pain+heart': 6,
+    'shortness_of_breath+asthma': 5,
+    'shortness_of_breath+copd': 6,
+    'dizziness+diabetes': 3,
+    'fever+immunocompromised': 5,
+    'headache+hypertension': 3,
+    'headache+stroke': 4,
+  },
+
+  // Medical protocols based on symptom patterns
+  medicalProtocols: {
+    'chest_pain': {
+      name: 'Chest Pain Protocol',
+      assessments: ['ECG', 'Troponin', 'BP monitoring', 'Oxygen saturation'],
+      immediateActions: ['Aspirin 325mg (if no contraindications)', 'Oxygen if sats < 94%', 'IV access'],
+      redFlags: ['ST elevation on ECG', 'Hypotension', 'Diaphoresis', 'Radiation to jaw/arm']
+    },
+    'stroke': {
+      name: 'Stroke Protocol',
+      assessments: ['FAST assessment', 'Blood glucose', 'CT scan', 'BP monitoring'],
+      immediateActions: ['Determine last known well time', 'Maintain airway', 'Check glucose'],
+      redFlags: ['Onset within 4.5 hours', 'Rapidly deteriorating symptoms', 'BP > 180/120']
+    },
+    'sepsis': {
+      name: 'Sepsis Protocol',
+      assessments: ['Temperature', 'Heart rate', 'Respiratory rate', 'Blood pressure', 'Blood cultures'],
+      immediateActions: ['IV fluids', 'Antibiotics within 1 hour', 'Oxygen if needed'],
+      redFlags: ['Hypotension', 'Altered mental status', 'Respiratory rate > 22']
+    }
+  },
+
+  // Decision support fields
+  differentialDiagnoses: [],
+  redFlags: [],
+  recommendedTests: [],
+  previousHealthMetrics: [],
+  vitalSignsTrend: null,
+  processingUserInput: false,
+  aiConfidence: 85,
   
   // Actions
   setRole: (role) => set({ role }),
@@ -551,6 +673,8 @@ const useStore = create<StoreState>((set, get) => ({
     
     set({ filteredPatients: filtered });
   },
+
+  
   
   resetState: () => {
     set({
@@ -563,9 +687,341 @@ const useStore = create<StoreState>((set, get) => ({
       triageSeverity: 0,
       chatMessages: [],
       showQuestionnaire: false,
-      questionnaireData: initialQuestionnaireData
+      questionnaireData: initialQuestionnaireData,
+      previousHealthMetrics: [],
+      vitalSignsTrend: null,
+      aiConfidence: 85,
+      differentialDiagnoses: [],
+      redFlags: [],
+      recommendedTests: [],
+      processingUserInput: false
     });
   }
+
+  // Add new functions right before the final export statement (around line 380)
+
+  // Enhanced symptom analysis function
+  analyzeSymptoms: (symptoms, conditions, metrics) => {
+    const { symptomCombinations } = get();
+    let totalSeverity = 0;
+
+    // Check for individual symptoms
+    symptoms.forEach(symptom => {
+      if (symptomCombinations[symptom]) {
+        totalSeverity += symptomCombinations[symptom];
+      }
+    });
+
+    // Check for symptom combinations (pairs)
+    for (let i = 0; i < symptoms.length; i++) {
+      for (let j = i + 1; j < symptoms.length; j++) {
+        const combination = `${symptoms[i]}+${symptoms[j]}`;
+        const reverseCombination = `${symptoms[j]}+${symptoms[i]}`;
+
+        if (symptomCombinations[combination]) {
+          totalSeverity += symptomCombinations[combination];
+        } else if (symptomCombinations[reverseCombination]) {
+          totalSeverity += symptomCombinations[reverseCombination];
+        }
+      }
+    }
+
+    // Check for symptom + condition combinations
+    if (conditions) {
+      Object.entries(conditions).forEach(([condition, hasCondition]) => {
+        if (hasCondition) {
+          symptoms.forEach(symptom => {
+            const combinationKey = `${symptom}+${condition}`;
+            if (symptomCombinations[combinationKey]) {
+              totalSeverity += symptomCombinations[combinationKey];
+            }
+          });
+        }
+      });
+    }
+
+    // Add severity based on vitals if available
+    if (metrics) {
+      // High heart rate
+      if (metrics.heartRate > 120) totalSeverity += 3;
+      else if (metrics.heartRate > 100) totalSeverity += 2;
+
+      // Blood pressure concerns
+      if (metrics.bloodPressure.systolic > 180 || metrics.bloodPressure.diastolic > 120) totalSeverity += 4;
+      else if (metrics.bloodPressure.systolic > 160 || metrics.bloodPressure.diastolic > 100) totalSeverity += 3;
+      else if (metrics.bloodPressure.systolic > 140 || metrics.bloodPressure.diastolic > 90) totalSeverity += 2;
+
+      // Low blood pressure (can indicate shock)
+      if (metrics.bloodPressure.systolic < 90) totalSeverity += 4;
+
+      // Low oxygen
+      if (metrics.bloodOxygen < 90) totalSeverity += 4;
+      else if (metrics.bloodOxygen < 94) totalSeverity += 2;
+
+      // Fever
+      if (metrics.temperature > 103) totalSeverity += 3;
+      else if (metrics.temperature > 101) totalSeverity += 2;
+      else if (metrics.temperature > 100.4) totalSeverity += 1;
+    }
+
+    return totalSeverity;
+  },
+
+  // Analyze if patient condition is improving or deteriorating based on vital signs
+  analyzeVitalsTrend: () => {
+    const { previousHealthMetrics, healthMetrics } = get();
+
+    if (!healthMetrics || previousHealthMetrics.length === 0) {
+      return; // Not enough data to analyze trend
+    }
+
+    // Clone the previous metrics array and add current metrics
+    const updatedPreviousMetrics = [...previousHealthMetrics, { ...healthMetrics }];
+
+    // Keep only the last 5 readings
+    while (updatedPreviousMetrics.length > 5) {
+      updatedPreviousMetrics.shift();
+    }
+
+    set({ previousHealthMetrics: updatedPreviousMetrics });
+
+    // Need at least 2 readings to determine a trend
+    if (updatedPreviousMetrics.length < 2) {
+      return;
+    }
+
+    // Calculate trend scores for vital signs
+    let trendScore = 0;
+    const oldest = updatedPreviousMetrics[0];
+    const newest = updatedPreviousMetrics[updatedPreviousMetrics.length - 1];
+
+    // Heart rate trend (normal is 60-100)
+    if (newest.heartRate > oldest.heartRate + 15) {
+      // Significant increase in heart rate is concerning
+      trendScore -= 2;
+    } else if (newest.heartRate < oldest.heartRate - 15) {
+      // Significant decrease could be good if returning to normal range
+      trendScore += (newest.heartRate >= 60 && newest.heartRate <= 100) ? 1 : -1;
+    }
+
+    // Blood pressure trend
+    if (newest.bloodPressure.systolic > oldest.bloodPressure.systolic + 20) {
+      // Significant increase in systolic BP is concerning
+      trendScore -= 1;
+    } else if (newest.bloodPressure.systolic < oldest.bloodPressure.systolic - 20) {
+      // Significant decrease could be good or bad depending on the range
+      trendScore += (newest.bloodPressure.systolic >= 100 && newest.bloodPressure.systolic <= 140) ? 1 : -2;
+    }
+
+    // Blood oxygen trend
+    if (newest.bloodOxygen < oldest.bloodOxygen - 3) {
+      // Any significant decrease in O2 saturation is concerning
+      trendScore -= 3;
+    } else if (newest.bloodOxygen > oldest.bloodOxygen + 3) {
+      // Improvement in O2 saturation is good
+      trendScore += 2;
+    }
+
+    // Temperature trend
+    if (newest.temperature > oldest.temperature + 1) {
+      // Rising fever is concerning
+      trendScore -= 2;
+    } else if (newest.temperature < oldest.temperature - 1) {
+      // Decreasing fever is good
+      trendScore += 1;
+    }
+
+    // Set the trend based on the score
+    let trend: 'improving' | 'stable' | 'worsening' = 'stable';
+
+    if (trendScore >= 2) {
+      trend = 'improving';
+    } else if (trendScore <= -2) {
+      trend = 'worsening';
+    }
+
+    set({ vitalSignsTrend: trend });
+
+    // If trend is worsening and triage is not already critical, increase severity
+    if (trend === 'worsening' && get().triageStatus !== 'critical') {
+      get().updateTriageStatus(2); // Add urgency for deteriorating patients
+    }
+  },
+
+  // Generate possible diagnoses based on symptoms and vitals
+  generateDifferentialDiagnoses: () => {
+    const { questionnaireData, healthMetrics, triageStatus } = get();
+    const differentials: string[] = [];
+
+    // Map obvious symptom combinations to possible conditions
+    if (questionnaireData.symptoms.includes('chest pain')) {
+      if (questionnaireData.breathing !== 'none') {
+        differentials.push('Acute Coronary Syndrome', 'Pulmonary Embolism', 'Pneumonia');
+      } else if (questionnaireData.symptoms.includes('sweating') || 
+                 questionnaireData.symptoms.includes('nausea')) {
+        differentials.push('Acute Coronary Syndrome', 'Myocardial Infarction');
+      } else {
+        differentials.push('Angina', 'Musculoskeletal Pain', 'GERD');
+      }
+    }
+
+    if (questionnaireData.symptoms.includes('sudden severe headache')) {
+      if (questionnaireData.symptoms.includes('vomiting') || 
+          questionnaireData.symptoms.includes('confusion') ||
+          questionnaireData.symptoms.includes('vision changes')) {
+        differentials.push('Subarachnoid Hemorrhage', 'Meningitis', 'Intracranial Hemorrhage');
+      } else {
+        differentials.push('Migraine', 'Tension Headache', 'Sinusitis');
+      }
+    }
+
+    // Remove duplicates and limit to most likely conditions based on severity
+    const uniqueDifferentials = Array.from(new Set(differentials));
+    let limitedDifferentials: string[] = [];
+
+    if (triageStatus === 'critical' || triageStatus === 'high') {
+      // Focus on serious conditions for higher acuity
+      limitedDifferentials = uniqueDifferentials.filter(dx => 
+        !['Musculoskeletal Pain', 'GERD', 'Tension Headache', 'Sinusitis'].includes(dx)
+      );
+    } else {
+      limitedDifferentials = uniqueDifferentials;
+    }
+
+    // Set top differentials (limited to 5)
+    set({ differentialDiagnoses: limitedDifferentials.slice(0, 5) });
+  },
+
+  // Enhanced AI response generator
+  generateAIResponse: async (userMessage) => {
+    const { healthMetrics, healthStatuses, triageStatus, questionnaireData } = get();
+
+    // Set processing flag
+    set({ processingUserInput: true });
+
+    // Convert user message to lowercase for easier comparison
+    const messageLower = userMessage.toLowerCase();
+
+    // Define symptom keywords to look for in user message
+    const symptomKeywords = {
+      'pain': ['pain', 'hurt', 'hurts', 'hurting', 'ache', 'sore'],
+      'breathing': ['breath', 'breathing', 'breathe', 'short of breath', 'shortness', 'suffocating'],
+      'dizziness': ['dizzy', 'dizziness', 'lightheaded', 'faint', 'fainting', 'vertigo', 'spinning'],
+      'chest pain': ['chest pain', 'chest hurts', 'chest pressure', 'chest tightness'],
+      'headache': ['headache', 'migraine', 'head hurts', 'head pain'],
+      'fever': ['fever', 'hot', 'temperature', 'sweating', 'chills'],
+      'nausea': ['nausea', 'nauseated', 'sick to my stomach', 'feel sick', 'queasy'],
+      'vomiting': ['vomit', 'throwing up', 'threw up', 'puking'],
+      'weakness': ['weak', 'weakness', 'tired', 'fatigue', 'exhausted', 'no energy'],
+      'confusion': ['confused', 'confusion', 'disoriented', 'can\'t think straight'],
+    };
+
+    // Check if message is describing new symptoms
+    let newSymptoms: string[] = [];
+
+    Object.entries(symptomKeywords).forEach(([symptom, keywords]) => {
+      if (keywords.some(keyword => messageLower.includes(keyword))) {
+        newSymptoms.push(symptom);
+      }
+    });
+
+    // Prepare response based on message content
+    let response = "";
+
+    if (newSymptoms.length > 0) {
+      // User is describing new symptoms
+      response = `Thank you for sharing that information about your ${newSymptoms.join(', ')}. `;
+
+      if (triageStatus === 'critical' || triageStatus === 'high') {
+        response += "Based on this and your previous information, I continue to recommend seeking immediate medical attention. ";
+
+        if (newSymptoms.includes('chest pain') || newSymptoms.includes('breathing')) {
+          response += "The combination of symptoms you're describing could indicate a serious condition that requires emergency evaluation.";
+        } else {
+          response += "Would you like me to update your assessment with this new information?";
+        }
+      } else {
+        response += "I recommend updating your symptom questionnaire with this new information so I can provide a more accurate assessment.";
+      }
+    } else {
+      // General response based on triage status
+      if (triageStatus === 'critical' || triageStatus === 'high') {
+        response = "I understand your concern. Given your current condition, it's important that you receive medical attention promptly. Are there any specific questions you have while preparing to seek care?";
+      } else if (triageStatus === 'medium') {
+        response = "I'm here to help you navigate your health concerns. Based on your information, medical evaluation is recommended. Is there anything specific you'd like to know about managing your symptoms in the meantime?";
+      } else {
+        response = "I'm here to assist with your health questions. Your condition appears stable based on the information provided. Would you like information about self-care measures for your symptoms?";
+      }
+    }
+
+    // Clear processing flag
+    set({ processingUserInput: false });
+
+    return response;
+  },
+
+  // Other enhanced functions
+  detectRedFlags: () => {
+    const { questionnaireData, healthMetrics } = get();
+    const redFlags: string[] = [];
+
+    // Check for critical symptoms
+    if (questionnaireData.levelOfConsciousness !== 'alert') {
+      redFlags.push('Altered Mental Status');
+    }
+
+    if (questionnaireData.breathing === 'severe') {
+      redFlags.push('Respiratory Distress');
+    }
+
+    // Set the red flags
+    set({ redFlags });
+  },
+
+  // Estimate wait time based on triage status
+  estimateWaitTime: () => {
+    const { triageStatus, triageStats } = get();
+
+    // Base wait times in minutes for each triage level
+    const baseWaitTimes = {
+      critical: 0, // Immediate
+      high: 15,
+      medium: 60,
+      low: 120
+    };
+
+    // Calculate wait time
+    let waitTime = 0;
+    if (triageStatus) {
+      waitTime = baseWaitTimes[triageStatus];
+    }
+
+    return waitTime;
+  },
+
+  // Detect emotional distress in patient messages
+  detectPatientDistress: (message) => {
+    const distressKeywords = [
+      { word: 'scared', weight: 3 },
+      { word: 'terrified', weight: 5 },
+      { word: 'afraid', weight: 3 },
+      { word: 'help me', weight: 3 },
+      { word: 'pain', weight: 2 }
+    ];
+
+    const messageLower = message.toLowerCase();
+    let distressScore = 0;
+
+    // Calculate distress score based on keywords
+    distressKeywords.forEach(item => {
+      if (messageLower.includes(item.word)) {
+        distressScore += item.weight;
+      }
+    });
+
+    return distressScore;
+  },
+  
 }));
 
 export default useStore;

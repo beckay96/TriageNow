@@ -416,15 +416,11 @@ const PatientDetailsModal: React.FC<PatientDetailsModalProps> = ({
                 <div>
                   <h4 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Reported Symptoms</h4>
                   {patient.symptoms && patient.symptoms.length > 0 ? (
-                    <div className="flex flex-wrap gap-2 animate-stagger-delay mt-2">
+                    <div className="flex flex-wrap gap-2 mt-2">
                       {patient.symptoms.map((symptom, index) => (
                         <span 
                           key={index} 
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                            bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200
-                            hover:scale-105 transition-transform duration-300 
-                            hover:bg-primary-light/20 dark:hover:bg-primary-light/20"
-                          style={{animationDelay: `${0.1 * index}s`}}
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 hover:bg-primary-light/20 dark:hover:bg-primary-light/20"
                         >
                           {symptom}
                         </span>
