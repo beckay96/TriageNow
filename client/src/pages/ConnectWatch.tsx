@@ -2,6 +2,7 @@ import { FC, useEffect, useState, useRef } from 'react';
 import { useLocation } from 'wouter';
 import HealthMetricCard from '@/components/HealthMetricCard';
 import ChatMessage from '@/components/ChatMessage';
+import ChatTypingIndicator from '@/components/ChatTypingIndicator';
 import QuestionnaireItem from '@/components/QuestionnaireItem';
 import TriageStatus from '@/components/TriageStatus';
 import useStore from '@/store';
@@ -25,7 +26,8 @@ const ConnectWatch: FC = () => {
     toggleQuestionnaire,
     questionnaireData,
     updateQuestionnaireData,
-    submitQuestionnaire
+    submitQuestionnaire,
+    processingUserInput
   } = useStore();
 
   // Scroll to bottom of chat whenever messages change

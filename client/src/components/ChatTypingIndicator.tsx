@@ -1,6 +1,6 @@
-import React from 'react';
+import { FC } from 'react';
 
-const ChatTypingIndicator: React.FC = () => {
+const ChatTypingIndicator: FC = () => {
   return (
     <div className="flex mb-4">
       <div className="flex-shrink-0 mr-3">
@@ -8,15 +8,13 @@ const ChatTypingIndicator: React.FC = () => {
           <span className="material-icons text-sm">smart_toy</span>
         </div>
       </div>
-      <div className="bg-neutral-100 rounded-lg p-3 max-w-3xl">
-        <div className="flex items-center">
-          <span className="text-neutral-700 mr-2">AI is analyzing symptoms</span>
-          <div className="flex space-x-1">
-            <div className="h-2 w-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
-            <div className="h-2 w-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
-            <div className="h-2 w-2 bg-primary rounded-full animate-pulse" style={{ animationDelay: '600ms' }}></div>
-          </div>
+      <div className="bg-neutral-100 rounded-lg p-4 max-w-3xl flex items-center">
+        <div className="flex space-x-1">
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
         </div>
+        <span className="ml-2 text-neutral-500 text-sm">AI Assistant is typing...</span>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { FC, useEffect, useState, useRef } from 'react';
 import { useLocation } from 'wouter';
 import ChatMessage from '@/components/ChatMessage';
+import ChatTypingIndicator from '@/components/ChatTypingIndicator';
 import QuestionnaireItem from '@/components/QuestionnaireItem';
 import TriageStatus from '@/components/TriageStatus';
 import useStore from '@/store';
@@ -20,7 +21,8 @@ const NoWatchPatientDashboard: FC = () => {
     toggleQuestionnaire,
     questionnaireData,
     submitQuestionnaire,
-    updateTriageStatus
+    updateTriageStatus,
+    processingUserInput
   } = useStore();
 
   // Scroll to bottom of chat whenever messages change
@@ -316,6 +318,7 @@ const NoWatchPatientDashboard: FC = () => {
           {chatMessages.map(message => (
             <ChatMessage key={message.id} message={message} />
           ))}
+          {processingUserInput && <ChatTypingIndicator />}
           <div ref={chatEndRef} />
         </div>
         <div className="p-4 border-t dark:border-zinc-800">
