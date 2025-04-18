@@ -696,9 +696,7 @@ const useStore = create<StoreState>((set, get) => ({
       recommendedTests: [],
       processingUserInput: false
     });
-  }
-
-  // Add new functions right before the final export statement (around line 380)
+  },
 
   // Enhanced symptom analysis function
   analyzeSymptoms: (symptoms, conditions, metrics) => {
