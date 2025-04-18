@@ -415,6 +415,7 @@ const ConnectWatch: FC = () => {
               {chatMessages.map(message => (
                 <ChatMessage key={message.id} message={message} />
               ))}
+              {processingUserInput && <ChatTypingIndicator />}
               <div ref={chatEndRef} />
             </div>
             <div className="p-4 border-t">

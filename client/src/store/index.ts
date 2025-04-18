@@ -573,18 +573,47 @@ const useStore = create<StoreState>((set, get) => ({
   
   addChatMessage: (message, sender) => {
     const newMessage: ChatMessage = {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       sender,
       message,
       timestamp: new Date()
     };
     
+    // If AI is responding, adjust confidence based on data completeness
+    if (sender === 'ai') {
+      // Calculate new confidence level
+      const { healthMetrics, questionnaireData, differentialDiagnoses, triageStatus } = get();
+      
+      // Base confidence level
+      let newConfidence = 65;
+      
+      // Add confidence if we have more data
+      if (healthMetrics) newConfidence += 15;
+      if (questionnaireData.symptoms.length > 0) newConfidence += 10;
+      if (questionnaireData.pain !== 'none' || questionnaireData.breathing !== 'none') newConfidence += 5;
+      if (differentialDiagnoses.length > 0) newConfidence += 5;
+      
+      // Reduce confidence for more severe conditions (they're harder to diagnose)
+      if (triageStatus === 'critical') newConfidence -= 10;
+      else if (triageStatus === 'high') newConfidence -= 5;
+      
+      // Cap confidence between 30 and 98
+      newConfidence = Math.min(98, Math.max(30, newConfidence));
+      
+      // Update the confidence level
+      set({ aiConfidence: newConfidence });
+    }
+    
     set(state => ({
-      chatMessages: [...state.chatMessages, newMessage]
+      chatMessages: [...state.chatMessages, newMessage],
+      processingUserInput: false // Always turn off processing indicator when a message is added
     }));
     
     // If user sent a message, generate an AI response after a delay
     if (sender === 'user') {
+      // Show "thinking" indicator
+      set({ processingUserInput: true });
+      
       setTimeout(() => {
         const responses = [
           "I understand you're concerned. Based on the data I can see, your vital signs are showing some irregularities. The medical staff will be notified about your condition.",

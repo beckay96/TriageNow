@@ -1,11 +1,14 @@
 import { FC } from 'react';
 import { ChatMessage as ChatMessageType } from '@/store';
+import useStore from '@/store';
 
 interface ChatMessageProps {
   message: ChatMessageType;
 }
 
 const ChatMessage: FC<ChatMessageProps> = ({ message }) => {
+  const { aiConfidence } = useStore();
+  
   if (message.sender === 'ai') {
     return (
       <div className="flex mb-4">
@@ -16,6 +19,21 @@ const ChatMessage: FC<ChatMessageProps> = ({ message }) => {
         </div>
         <div className="bg-neutral-100 rounded-lg p-3 max-w-3xl">
           <p className="text-neutral-700">{message.message}</p>
+          
+          {/* AI confidence indicator */}
+          <div className="mt-2 flex items-center">
+            <div className="w-full max-w-[120px] h-1.5 bg-neutral-200 rounded-full overflow-hidden">
+              <div 
+                className={`h-full rounded-full ${aiConfidence > 80 ? 'bg-green-500' : aiConfidence > 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                style={{ width: `${aiConfidence}%` }}
+              ></div>
+            </div>
+            <span className="ml-2 text-xs text-neutral-500">
+              {aiConfidence > 80 ? 'High confidence' : 
+               aiConfidence > 60 ? 'Moderate confidence' : 
+               'Low confidence'} ({aiConfidence}%)
+            </span>
+          </div>
         </div>
       </div>
     );
