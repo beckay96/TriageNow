@@ -118,14 +118,28 @@ const ConnectWatch: FC = () => {
             </div>
           </div>
 
-          <div className="text-neutral-500 flex justify-center">
-            <button 
-              className="dark:text-white text-sm underline"
-              onClick={() => navigate('/no-watch')}
-            >
-              I don't have a smartwatch
-            </button>
-          </div>
+          {patientOption === 'at-er' ? (
+            <div className="text-neutral-500 flex justify-center mt-3">
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg text-sm text-center">
+                <p className="font-medium text-blue-700 dark:text-blue-300 mb-1">
+                  <span className="material-icons text-blue-500 text-sm align-text-bottom mr-1">info</span>
+                  At the ER without a smartwatch?
+                </p>
+                <p className="text-blue-600 dark:text-blue-400">
+                  Please ask hospital staff for a monitoring device to help prioritize your care more accurately.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="text-neutral-500 flex justify-center">
+              <button 
+                className="dark:text-white text-sm underline"
+                onClick={() => navigate('/no-watch')}
+              >
+                I don't have a smartwatch
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div>
