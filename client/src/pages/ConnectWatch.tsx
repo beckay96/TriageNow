@@ -238,6 +238,28 @@ const ConnectWatch: FC = () => {
                 onClose={toggleQuestionnaire}
                 onSubmit={submitQuestionnaire}
               />
+
+              {/* Health Assessment Banner */}
+              {!showQuestionnaire && (
+                <div className="lg:flex flex-row gap-2 bg-gradient-to-r from-red-50 to-white dark:bg-gradient-to-r dark:from-black dark:via-black dark:to-red-900 border-l-4 border-red-500 p-5 rounded-lg shadow-md mb-8 items-center justify-between">
+                  <div className="flex items-start">
+                    <span className="material-icons text-red-500 mr-3 text-2xl">medical_services</span>
+                    <div>
+                      <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Complete Your Health Assessment</h3>
+                      <p className="text-gray-700 dark:text-white/70">
+                        Provide more details about your symptoms and medical history to receive a more accurate health assessment and priority level.
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md shadow-sm transition-colors flex items-center m-4 whitespace-nowrap"
+                    onClick={toggleQuestionnaire}
+                  >
+                    <span className="material-icons mr-1">assignment_turned_in</span>
+                    Start Assessment
+                  </button>
+                </div>
+              )}
               
               {/* AI Chat Box */}
               <div className="bg-white rounded-lg shadow overflow-hidden mb-8 dark:bg-black">
@@ -361,27 +383,6 @@ const ConnectWatch: FC = () => {
             />
           </div>
 
-          {/* Health Assessment Banner */}
-          {!showQuestionnaire && (
-            <div className="lg:flex flex-row gap-2 bg-gradient-to-r from-red-50 to-white dark:bg-gradient-to-r dark:from-black dark:via-black dark:to-red-900 border-l-4 border-red-500 p-5 rounded-lg shadow-md mb-8 items-center justify-between">
-              <div className="flex items-start">
-                <span className="material-icons text-red-500 mr-3 text-2xl">medical_services</span>
-                <div>
-                  <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Complete Your Health Assessment</h3>
-                  <p className="text-gray-700 dark:text-white/70">
-                    Provide more details about your symptoms and medical history to receive a more accurate health assessment and priority level.
-                  </p>
-                </div>
-              </div>
-              <button 
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md shadow-sm transition-colors flex items-center m-4 whitespace-nowrap"
-                onClick={toggleQuestionnaire}
-              >
-                <span className="material-icons mr-1">assignment_turned_in</span>
-                Start Assessment
-              </button>
-            </div>
-          )}
         </div>
       )}
     </div>

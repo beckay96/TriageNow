@@ -156,7 +156,7 @@ const VitalSignTrend: FC<VitalSignTrendProps> = ({
             <polygon 
               points={normalRangeArea}
               fill="rgba(0, 255, 0, 0.1)"
-              className="dark:fill-green-900/20"
+              className="dark:fill-zinc-700/20"
             />
           )}
           
