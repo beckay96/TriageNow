@@ -1,6 +1,33 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { QuestionnaireData } from "@/store";
+
+// Define the form value type
+type FormValues = {
+  pain: 'none' | 'mild' | 'moderate' | 'severe';
+  breathing: 'none' | 'slight' | 'moderate' | 'severe';
+  symptoms: string[];
+  symptomsDescription: string;
+  symptomsStarted: string;
+  painLevel: number;
+  painLocation: string;
+  painCharacteristics: string[];
+  conditions: {
+    diabetes: boolean;
+    hypertension: boolean;
+    heart: boolean;
+    asthma: boolean;
+    copd: boolean;
+    stroke: boolean;
+    seizures: boolean;
+    other: boolean;
+  };
+  conditionsOther: string;
+  allergies: string;
+  medications: string;
+  recentInjury: boolean;
+  levelOfConsciousness: 'alert' | 'confused' | 'drowsy' | 'unresponsive';
+};
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,7 +59,7 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
   const totalSteps = 3;
 
   // React Hook Form
-  const { register, handleSubmit, setValue, watch, getValues, formState } = useForm({
+  const { register, handleSubmit, setValue, watch, getValues, formState } = useForm<FormValues>({
     defaultValues: {
       pain: 'none' as const,
       breathing: 'none' as const,
@@ -56,7 +83,7 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
       allergies: "",
       medications: "",
       recentInjury: false,
-      levelOfConsciousness: 'alert' as const
+      levelOfConsciousness: 'alert' as 'alert' | 'confused' | 'drowsy' | 'unresponsive'
     }
   });
 
@@ -81,7 +108,7 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
     }
   };
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data: FormValues) => {
     // Convert pain level to descriptive value
     const painValue = data.painLevel;
     let painCategory: 'none' | 'mild' | 'moderate' | 'severe' = 'none';
@@ -171,9 +198,9 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
   };
 
   const handleLevelOfConsciousnessChange = (value: string) => {
-    if (value === 'alert' || value === 'confused' || value === 'drowsy' || value === 'unresponsive') {
-      setValue("levelOfConsciousness", value);
-    }
+    // Type assertion to tell TypeScript this is a valid value
+    const consciousnessLevel = value as 'alert' | 'confused' | 'drowsy' | 'unresponsive';
+    setValue("levelOfConsciousness", consciousnessLevel);
   };
 
   const handlePainCharacteristicChange = (type: 'sharp' | 'dull' | 'throbbing' | 'burning', checked: boolean) => {

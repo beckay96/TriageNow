@@ -209,10 +209,7 @@ const NoWatchPatientDashboard: FC = () => {
     
     // Actually submit the form data now that user has clicked submit
     submitQuestionnaire({
-      ...questionnaireData,  // Include any fields not present in formData
-      pain: formData.pain,
-      breathing: formData.breathing,
-      symptoms: formData.symptoms
+      ...formData  // Use the complete formData object that now includes all fields
     });
     
     // Generate AI response based on the submitted data
