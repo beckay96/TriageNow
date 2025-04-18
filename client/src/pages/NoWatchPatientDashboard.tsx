@@ -139,127 +139,41 @@ const NoWatchPatientDashboard: FC = () => {
     }
   };
 
-  // Local state for form values - include all necessary fields from QuestionnaireData
-  const [formData, setFormData] = useState({
-    pain: questionnaireData.pain,
-    breathing: questionnaireData.breathing,
-    symptoms: [...questionnaireData.symptoms],
-    symptomsDescription: questionnaireData.symptomsDescription,
-    symptomsStarted: questionnaireData.symptomsStarted,
-    painLevel: questionnaireData.painLevel,
-    painLocation: questionnaireData.painLocation,
-    painCharacteristics: [...questionnaireData.painCharacteristics],
-    conditions: { ...questionnaireData.conditions },
-    conditionsOther: questionnaireData.conditionsOther,
-    allergies: questionnaireData.allergies,
-    medications: questionnaireData.medications,
-    recentInjury: questionnaireData.recentInjury,
-    levelOfConsciousness: questionnaireData.levelOfConsciousness
-  });
-  
-  // Handle questionnaire changes without submitting immediately
-  const handlePainChange = (value: string) => {
-    setFormData({
-      ...formData,
-      pain: value as 'none' | 'mild' | 'moderate' | 'severe'
-    });
-    
-    // Just update the UI indication of severity without submitting the form
-    const painSeverityMap = {
-      'none': 0,
-      'mild': 1,
-      'moderate': 2,
-      'severe': 3
-    };
-    updateTriageStatus(painSeverityMap[value as 'none' | 'mild' | 'moderate' | 'severe']);
-  };
-
-  const handleBreathingChange = (value: string) => {
-    setFormData({
-      ...formData,
-      breathing: value as 'none' | 'slight' | 'moderate' | 'severe'
-    });
-    
-    // Just update UI indication of severity without submitting
-    const breathingSeverityMap = {
-      'none': 0,
-      'slight': 1,
-      'moderate': 3,
-      'severe': 5
-    };
-    updateTriageStatus(breathingSeverityMap[value as 'none' | 'slight' | 'moderate' | 'severe']);
-  };
-
-  const handleSymptomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const symptom = e.target.value;
-    const isChecked = e.target.checked;
-    
-    let newSymptoms = [...formData.symptoms];
-    
-    if (isChecked && !newSymptoms.includes(symptom)) {
-      newSymptoms.push(symptom);
-    } else if (!isChecked && newSymptoms.includes(symptom)) {
-      newSymptoms = newSymptoms.filter(s => s !== symptom);
-    }
-    
-    setFormData({
-      ...formData,
-      symptoms: newSymptoms
-    });
-    
-    // Update triage severity based on critical symptoms just for UI indication
-    if (isChecked) {
-      const criticalSymptoms = ['chest_pain', 'severe_bleeding', 'stroke_symptoms'];
-      const seriousSymptoms = ['fever', 'dizziness', 'fainting'];
-      
-      if (criticalSymptoms.includes(symptom)) {
-        updateTriageStatus(4);
-      } else if (seriousSymptoms.includes(symptom)) {
-        updateTriageStatus(2);
-      } else {
-        updateTriageStatus(1);
-      }
-    }
-  };
-
-  const handleQuestionnaireSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Actually submit the form data now that user has clicked submit
-    submitQuestionnaire({
-      ...formData  // Use the complete formData object that now includes all fields
-    });
+  // Custom handler for when QuestionnaireModal is submitted
+  const handleQuestionnaireSubmit = (data: any) => {
+    // Pass the data to the store
+    submitQuestionnaire(data);
     
     // Generate AI response based on the submitted data
-    const symptomDescription = formData.symptoms.join(', ');
-    const painLevel = formData.pain;
-    const breathingLevel = formData.breathing;
+    const symptomDescription = data.symptoms.join(', ');
+    const painLevel = data.pain;
+    const breathingLevel = data.breathing;
     
     let responseMessage = "Based on the information you've provided, ";
     let recommendation = "";
     
     // Determine triage status and recommendation based on symptoms
-    const hasEmergencySymptoms = formData.symptoms.includes('chest_pain') || 
-                                 formData.symptoms.includes('severe_bleeding') || 
-                                 formData.symptoms.includes('stroke_symptoms');
+    const hasEmergencySymptoms = data.symptoms.includes('chest_pain') || 
+                                 data.symptoms.includes('severe_bleeding') || 
+                                 data.symptoms.includes('stroke_symptoms');
     
     const hasSeriousSymptoms = painLevel === 'severe' || 
                                breathingLevel === 'severe' ||
-                               formData.symptoms.includes('fever');
+                               data.symptoms.includes('fever');
     
     const hasModerateSymptoms = painLevel === 'moderate' || 
                                breathingLevel === 'moderate' ||
-                               (formData.symptoms.includes('fever') && formData.symptoms.includes('dizziness'));
+                               (data.symptoms.includes('fever') && data.symptoms.includes('dizziness'));
     
-    const hasChestPain = formData.symptoms.includes('chest_pain');
-    const hasBackPain = formData.symptoms.includes('back_pain');
-    const hasHeadache = formData.symptoms.includes('headache');
+    const hasChestPain = data.symptoms.includes('chest_pain');
+    const hasBackPain = data.symptoms.includes('back_pain');
+    const hasHeadache = data.symptoms.includes('headache');
     
     // Custom recommendations based on specific symptoms
     if (hasEmergencySymptoms || breathingLevel === 'severe') {
       if (hasChestPain) {
         recommendation = "chest pain can be caused by various conditions ranging from muscle strain to cardiac issues. If this is a new symptom for you, especially if it's severe, persistent, or accompanied by shortness of breath, speaking with a healthcare provider today would be advisable.";
-      } else if (formData.symptoms.includes('stroke_symptoms')) {
+      } else if (data.symptoms.includes('stroke_symptoms')) {
         recommendation = "the symptoms you've described (such as face drooping, arm weakness, or speech difficulties) should be evaluated promptly. These could potentially indicate a serious condition where timely medical care is beneficial.";
       } else {
         recommendation = "based on your symptoms, speaking with a healthcare provider soon would be advisable. While many conditions can be managed effectively, prompt evaluation provides the best opportunity for appropriate treatment.";
@@ -282,11 +196,6 @@ const NoWatchPatientDashboard: FC = () => {
     }
     
     addChatMessage(responseMessage + recommendation, 'ai');
-    
-    // Hide questionnaire after submission
-    if (showQuestionnaire) {
-      toggleQuestionnaire();
-    }
   };
 
   return (
@@ -383,163 +292,12 @@ const NoWatchPatientDashboard: FC = () => {
         </div>
       </div>
 
-      {/* Triage Questionnaire */}
-      {showQuestionnaire && (
-        <div className="bg-white dark:bg-zinc-900 dark:border dark:border-zinc-800 rounded-lg shadow p-6 mb-8 transition-colors duration-300">
-          <h3 className="text-lg font-semibold text-neutral-700 dark:text-white mb-4 flex items-center">
-            <span className="material-icons text-primary dark:text-green-400 mr-2 transition-transform duration-300 hover:scale-110 hover:rotate-12">quiz</span>
-            Quick Symptom Assessment
-          </h3>
-          
-          <form id="symptom-form" onSubmit={handleQuestionnaireSubmit}>
-            <QuestionnaireItem 
-              question="Are you experiencing any pain?"
-              name="pain"
-              options={[
-                { value: 'none', label: 'No pain' },
-                { value: 'mild', label: 'Mild pain' },
-                { value: 'moderate', label: 'Moderate pain' },
-                { value: 'severe', label: 'Severe pain' }
-              ]}
-              selected={formData.pain}
-              onChange={handlePainChange}
-            />
-
-            <QuestionnaireItem 
-              question="Are you having trouble breathing?"
-              name="breathing"
-              options={[
-                { value: 'none', label: 'No difficulty' },
-                { value: 'slight', label: 'Slight difficulty' },
-                { value: 'moderate', label: 'Moderate difficulty' },
-                { value: 'severe', label: 'Severe difficulty' }
-              ]}
-              selected={formData.breathing}
-              onChange={handleBreathingChange}
-            />
-
-            {/* Critical symptoms */}
-            <div className="mb-6">
-              <label className="block text-neutral-700 dark:text-zinc-200 mb-2 font-medium">Select any critical symptoms you're experiencing:</label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
-                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-red-200 dark:border-red-900 rounded-md px-3 py-2 cursor-pointer hover:bg-red-50 dark:hover:bg-red-950/30 dark:text-zinc-200 transition-colors duration-300">
-                  <input 
-                    type="checkbox" 
-                    name="symptoms" 
-                    value="chest_pain" 
-                    checked={formData.symptoms.includes('chest_pain')}
-                    onChange={handleSymptomChange}
-                    className="mr-2 text-red-500" 
-                  />
-                  Chest pain or pressure
-                </label>
-                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-red-200 dark:border-red-900 rounded-md px-3 py-2 cursor-pointer hover:bg-red-50 dark:hover:bg-red-950/30 dark:text-zinc-200 transition-colors duration-300">
-                  <input 
-                    type="checkbox" 
-                    name="symptoms" 
-                    value="severe_bleeding" 
-                    checked={formData.symptoms.includes('severe_bleeding')}
-                    onChange={handleSymptomChange}
-                    className="mr-2 text-red-500" 
-                  />
-                  Severe bleeding
-                </label>
-                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-red-200 dark:border-red-900 rounded-md px-3 py-2 cursor-pointer hover:bg-red-50 dark:hover:bg-red-950/30 dark:text-zinc-200 transition-colors duration-300">
-                  <input 
-                    type="checkbox" 
-                    name="symptoms" 
-                    value="stroke_symptoms" 
-                    checked={formData.symptoms.includes('stroke_symptoms')}
-                    onChange={handleSymptomChange}
-                    className="mr-2 text-red-500" 
-                  />
-                  Stroke symptoms (face drooping, arm weakness, speech difficulty)
-                </label>
-              </div>
-              
-              {/* Other common symptoms */}
-              <label className="block text-neutral-700 dark:text-zinc-200 mb-2 font-medium">Select any other symptoms you're experiencing:</label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50 dark:hover:bg-zinc-700 dark:text-zinc-200 transition-colors duration-300">
-                  <input 
-                    type="checkbox" 
-                    name="symptoms" 
-                    value="fever" 
-                    checked={formData.symptoms.includes('fever')}
-                    onChange={handleSymptomChange}
-                    className="mr-2" 
-                  />
-                  Fever
-                </label>
-                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50 dark:hover:bg-zinc-700 dark:text-zinc-200 transition-colors duration-300">
-                  <input 
-                    type="checkbox" 
-                    name="symptoms" 
-                    value="dizziness" 
-                    checked={formData.symptoms.includes('dizziness')}
-                    onChange={handleSymptomChange}
-                    className="mr-2" 
-                  />
-                  Dizziness
-                </label>
-                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50 dark:hover:bg-zinc-700 dark:text-zinc-200 transition-colors duration-300">
-                  <input 
-                    type="checkbox" 
-                    name="symptoms" 
-                    value="nausea" 
-                    checked={formData.symptoms.includes('nausea')}
-                    onChange={handleSymptomChange}
-                    className="mr-2" 
-                  />
-                  Nausea/Vomiting
-                </label>
-                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50 dark:hover:bg-zinc-700 dark:text-zinc-200 transition-colors duration-300">
-                  <input 
-                    type="checkbox" 
-                    name="symptoms" 
-                    value="cough" 
-                    checked={formData.symptoms.includes('cough')}
-                    onChange={handleSymptomChange}
-                    className="mr-2" 
-                  />
-                  Cough
-                </label>
-                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50 dark:hover:bg-zinc-700 dark:text-zinc-200 transition-colors duration-300">
-                  <input 
-                    type="checkbox" 
-                    name="symptoms" 
-                    value="rash" 
-                    checked={formData.symptoms.includes('rash')}
-                    onChange={handleSymptomChange}
-                    className="mr-2" 
-                  />
-                  Rash
-                </label>
-                <label className="inline-flex items-center bg-white dark:bg-zinc-800 border border-neutral-300 dark:border-zinc-700 rounded-md px-3 py-2 cursor-pointer hover:bg-neutral-50 dark:hover:bg-zinc-700 dark:text-zinc-200 transition-colors duration-300">
-                  <input 
-                    type="checkbox" 
-                    name="symptoms" 
-                    value="headache" 
-                    checked={formData.symptoms.includes('headache')}
-                    onChange={handleSymptomChange}
-                    className="mr-2" 
-                  />
-                  Headache
-                </label>
-              </div>
-            </div>
-
-            <div className="flex justify-end">
-              <button 
-                type="submit"
-                className="bg-primary dark:bg-blue-700 hover:bg-primary-dark dark:hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-colors"
-              >
-                Submit Assessment
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+      {/* Triage Questionnaire Modal */}
+      <QuestionnaireModal 
+        isOpen={showQuestionnaire}
+        onClose={toggleQuestionnaire}
+        onSubmit={handleQuestionnaireSubmit}
+      />
     </div>
   );
 };
