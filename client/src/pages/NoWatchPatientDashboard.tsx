@@ -78,18 +78,35 @@ const NoWatchPatientDashboard: FC = () => {
       addChatMessage(userMessage, 'user');
       setUserMessage('');
       
-      // Simulate AI response based on user's message
+      // Analyze user message and generate contextual response
       setTimeout(() => {
-        const responses = [
-          "Based on what you've described, please complete the symptom assessment below so I can better understand your situation. This will help determine the appropriate level of care you might need.",
-          "Thank you for that information. To make a more accurate assessment, could you answer a few questions in the form below? This helps me understand the full picture of what you're experiencing.",
-          "I understand your concern. The symptom assessment below will help me provide more specific guidance based on medical best practices.",
-          "I've noted your symptoms. To provide appropriate advice, could you complete the assessment below? This information helps determine if self-care is sufficient or if medical attention is recommended.",
-          "Thanks for sharing that. To better evaluate your symptoms, please fill out the brief questionnaire below. This helps differentiate between conditions that may have similar symptoms."
-        ];
+        const lowerCaseMsg = userMessage.toLowerCase();
+        let response = "Based on what you've described, please complete the symptom assessment below so I can better understand your situation.";
         
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        addChatMessage(randomResponse, 'ai');
+        // Check for specific symptom mentions
+        if (/pain|hurt|ache|sore/.test(lowerCaseMsg)) {
+          if (/chest|heart/.test(lowerCaseMsg)) {
+            response = "You mentioned chest pain, which can have various causes. To better understand your situation, please complete the symptom assessment below focusing on the nature and severity of your pain.";
+          } else if (/head|migraine/.test(lowerCaseMsg)) {
+            response = "I see you're experiencing head pain. The assessment below will help gather important details about your symptoms to provide appropriate guidance.";
+          } else if (/stomach|abdomen|belly/.test(lowerCaseMsg)) {
+            response = "For abdominal discomfort like you've described, completing the symptom assessment below will help determine appropriate next steps based on your specific situation.";
+          } else {
+            response = "Pain can have many causes. The symptom assessment below will help gather important details about what you're experiencing.";
+          }
+        } else if (/breath|cough|wheez|lung/.test(lowerCaseMsg)) {
+          response = "Breathing-related symptoms require careful assessment. Please complete the questionnaire below, paying particular attention to the breathing difficulty section.";
+        } else if (/fever|temperatur/.test(lowerCaseMsg)) {
+          response = "You mentioned fever symptoms. The assessment below will help gather more details about your condition, including other symptoms that might be related.";
+        } else if (/dizz|light-headed|faint|vertigo/.test(lowerCaseMsg)) {
+          response = "Dizziness can be related to various conditions. The symptom assessment below will help gather more context about what you're experiencing.";
+        } else if (/emergency|urgent|serious|severe|ambulance/.test(lowerCaseMsg)) {
+          response = "If you believe you're experiencing a medical emergency, please contact emergency services directly. For a non-emergency assessment, the questionnaire below can help evaluate your symptoms.";
+        } else if (/\?|should i|recommend|advice|help/.test(lowerCaseMsg)) {
+          response = "To better answer your question and provide appropriate guidance, I'll need some additional information. The assessment below will help me understand your specific situation.";
+        }
+        
+        addChatMessage(response, 'ai');
         
         // Show questionnaire if it's not already visible
         if (!showQuestionnaire) {

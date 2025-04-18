@@ -617,16 +617,120 @@ const useStore = create<StoreState>((set, get) => ({
       set({ processingUserInput: true });
       
       setTimeout(() => {
-        const responses = [
-          "I understand you're concerned. Based on the data I can see, your vital signs are showing some irregularities. The medical staff will be notified about your condition.",
-          "Thank you for providing that information. Have you experienced these symptoms before? This will help us better assess your condition.",
-          "I've updated your profile with this information. This will help the medical team prioritize care when you arrive at the hospital.",
-          `Given your current ${get().triageStatus} status, please continue to monitor your symptoms. If anything worsens, please let me know immediately.`
-        ];
+        // Create specific responses based on keyword patterns in the user's message
+        const { triageStatus, questionnaireData, healthMetrics } = get();
+        const lowerCaseMessage = message.toLowerCase();
         
-        // Pick a random response
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        get().addChatMessage(randomResponse, 'ai');
+        // Default response if no patterns match
+        let response = "Thank you for sharing that information. Could you provide more details about your symptoms?";
+        
+        // Check for keyword patterns in the message
+        const hasKeywords = {
+          pain: /pain|hurt|ache|sore|discomfort/.test(lowerCaseMessage),
+          chest: /chest|heart|cardiac/.test(lowerCaseMessage),
+          head: /head|migraine|headache/.test(lowerCaseMessage),
+          stomach: /stomach|abdomen|gut|nausea|vomit/.test(lowerCaseMessage),
+          breathing: /breath|inhale|lung|cough|wheez/.test(lowerCaseMessage),
+          fever: /fever|temperature|hot|chill/.test(lowerCaseMessage),
+          duration: /how long|since|day|week|month|year|time/.test(lowerCaseMessage),
+          worse: /worse|worsen|deteriorat|getting bad/.test(lowerCaseMessage),
+          better: /better|improve|helping|helps|alleviat/.test(lowerCaseMessage),
+          medication: /medicine|medication|drug|pill|dose|taking/.test(lowerCaseMessage),
+          allergy: /allerg|reaction|histamine/.test(lowerCaseMessage),
+          question: /\?|wondering|question|curious|like to know/.test(lowerCaseMessage),
+          help: /help|guidance|advice|suggest|recommendation/.test(lowerCaseMessage),
+          emergency: /emergency|er|hospital|ambulance|911/.test(lowerCaseMessage),
+          worry: /worry|anxious|concerned|scared|afraid/.test(lowerCaseMessage),
+          sleep: /sleep|insomnia|tired|fatigue|rest/.test(lowerCaseMessage),
+          dizzy: /dizzy|vertigo|spinning|lightheaded|faint/.test(lowerCaseMessage),
+          past: /history|before|previous|past|chronic|always/.test(lowerCaseMessage),
+          family: /family|genetic|inherited|mother|father|parent/.test(lowerCaseMessage)
+        };
+        
+        // Create patterns of related keywords to check together
+        const patterns = {
+          chestPain: hasKeywords.chest && hasKeywords.pain,
+          headPain: hasKeywords.head && hasKeywords.pain,
+          stomachPain: hasKeywords.stomach && hasKeywords.pain,
+          breathingProblem: hasKeywords.breathing,
+          medicationQuestion: hasKeywords.medication && hasKeywords.question,
+          sleepIssue: hasKeywords.sleep,
+          worsening: hasKeywords.worse,
+          improvement: hasKeywords.better,
+          durationQuestion: hasKeywords.duration,
+          emergencyQuestion: hasKeywords.emergency && hasKeywords.question,
+          painDuration: hasKeywords.pain && hasKeywords.duration,
+          generalPain: hasKeywords.pain && !hasKeywords.chest && !hasKeywords.head && !hasKeywords.stomach,
+          feverConcern: hasKeywords.fever,
+          dizzinessConcern: hasKeywords.dizzy,
+          worryExpression: hasKeywords.worry,
+          pastHistory: hasKeywords.past,
+          familyHistory: hasKeywords.family,
+          allergyQuestion: hasKeywords.allergy,
+          helpRequest: hasKeywords.help
+        };
+        
+        // Choose response based on patterns (most specific first)
+        if (patterns.chestPain) {
+          response = "I understand you're experiencing chest pain. Can you describe if it's sharp, dull, pressure-like, or burning? Is it constant or does it come and go?";
+        } else if (patterns.headPain) {
+          response = "I see you're having head pain. Is it on one side or both sides? Have you noticed anything that tends to trigger it or make it worse?";
+        } else if (patterns.stomachPain) {
+          response = "You mentioned stomach discomfort. Is it in a specific area of your abdomen? Does it relate to eating or change throughout the day?";
+        } else if (patterns.breathingProblem) {
+          response = "I understand you're having breathing concerns. Does it happen at rest, with activity, or both? Have you noticed any wheezing or coughing along with it?";
+        } else if (patterns.medicationQuestion) {
+          response = "Regarding medications, it's important to take them as prescribed by your healthcare provider. For specific medication questions, your doctor or pharmacist would be the best resource for personalized advice.";
+        } else if (patterns.sleepIssue) {
+          response = "Sleep difficulties can affect your overall health. How long have you been experiencing sleep problems? Have you noticed any patterns to when they occur?";
+        } else if (patterns.durationQuestion) {
+          response = "The duration of symptoms can provide important context. When exactly did you first notice these symptoms, and have they been constant or intermittent?";
+        } else if (patterns.emergencyQuestion) {
+          response = "For emergency situations or symptoms that concern you greatly, it's always best to contact your healthcare provider, urgent care, or emergency services directly rather than relying on an app-based assessment.";
+        } else if (patterns.painDuration) {
+          response = "Understanding how long you've had this pain is helpful. When did it begin, and has it changed in character or intensity since it started?";
+        } else if (patterns.generalPain) {
+          response = "Pain can have many causes. Can you describe its intensity on a scale of 1-10, and whether anything seems to make it better or worse?";
+        } else if (patterns.feverConcern) {
+          response = "Regarding fever, what temperature have you measured? Have you been taking any fever-reducing medications like acetaminophen or ibuprofen?";
+        } else if (patterns.dizzinessConcern) {
+          response = "Dizziness can have many causes. Does it feel more like the room is spinning (vertigo) or like you might faint (lightheadedness)? Does changing positions affect it?";
+        } else if (patterns.worryExpression) {
+          response = "I understand you're concerned. While I can provide general health information, for specific concerns about your health, discussing with a healthcare provider is always best.";
+        } else if (patterns.worsening) {
+          response = "You mentioned your symptoms are worsening. Over what time period have you noticed this change, and are there any new symptoms that have appeared?";
+        } else if (patterns.improvement) {
+          response = "It's good to hear about improvements. What do you think has been helping with your symptoms?";
+        } else if (patterns.pastHistory) {
+          response = "Past medical history is important context. How have these or similar symptoms been addressed previously?";
+        } else if (patterns.familyHistory) {
+          response = "Family medical history can provide helpful context in some situations. Has anyone in your family experienced similar symptoms or conditions?";
+        } else if (patterns.allergyQuestion) {
+          response = "Allergies can cause a variety of symptoms. Have you identified any specific triggers for your allergic reactions?";
+        } else if (patterns.helpRequest) {
+          if (triageStatus === 'critical' || triageStatus === 'high') {
+            response = "Based on the information you've provided, discussing these symptoms with a healthcare provider soon would be advisable. Would you like some suggestions for managing symptoms in the meantime?";
+          } else if (triageStatus === 'medium') {
+            response = "For the symptoms you've described, self-care measures can often help, but monitoring for any changes is important. Would you like some general self-care suggestions?";
+          } else {
+            response = "For mild symptoms like you've described, self-care approaches often help. Would you like some suggestions for managing these symptoms at home?";
+          }
+        } else if (hasKeywords.question) {
+          response = "That's a good question. While I can provide general health information, your healthcare provider can give you personalized advice specific to your situation.";
+        } else {
+          // Default responses based on triage status if no specific pattern matches
+          if (triageStatus === 'critical') {
+            response = "Thank you for sharing this information. Based on what you've described, discussing these symptoms with a healthcare provider soon would be advisable. Is there something specific about these symptoms that concerns you most?";
+          } else if (triageStatus === 'high') {
+            response = "I've noted what you've shared. These types of symptoms often warrant discussion with a healthcare provider. Have you noticed any patterns to when they occur or what makes them better or worse?";
+          } else if (triageStatus === 'medium') {
+            response = "I understand what you're experiencing. These symptoms should be monitored, and if they persist, mentioning them to your healthcare provider would be reasonable. Is there anything else about these symptoms you'd like to share?";
+          } else {
+            response = "Thank you for sharing that information. Based on what you've described, these symptoms appear mild. Have you tried any self-care measures that have helped?";
+          }
+        }
+        
+        get().addChatMessage(response, 'ai');
       }, 1000);
     }
   },
@@ -660,8 +764,45 @@ const useStore = create<StoreState>((set, get) => ({
     // Update triage status with additional severity
     get().updateTriageStatus(additionalSeverity);
     
-    // Add AI message about the questionnaire
-    get().addChatMessage("Thank you for providing more information. I've updated your assessment based on your symptoms.", 'ai');
+    // Add more tailored response based on questionnaire data
+    const { triageStatus } = get();
+    
+    // Create a personalized response based on symptoms and triage status
+    let response = "Thank you for providing more information. ";
+    
+    // Add specifics based on reported symptoms
+    if (data.symptoms.length > 0) {
+      // Mention specific symptoms 
+      if (data.symptoms.length <= 3) {
+        response += `I've noted your ${data.symptoms.join(', ')}. `;
+      } else {
+        // If there are many symptoms, just mention the count
+        response += `I've noted the ${data.symptoms.length} symptoms you reported. `;
+      }
+    }
+    
+    // Add something about pain level if reported
+    if (data.pain !== 'none') {
+      response += `I understand you're experiencing ${data.pain} pain. `;
+    }
+    
+    // Add something about breathing if reported
+    if (data.breathing !== 'none') {
+      response += `Your ${data.breathing} breathing difficulty has been recorded. `;
+    }
+    
+    // Add a response based on triage status
+    if (triageStatus === 'critical') {
+      response += "Based on your assessment, your symptoms suggest a condition that would benefit from timely medical evaluation.";
+    } else if (triageStatus === 'high') {
+      response += "Based on your assessment, these symptoms would be worth discussing with a healthcare provider in the near future.";
+    } else if (triageStatus === 'medium') {
+      response += "Based on your assessment, these symptoms should be monitored, and if they persist, consider mentioning them at your next healthcare visit.";
+    } else {
+      response += "Based on your assessment, your symptoms appear manageable with appropriate self-care. If they persist or worsen, consider following up with a healthcare provider.";
+    }
+    
+    get().addChatMessage(response, 'ai');
   },
   
   searchPatients: (term) => {
