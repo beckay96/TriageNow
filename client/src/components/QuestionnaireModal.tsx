@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { X, AlertTriangle, ClipboardList, Stethoscope, Activity } from "lucide-react";
+import { QuestionnaireData } from "@/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +15,6 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { QuestionnaireData } from "@/store";
 
 interface QuestionnaireModalProps {
   isOpen: boolean;
@@ -145,6 +144,10 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
     setValue("symptomsStarted", value);
   };
 
+  const handleLevelOfConsciousnessChange = (value: string) => {
+    setValue("levelOfConsciousness", value as 'alert' | 'confused' | 'drowsy' | 'unresponsive');
+  };
+
   if (!isOpen) return null;
 
   const painLevel = watch("painLevel");
@@ -154,60 +157,60 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
   else if (painLevel > 2) painIndicatorColor = "bg-blue-500";
 
   return (
-    <div className="fixed inset-0 bg-white dark:bg-black bg-opacity-50 dark:bg-black flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-black rounded-xl shadow-2xl max-w-md w-full mx-4 max-h-[90vh] overflow-auto">
-        <div className="p-5 border border-red-50 bg-gradient-to-r from-red-50 to-white dark:bg-black flex justify-between items-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-2xl max-w-md w-full mx-4 max-h-[90vh] overflow-auto">
+        <div className="p-5 border-b border-gray-200 dark:border-zinc-700 bg-gradient-to-r from-blue-50 to-white dark:from-blue-900/20 dark:to-zinc-900 flex justify-between items-center">
           <div className="flex items-center">
-            <Stethoscope className="h-6 w-6 text-red-500 mr-2" />
-            <h3 className="text-xl font-medium text-gray-900">Health Assessment</h3>
+            <span className="material-icons text-blue-500 mr-2">medical_information</span>
+            <h3 className="text-xl font-medium text-gray-900 dark:text-white">Health Assessment</h3>
           </div>
           <button 
-            className="text-gray-400 hover:text-gray-500"
+            className="text-gray-400 hover:text-gray-500 dark:text-gray-400 dark:hover:text-gray-300"
             onClick={onClose}
           >
-            <X className="h-6 w-6" />
+            <span className="material-icons">close</span>
           </button>
         </div>
         
         <div className="p-5">
-          <div className="bg-red-50 rounded-lg p-4 mb-6 flex items-start">
-            <AlertTriangle className="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
-            <p className="text-red-800 text-sm">
+          <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 mb-6 flex items-start">
+            <span className="material-icons text-amber-500 mr-2">warning</span>
+            <p className="text-amber-800 dark:text-amber-300 text-sm">
               <span className="font-bold">Important:</span> Your responses help us determine the urgency of your condition. Please provide as much detail as possible.
             </p>
           </div>
           
           <form onSubmit={handleSubmit(handleFormSubmit)}>
             <div className="space-y-6">
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <div className="bg-gray-50 dark:bg-zinc-800 p-4 rounded-lg border border-gray-200 dark:border-zinc-700">
                 <div className="flex items-center mb-2">
-                  <ClipboardList className="h-5 w-5 text-blue-500 mr-2" />
-                  <h4 className="font-medium text-gray-900">Symptom Information</h4>
+                  <span className="material-icons text-blue-500 mr-2">assignment</span>
+                  <h4 className="font-medium text-gray-900 dark:text-white">Symptom Information</h4>
                 </div>
                 
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="symptomsDescription" className="block text-sm font-medium text-gray-700 mb-1">
+                    <Label htmlFor="symptomsDescription" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Please describe your symptoms in detail
                     </Label>
                     <Textarea 
                       id="symptomsDescription"
                       placeholder="Example: I have a severe headache, fever, and I'm feeling dizzy when standing up"
-                      className="w-full"
+                      className="w-full dark:bg-zinc-700 dark:border-zinc-600"
                       rows={3}
                       {...register("symptomsDescription")}
                     />
                   </div>
                   
                   <div>
-                    <Label className="block text-sm font-medium text-gray-700 mb-1">
+                    <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       When did your symptoms start?
                     </Label>
                     <Select 
                       onValueChange={handleSymptomStartChange}
                       defaultValue="today"
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full dark:bg-zinc-700 dark:border-zinc-600">
                         <SelectValue placeholder="Select when symptoms started" />
                       </SelectTrigger>
                       <SelectContent>
@@ -219,20 +222,40 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
                       </SelectContent>
                     </Select>
                   </div>
+                  
+                  <div>
+                    <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Level of consciousness
+                    </Label>
+                    <Select 
+                      onValueChange={handleLevelOfConsciousnessChange}
+                      defaultValue="alert"
+                    >
+                      <SelectTrigger className="w-full dark:bg-zinc-700 dark:border-zinc-600">
+                        <SelectValue placeholder="Select level of consciousness" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="alert">Alert and oriented</SelectItem>
+                        <SelectItem value="confused">Confused</SelectItem>
+                        <SelectItem value="drowsy">Drowsy</SelectItem>
+                        <SelectItem value="unresponsive">Unresponsive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <div className="bg-gray-50 dark:bg-zinc-800 p-4 rounded-lg border border-gray-200 dark:border-zinc-700">
                 <div className="flex items-center mb-2">
-                  <Activity className="h-5 w-5 text-red-500 mr-2" />
-                  <h4 className="font-medium text-gray-900">Pain Assessment</h4>
+                  <span className="material-icons text-red-500 mr-2">monitor_heart</span>
+                  <h4 className="font-medium text-gray-900 dark:text-white">Pain Assessment</h4>
                 </div>
                 
-                <Label className="block text-sm font-medium text-gray-700 mb-2">
+                <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Rate your pain level (0-10)
                 </Label>
                 <div className="flex items-center space-x-2 mb-1">
-                  <span className="text-sm text-gray-500 w-16">No Pain</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 w-16">No Pain</span>
                   <Slider 
                     defaultValue={[5]} 
                     max={10} 
@@ -240,7 +263,7 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
                     className="flex-grow"
                     onValueChange={handlePainLevelChange}
                   />
-                  <span className="text-sm text-gray-500 w-16 text-right">Severe</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 w-16 text-right">Severe</span>
                 </div>
                 <div className="flex justify-center items-center mt-2 mb-1">
                   <div className={`w-10 h-10 rounded-full ${painIndicatorColor} flex items-center justify-center text-white font-bold`}>
@@ -256,24 +279,24 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
                 </div>
                 
                 <div className="mt-4">
-                  <Label htmlFor="painLocation" className="block text-sm font-medium text-gray-700 mb-1">
+                  <Label htmlFor="painLocation" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Where is your pain located?
                   </Label>
                   <Input 
                     id="painLocation" 
                     type="text" 
                     placeholder="E.g., chest, abdomen, head, lower back, etc."
-                    className="w-full"
+                    className="w-full dark:bg-zinc-700 dark:border-zinc-600"
                     {...register("painLocation")}
                   />
                 </div>
 
                 <div className="mt-4">
-                  <Label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Pain characteristics (select all that apply)
                   </Label>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="flex items-center bg-white p-2 rounded border border-gray-100">
+                    <div className="flex items-center bg-white dark:bg-zinc-700 p-2 rounded border border-gray-200 dark:border-zinc-600">
                       <Checkbox 
                         id="pain-sharp" 
                         className="mr-2" 
@@ -286,9 +309,9 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
                           }
                         }}
                       />
-                      <Label htmlFor="pain-sharp" className="text-sm text-gray-700">Sharp</Label>
+                      <Label htmlFor="pain-sharp" className="text-sm text-gray-700 dark:text-gray-300">Sharp</Label>
                     </div>
-                    <div className="flex items-center bg-white p-2 rounded border border-gray-100">
+                    <div className="flex items-center bg-white dark:bg-zinc-700 p-2 rounded border border-gray-200 dark:border-zinc-600">
                       <Checkbox 
                         id="pain-dull" 
                         className="mr-2" 
@@ -301,9 +324,9 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
                           }
                         }}
                       />
-                      <Label htmlFor="pain-dull" className="text-sm text-gray-700">Dull/Aching</Label>
+                      <Label htmlFor="pain-dull" className="text-sm text-gray-700 dark:text-gray-300">Dull/Aching</Label>
                     </div>
-                    <div className="flex items-center bg-white p-2 rounded border border-gray-100">
+                    <div className="flex items-center bg-white dark:bg-zinc-700 p-2 rounded border border-gray-200 dark:border-zinc-600">
                       <Checkbox 
                         id="pain-throbbing" 
                         className="mr-2" 
@@ -316,9 +339,9 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
                           }
                         }}
                       />
-                      <Label htmlFor="pain-throbbing" className="text-sm text-gray-700">Throbbing</Label>
+                      <Label htmlFor="pain-throbbing" className="text-sm text-gray-700 dark:text-gray-300">Throbbing</Label>
                     </div>
-                    <div className="flex items-center bg-white p-2 rounded border border-gray-100">
+                    <div className="flex items-center bg-white dark:bg-zinc-700 p-2 rounded border border-gray-200 dark:border-zinc-600">
                       <Checkbox 
                         id="pain-burning" 
                         className="mr-2" 
@@ -331,193 +354,147 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
                           }
                         }}
                       />
-                      <Label htmlFor="pain-burning" className="text-sm text-gray-700">Burning</Label>
+                      <Label htmlFor="pain-burning" className="text-sm text-gray-700 dark:text-gray-300">Burning</Label>
                     </div>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                <h4 className="font-medium text-gray-900 mb-3">Medical History</h4>
+              <div className="bg-gray-50 dark:bg-zinc-800 p-4 rounded-lg border border-gray-200 dark:border-zinc-700">
+                <div className="flex items-center mb-2">
+                  <span className="material-icons text-indigo-500 mr-2">medical_services</span>
+                  <h4 className="font-medium text-gray-900 dark:text-white">Medical History</h4>
+                </div>
                 
-                <div className="space-y-4">
-                  <div>
-                    <Label className="block text-sm font-medium text-gray-700 mb-2">
-                      Do you have any of these medical conditions?
-                    </Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="flex items-center bg-white p-2 rounded border border-gray-100">
-                        <Checkbox 
-                          id="condition-diabetes" 
-                          className="mr-2 text-blue-500"
-                          {...register("conditions.diabetes")}
-                        />
-                        <Label htmlFor="condition-diabetes" className="text-sm text-gray-700">
-                          Diabetes
-                        </Label>
-                      </div>
-                      <div className="flex items-center bg-white p-2 rounded border border-gray-100">
-                        <Checkbox 
-                          id="condition-hypertension" 
-                          className="mr-2"
-                          {...register("conditions.hypertension")}
-                        />
-                        <Label htmlFor="condition-hypertension" className="text-sm text-gray-700">
-                          Hypertension
-                        </Label>
-                      </div>
-                      <div className="flex items-center bg-white p-2 rounded border border-gray-100">
-                        <Checkbox 
-                          id="condition-heart" 
-                          className="mr-2"
-                          {...register("conditions.heart")}
-                        />
-                        <Label htmlFor="condition-heart" className="text-sm text-gray-700">
-                          Heart Disease
-                        </Label>
-                      </div>
-                      <div className="flex items-center bg-white p-2 rounded border border-gray-100">
-                        <Checkbox 
-                          id="condition-asthma" 
-                          className="mr-2"
-                          {...register("conditions.asthma")}
-                        />
-                        <Label htmlFor="condition-asthma" className="text-sm text-gray-700">
-                          Asthma
-                        </Label>
-                      </div>
-                      <div className="flex items-center bg-white p-2 rounded border border-gray-100">
-                        <Checkbox 
-                          id="condition-copd" 
-                          className="mr-2"
-                          {...register("conditions.copd")}
-                        />
-                        <Label htmlFor="condition-copd" className="text-sm text-gray-700">
-                          COPD
-                        </Label>
-                      </div>
-                      <div className="flex items-center bg-white p-2 rounded border border-gray-100">
-                        <Checkbox 
-                          id="condition-stroke" 
-                          className="mr-2"
-                          {...register("conditions.stroke")}
-                        />
-                        <Label htmlFor="condition-stroke" className="text-sm text-gray-700">
-                          Stroke History
-                        </Label>
-                      </div>
-                      <div className="flex items-center bg-white p-2 rounded border border-gray-100">
-                        <Checkbox 
-                          id="condition-seizures" 
-                          className="mr-2"
-                          {...register("conditions.seizures")}
-                        />
-                        <Label htmlFor="condition-seizures" className="text-sm text-gray-700">
-                          Seizures
-                        </Label>
-                      </div>
-                      <div className="flex items-center bg-white p-2 rounded border border-gray-100">
-                        <Checkbox 
-                          id="condition-other" 
-                          className="mr-2"
-                          {...register("conditions.other")}
-                        />
-                        <Label htmlFor="condition-other" className="text-sm text-gray-700">
-                          Other
-                        </Label>
-                      </div>
-                    </div>
-                    
-                    {watch("conditions.other") && (
-                      <div className="mt-2">
-                        <Label htmlFor="conditionsOther" className="block text-sm font-medium text-gray-700 mb-1">
-                          Please specify other conditions
-                        </Label>
-                        <Input 
-                          id="conditionsOther" 
-                          type="text" 
-                          placeholder="List any other medical conditions"
-                          className="w-full"
-                          {...register("conditionsOther")}
-                        />
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="allergies" className="block text-sm font-medium text-gray-700 mb-1">
-                      Do you have any allergies?
-                    </Label>
-                    <Textarea 
-                      id="allergies"
-                      placeholder="List allergies to medications, foods, etc."
-                      className="w-full"
-                      rows={2}
-                      {...register("allergies")}
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="medications" className="block text-sm font-medium text-gray-700 mb-1">
-                      Are you taking any medications?
-                    </Label>
-                    <Textarea 
-                      id="medications"
-                      placeholder="List your current medications and dosages"
-                      className="w-full"
-                      rows={2}
-                      {...register("medications")}
-                    />
-                  </div>
-                  
-                  <div className="mt-4">
-                    <div className="flex items-center mb-2">
+                <div className="mt-2">
+                  <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Pre-existing conditions (select all that apply)
+                  </Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex items-center bg-white dark:bg-zinc-700 p-2 rounded border border-gray-200 dark:border-zinc-600">
                       <Checkbox 
-                        id="recent-injury" 
-                        className="mr-2"
-                        {...register("recentInjury")}
+                        id="condition-diabetes" 
+                        className="mr-2" 
+                        {...register("conditions.diabetes")}
                       />
-                      <Label htmlFor="recent-injury" className="text-sm text-gray-700">
-                        Have you experienced a recent injury or fall?
-                      </Label>
+                      <Label htmlFor="condition-diabetes" className="text-sm text-gray-700 dark:text-gray-300">Diabetes</Label>
+                    </div>
+                    <div className="flex items-center bg-white dark:bg-zinc-700 p-2 rounded border border-gray-200 dark:border-zinc-600">
+                      <Checkbox 
+                        id="condition-hypertension" 
+                        className="mr-2" 
+                        {...register("conditions.hypertension")}
+                      />
+                      <Label htmlFor="condition-hypertension" className="text-sm text-gray-700 dark:text-gray-300">Hypertension</Label>
+                    </div>
+                    <div className="flex items-center bg-white dark:bg-zinc-700 p-2 rounded border border-gray-200 dark:border-zinc-600">
+                      <Checkbox 
+                        id="condition-heart" 
+                        className="mr-2" 
+                        {...register("conditions.heart")}
+                      />
+                      <Label htmlFor="condition-heart" className="text-sm text-gray-700 dark:text-gray-300">Heart Disease</Label>
+                    </div>
+                    <div className="flex items-center bg-white dark:bg-zinc-700 p-2 rounded border border-gray-200 dark:border-zinc-600">
+                      <Checkbox 
+                        id="condition-asthma" 
+                        className="mr-2" 
+                        {...register("conditions.asthma")}
+                      />
+                      <Label htmlFor="condition-asthma" className="text-sm text-gray-700 dark:text-gray-300">Asthma</Label>
+                    </div>
+                    <div className="flex items-center bg-white dark:bg-zinc-700 p-2 rounded border border-gray-200 dark:border-zinc-600">
+                      <Checkbox 
+                        id="condition-copd" 
+                        className="mr-2" 
+                        {...register("conditions.copd")}
+                      />
+                      <Label htmlFor="condition-copd" className="text-sm text-gray-700 dark:text-gray-300">COPD</Label>
+                    </div>
+                    <div className="flex items-center bg-white dark:bg-zinc-700 p-2 rounded border border-gray-200 dark:border-zinc-600">
+                      <Checkbox 
+                        id="condition-stroke" 
+                        className="mr-2" 
+                        {...register("conditions.stroke")}
+                      />
+                      <Label htmlFor="condition-stroke" className="text-sm text-gray-700 dark:text-gray-300">Stroke History</Label>
+                    </div>
+                    <div className="flex items-center bg-white dark:bg-zinc-700 p-2 rounded border border-gray-200 dark:border-zinc-600">
+                      <Checkbox 
+                        id="condition-seizures" 
+                        className="mr-2" 
+                        {...register("conditions.seizures")}
+                      />
+                      <Label htmlFor="condition-seizures" className="text-sm text-gray-700 dark:text-gray-300">Seizures</Label>
+                    </div>
+                    <div className="flex items-center bg-white dark:bg-zinc-700 p-2 rounded border border-gray-200 dark:border-zinc-600">
+                      <Checkbox 
+                        id="condition-other" 
+                        className="mr-2" 
+                        {...register("conditions.other")}
+                      />
+                      <Label htmlFor="condition-other" className="text-sm text-gray-700 dark:text-gray-300">Other</Label>
                     </div>
                   </div>
-                  
-                  <div className="mt-4">
-                    <Label className="block text-sm font-medium text-gray-700 mb-2">
-                      Current level of consciousness
-                    </Label>
-                    <Select 
-                      onValueChange={(value) => setValue("levelOfConsciousness", value as any)}
-                      defaultValue="alert"
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select consciousness level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="alert">Alert and fully aware</SelectItem>
-                        <SelectItem value="confused">Confused or disoriented</SelectItem>
-                        <SelectItem value="drowsy">Drowsy or sleepy</SelectItem>
-                        <SelectItem value="unresponsive">Unresponsive</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+
+                  {watch("conditions.other") && (
+                    <div className="mt-2">
+                      <Input 
+                        type="text" 
+                        placeholder="Please specify other conditions"
+                        className="w-full dark:bg-zinc-700 dark:border-zinc-600"
+                        {...register("conditionsOther")}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-4">
+                  <Label htmlFor="allergies" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Do you have any allergies?
+                  </Label>
+                  <Input 
+                    id="allergies" 
+                    type="text" 
+                    placeholder="E.g., medications, foods, etc."
+                    className="w-full dark:bg-zinc-700 dark:border-zinc-600"
+                    {...register("allergies")}
+                  />
+                </div>
+
+                <div className="mt-4">
+                  <Label htmlFor="medications" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Current medications
+                  </Label>
+                  <Input 
+                    id="medications" 
+                    type="text" 
+                    placeholder="List any medications you're currently taking"
+                    className="w-full dark:bg-zinc-700 dark:border-zinc-600"
+                    {...register("medications")}
+                  />
+                </div>
+
+                <div className="mt-4 flex items-center">
+                  <Checkbox 
+                    id="recent-injury" 
+                    className="mr-2" 
+                    {...register("recentInjury")}
+                  />
+                  <Label htmlFor="recent-injury" className="text-sm text-gray-700 dark:text-gray-300">
+                    Have you experienced a recent injury or trauma?
+                  </Label>
                 </div>
               </div>
-            </div>
-            
-            <div className="mt-8 flex justify-end bg-white dark:bg-black">
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="mr-3"
-                onClick={onClose}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" className="bg-red-500 hover:bg-red-600 text-white shadow-md">
-                Submit Assessment
-              </Button>
+              
+              <div className="flex justify-end pt-4">
+                <Button variant="outline" className="mr-2" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-primary hover:bg-primary/90">
+                  Submit Assessment
+                </Button>
+              </div>
             </div>
           </form>
         </div>

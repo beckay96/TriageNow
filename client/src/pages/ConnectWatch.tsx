@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import HealthMetricCard from '@/components/HealthMetricCard';
 import ChatMessage from '@/components/ChatMessage';
 import ChatTypingIndicator from '@/components/ChatTypingIndicator';
-import QuestionnaireItem from '@/components/QuestionnaireItem';
+import QuestionnaireModal from '@/components/QuestionnaireModal';
 import TriageStatus from '@/components/TriageStatus';
 import useStore from '@/store';
 
@@ -251,126 +251,7 @@ const ConnectWatch: FC = () => {
               </div>
             </>
           )}
-          {/* Triage Questionnaire */}
-          {showQuestionnaire && (
-            <div className="bg-white rounded-lg shadow p-6 mb-8 dark:bg-black dark:text-white">
-              <h3 className="text-lg font-semibold text-neutral-700 dark:text-white mb-4 flex items-center">
-                <span className="material-icons text-blue-500 mr-2">quiz</span>
-                Quick Symptom Assessment
-              </h3>
-
-              <form id="symptom-form" onSubmit={handleQuestionnaireSubmit}>
-                <QuestionnaireItem 
-                  question="Are you experiencing any pain?"
-                  name="pain"
-                  options={[
-                    { value: 'none', label: 'No pain' },
-                    { value: 'mild', label: 'Mild pain' },
-                    { value: 'moderate', label: 'Moderate pain' },
-                    { value: 'severe', label: 'Severe pain' }
-                  ]}
-                  selected={questionnaireData.pain}
-                  onChange={handlePainChange}
-                />
-
-                <QuestionnaireItem 
-                  question="Are you having trouble breathing?"
-                  name="breathing"
-                  options={[
-                    { value: 'none', label: 'No difficulty' },
-                    { value: 'slight', label: 'Slight difficulty' },
-                    { value: 'moderate', label: 'Moderate difficulty' },
-                    { value: 'severe', label: 'Severe difficulty' }
-                  ]}
-                  selected={questionnaireData.breathing}
-                  onChange={handleBreathingChange}
-                />
-
-                {/* Additional symptoms */}
-                <div className="mb-6">
-                  <label className="block text-zinc-700 dark:text-white mb-2">Select any other symptoms you're experiencing:</label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    <label className="inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400">
-                      <input 
-                        type="checkbox" 
-                        name="symptoms" 
-                        value="fever" 
-                        checked={questionnaireData.symptoms.includes('fever')}
-                        onChange={handleSymptomChange}
-                        className="mr-2" 
-                      />
-                      Fever
-                    </label>
-                    <label className="inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400">
-                      <input 
-                        type="checkbox" 
-                        name="symptoms" 
-                        value="dizziness" 
-                        checked={questionnaireData.symptoms.includes('dizziness')}
-                        onChange={handleSymptomChange}
-                        className="mr-2" 
-                      />
-                      Dizziness
-                    </label>
-                    <label className="inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400">
-                      <input 
-                        type="checkbox" 
-                        name="symptoms" 
-                        value="nausea" 
-                        checked={questionnaireData.symptoms.includes('nausea')}
-                        onChange={handleSymptomChange}
-                        className="mr-2" 
-                      />
-                      Nausea/Vomiting
-                    </label>
-                    <label className="inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400">
-                      <input 
-                        type="checkbox" 
-                        name="symptoms" 
-                        value="cough" 
-                        checked={questionnaireData.symptoms.includes('cough')}
-                        onChange={handleSymptomChange}
-                        className="mr-2" 
-                      />
-                      Cough
-                    </label>
-                    <label className="inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400">
-                      <input 
-                        type="checkbox" 
-                        name="symptoms" 
-                        value="rash" 
-                        checked={questionnaireData.symptoms.includes('rash')}
-                        onChange={handleSymptomChange}
-                        className="mr-2" 
-                      />
-                      Rash
-                    </label>
-                    <label className="inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400">
-                      <input 
-                        type="checkbox" 
-                        name="symptoms" 
-                        value="weakness" 
-                        checked={questionnaireData.symptoms.includes('weakness')}
-                        onChange={handleSymptomChange}
-                        className="mr-2" 
-                      />
-                      Weakness
-                    </label>
-                  </div>
-                </div>
-
-                <div className="flex justify-end">
-                  <button 
-                    type="submit" 
-                    className="bg-primary hover:bg-primary-dark dark:bg-black border border-blue-500 text-white py-2 px-4 rounded-md font-medium transition-colors"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-
+          {/* Health Assessment Banner */}
           {!showQuestionnaire && (
             <div className="lg:flex flex-row gap-2 bg-gradient-to-r from-red-50 to-white dark:bg-gradient-to-r dark:from-black dark:via-black dark:to-red-900 border-l-4 border-red-500 p-5 rounded-lg shadow-md mb-8 items-center justify-between">
               <div className="flex items-start">
@@ -391,18 +272,13 @@ const ConnectWatch: FC = () => {
               </button>
             </div>
           )}
-
-          {showQuestionnaire && (
-            <div className="flex justify-center mb-8">
-              <button 
-                className="flex items-center inline-flex items-center bg-white text-zinc-900 border border-blue-400 rounded-md px-3 py-2 cursor-pointer dark:bg-black dark:text-white hover:dark:bg-blue-900/40 hover:dark:border-blue-400 transition-colors"
-                onClick={toggleQuestionnaire}
-              >
-                <span className="material-icons mr-1">close</span>
-                Close Questionnaire
-              </button>
-            </div>
-          )}
+          
+          {/* Triage Questionnaire Modal */}
+          <QuestionnaireModal 
+            isOpen={showQuestionnaire}
+            onClose={toggleQuestionnaire}
+            onSubmit={submitQuestionnaire}
+          />
           {/* End of Questionnaire Section */}
           
           {/* AI Chat Box */}
