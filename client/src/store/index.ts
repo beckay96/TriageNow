@@ -3,6 +3,8 @@ import { mockPatientEntries, mockPatients } from '@/utils/mockData';
 
 // Define the patient's health metrics
 export interface HealthMetrics {
+  id?: number;
+  timestamp?: Date;
   heartRate: number;
   bloodPressure: {
     systolic: number;

@@ -212,31 +212,47 @@ const NoWatchPatientDashboard: FC = () => {
     let responseMessage = "Based on the information you've provided, ";
     let recommendation = "";
     
-    // Determine triage status based on symptoms
-    if (
-      formData.symptoms.includes('chest_pain') || 
-      formData.symptoms.includes('severe_bleeding') || 
-      formData.symptoms.includes('stroke_symptoms') ||
-      (formData.breathing === 'severe')
-    ) {
-      recommendation = "your symptoms suggest a critical situation that requires immediate medical attention. Please call an ambulance or go to the nearest emergency room immediately.";
+    // Determine triage status and recommendation based on symptoms
+    const hasEmergencySymptoms = formData.symptoms.includes('chest_pain') || 
+                                 formData.symptoms.includes('severe_bleeding') || 
+                                 formData.symptoms.includes('stroke_symptoms');
+    
+    const hasSeriousSymptoms = painLevel === 'severe' || 
+                               breathingLevel === 'severe' ||
+                               (formData.symptoms.includes('fever') && formData.temperature > 102);
+    
+    const hasModerateSymptoms = painLevel === 'moderate' || 
+                               breathingLevel === 'moderate' ||
+                               (formData.symptoms.includes('fever') && formData.symptoms.includes('dizziness'));
+    
+    const hasChestPain = formData.symptoms.includes('chest_pain');
+    const hasBackPain = formData.painLocation && formData.painLocation.toLowerCase().includes('back');
+    const hasHeadache = formData.symptoms.includes('headache');
+    
+    // Custom recommendations based on specific symptoms
+    if (hasEmergencySymptoms || breathingLevel === 'severe') {
+      if (hasChestPain) {
+        recommendation = "you're experiencing chest pain which could indicate several conditions ranging from muscle strain to more serious cardiac issues. Given your symptoms, it would be advisable to seek prompt medical evaluation at an emergency room to rule out serious conditions.";
+      } else if (formData.symptoms.includes('stroke_symptoms')) {
+        recommendation = "the symptoms you're describing could be consistent with a stroke, which requires immediate medical attention. Please call emergency services (911) right away as prompt treatment is essential.";
+      } else {
+        recommendation = "your symptoms suggest a potentially serious condition that requires prompt medical attention. Please seek care at an emergency room or urgent care center immediately.";
+      }
     } 
-    else if (
-      painLevel === 'severe' || 
-      breathingLevel === 'moderate' || 
-      formData.symptoms.includes('fever') && formData.symptoms.includes('dizziness')
-    ) {
-      recommendation = "your symptoms indicate a potentially serious condition. I recommend seeking medical care promptly at an urgent care center or emergency room.";
+    else if (hasSeriousSymptoms) {
+      recommendation = "your symptoms indicate a condition that should be evaluated by a healthcare professional soon. I recommend seeking care at an urgent care center today or scheduling a same-day appointment with your doctor.";
     }
-    else if (
-      painLevel === 'moderate' || 
-      breathingLevel === 'slight' || 
-      formData.symptoms.length >= 3
-    ) {
-      recommendation = "your symptoms suggest you should seek medical advice soon. Consider visiting an urgent care center today.";
+    else if (hasModerateSymptoms) {
+      if (hasBackPain) {
+        recommendation = "back pain can often be managed initially with rest, gentle stretching, and over-the-counter pain relievers. If the pain is persistent, worsening, or associated with other symptoms, consider scheduling an appointment with your primary care physician in the next few days.";
+      } else if (hasHeadache && formData.painLevel < 7) {
+        recommendation = "headaches can often be managed with adequate hydration, rest, and over-the-counter pain relievers. If your headache persists beyond 72 hours, worsens significantly, or is accompanied by other neurological symptoms, please consult your doctor.";
+      } else {
+        recommendation = "based on your symptoms, I recommend scheduling an appointment with your primary care provider in the next few days. In the meantime, rest and stay hydrated.";
+      }
     }
     else {
-      recommendation = "your symptoms appear to be mild. You might consider scheduling an appointment with your primary care provider in the next few days. Monitor your symptoms and seek urgent care if they worsen.";
+      recommendation = "your symptoms appear to be mild. Consider self-care measures like rest, staying hydrated, and over-the-counter remedies as appropriate. If symptoms persist or worsen, schedule an appointment with your primary care provider.";
     }
     
     addChatMessage(responseMessage + recommendation, 'ai');
