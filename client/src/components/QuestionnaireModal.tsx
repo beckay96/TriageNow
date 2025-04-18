@@ -293,7 +293,7 @@ const QuestionnaireModal: React.FC<QuestionnaireModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-2xl max-w-md w-full mx-4 max-h-[90vh] overflow-auto">
+      <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-2xl lg:w-[50%] mx-4 max-h-[90vh] overflow-auto">
         <div className="p-5 border-b border-gray-200 dark:border-zinc-700 bg-gradient-to-r from-blue-50 to-white dark:from-blue-900/20 dark:to-zinc-900 flex justify-between items-center">
           <div className="flex items-center">
             <span className="material-icons text-blue-500 mr-2">medical_information</span>

@@ -56,7 +56,7 @@ const ConnectWatch: FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-full">
       {!watchConnected ? (
         <div className="text-center">
           <div className="mb-8">

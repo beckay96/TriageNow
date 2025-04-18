@@ -78,69 +78,74 @@ const ChatPopup: FC<ChatPopupProps> = ({ patientOption, showQuestionnaire }) => 
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end">
-      <AnimatePresence>
-        {isChatOpen && (
-          <motion.div 
-            className="bg-white dark:bg-zinc-900 dark:border dark:border-zinc-800 rounded-lg shadow-lg overflow-hidden mb-2 w-80 md:w-96"
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div className="bg-primary dark:bg-gradient-to-r dark:from-blue-800 dark:to-zinc-800 p-3 flex justify-between items-center">
-              <h3 className="text-white font-semibold flex items-center">
-                <span className="material-icons mr-2 transition-transform duration-300 hover:scale-110 hover:rotate-12">smart_toy</span>
-                Health Assistant
-              </h3>
-              <button 
-                onClick={toggleChat}
-                className="text-white hover:bg-white/10 rounded-full p-1 transition-colors duration-200"
+        <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end justify-end">
+          <AnimatePresence>
+            {isChatOpen && (
+              <motion.div 
+                className="bg-white dark:bg-zinc-900 dark:border dark:border-zinc-800 rounded-lg shadow-lg flex flex-col mb-2 w-80 md:w-96 max-h-[80vh] overflow-hidden"
+                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
               >
-                <span className="material-icons text-sm">remove</span>
-              </button>
-            </div>
-            <div className="p-3 h-80 overflow-y-auto bg-neutral-50 dark:bg-zinc-900">
-              {chatMessages.map(message => (
-                <ChatMessage key={message.id} message={message} />
-              ))}
-              {processingUserInput && <ChatTypingIndicator />}
-              <div ref={chatEndRef} />
-            </div>
-            <div className="p-3 border-t dark:border-zinc-800">
-              <div className="flex">
-                <input 
-                  type="text" 
-                  placeholder="Type your symptoms or questions here..." 
-                  className="flex-1 border border-neutral-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white rounded-l-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-green-400 focus:border-transparent"
-                  value={userMessage}
-                  onChange={(e) => setUserMessage(e.target.value)}
-                  onKeyUp={handleKeyUp}
-                />
-                <button 
-                  className="bg-primary dark:bg-blue-700 text-white px-3 rounded-r-md hover:bg-primary-dark dark:hover:bg-blue-600 transition-colors"
-                  onClick={handleSendMessage}
-                >
-                  <span className="material-icons text-sm">send</span>
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                {/* Header - always visible */}
+                <div className="bg-primary dark:bg-gradient-to-r dark:from-blue-800 dark:to-zinc-800 p-3 flex justify-between items-center flex-shrink-0">
+                  <h3 className="text-white font-semibold flex items-center">
+                    <span className="material-icons mr-2 transition-transform duration-300 hover:scale-110 hover:rotate-12">smart_toy</span>
+                    Health Assistant
+                  </h3>
+                  <button 
+                    onClick={toggleChat}
+                    className="text-white hover:bg-white/10 rounded-full p-1 transition-colors duration-200"
+                  >
+                    <span className="material-icons text-sm">remove</span>
+                  </button>
+                </div>
+
+                {/* Messages area - scrollable */}
+                <div className="flex-grow overflow-y-auto p-3">
+                  {chatMessages.map(message => (
+                    <ChatMessage key={message.id} message={message} />
+                  ))}
+                  {processingUserInput && <ChatTypingIndicator />}
+                  <div ref={chatEndRef} />
+                </div>
+
+                {/* Input area - always visible */}
+                <div className="p-3 border-t dark:border-zinc-800 flex-shrink-0">
+                  <div className="flex">
+                    <input 
+                      type="text" 
+                      placeholder="Type your symptoms or questions here..." 
+                      className="flex-1 border border-neutral-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white rounded-l-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-green-400 focus:border-transparent"
+                      value={userMessage}
+                      onChange={(e) => setUserMessage(e.target.value)}
+                      onKeyUp={handleKeyUp}
+                    />
+                    <button 
+                      className="bg-primary dark:bg-blue-700 text-white px-3 rounded-r-md hover:bg-primary-dark dark:hover:bg-blue-600 transition-colors"
+                      onClick={handleSendMessage}
+                    >
+                      <span className="material-icons text-sm">send</span>
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
       
       {/* Chat Icon Button */}
       <button 
         onClick={toggleChat}
         className={`
-          bg-primary dark:bg-blue-700 text-white p-3 rounded-full shadow-lg 
-          hover:shadow-xl transition-all duration-300 transform hover:scale-110
+          bg-gradient-to-br from-blue-400/70 via-green-400/70 to-purple-400/70 dark:bg-blue-700 text-white p-2 rounded-full shadow-xl border border-blue-500 dark:border-blue-400 flex items-center justify-center m-3
+          hover:shadow-xl transition-all duration-300 transform hover:scale-150
           group relative
-          ${isChatOpen ? 'rotate-0' : 'animate-pulse'}
+          ${isChatOpen ? 'rotate-0' : 'hover-lift'}
         `}
         aria-label="Toggle chat assistant"
       >
-        <span className="material-icons">
+        <span className="material-icons text-black">
           {isChatOpen ? 'chat' : 'smart_toy'}
         </span>
         {!isChatOpen && chatMessages.length > 0 && (

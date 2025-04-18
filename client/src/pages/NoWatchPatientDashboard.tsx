@@ -4,6 +4,7 @@ import QuestionnaireModal from '@/components/QuestionnaireModal';
 import TriageStatus from '@/components/TriageStatus';
 import ChatPopup from '@/components/ChatPopup';
 import useStore from '@/store';
+import { Watch } from 'lucide-react';
 
 const NoWatchPatientDashboard: FC = () => {
   const [, navigate] = useLocation();
@@ -170,6 +171,22 @@ const NoWatchPatientDashboard: FC = () => {
 
       {/* Chat Popup */}
       <ChatPopup patientOption={patientOption} showQuestionnaire={toggleQuestionnaire} />
+
+          <div className="bg-blue-900/30 border border-blue-600 rounded-lg p-4 my-4 max-w-3xl">
+            <div className="flex items-start">
+              <div className="bg-blue-500 p-2 rounded-full mr-4 flex-shrink-0">
+                <Watch size={20} className="text-white" />
+              </div>
+              <div>
+                <h3 className="text-blue-800 dark:text-blue-300 font-medium text-lg mb-1">Hospital Arrival Tip</h3>
+                <p className="text-black/90 dark:text-white/90">
+                  When you arrive at the hospital or meet with medical staff, please request one of the 
+                  supplied smartwatches for enhanced monitoring of your condition.
+                </p>
+              </div>
+            </div>
+          </div>
+
     </div>
   );
 };
