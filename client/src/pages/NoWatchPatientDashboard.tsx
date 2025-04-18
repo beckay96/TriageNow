@@ -2,7 +2,7 @@ import { FC, useEffect, useState, useRef } from 'react';
 import { useLocation } from 'wouter';
 import ChatMessage from '@/components/ChatMessage';
 import ChatTypingIndicator from '@/components/ChatTypingIndicator';
-import QuestionnaireItem from '@/components/QuestionnaireItem';
+import QuestionnaireModal from '@/components/QuestionnaireModal';
 import TriageStatus from '@/components/TriageStatus';
 import useStore from '@/store';
 
