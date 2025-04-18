@@ -926,71 +926,235 @@ const useStore = create<StoreState>((set, get) => ({
     set({ differentialDiagnoses: limitedDifferentials.slice(0, 5) });
   },
 
-  // Enhanced AI response generator
+  // Enhanced AI response generator with more realistic medical responses
   generateAIResponse: async (userMessage) => {
     const { healthMetrics, healthStatuses, triageStatus, questionnaireData } = get();
-
-    // Set processing flag
+    
+    // Set processing flag to show typing indicator
     set({ processingUserInput: true });
-
-    // Convert user message to lowercase for easier comparison
-    const messageLower = userMessage.toLowerCase();
-
-    // Define symptom keywords to look for in user message
-    const symptomKeywords = {
-      'pain': ['pain', 'hurt', 'hurts', 'hurting', 'ache', 'sore'],
-      'breathing': ['breath', 'breathing', 'breathe', 'short of breath', 'shortness', 'suffocating'],
-      'dizziness': ['dizzy', 'dizziness', 'lightheaded', 'faint', 'fainting', 'vertigo', 'spinning'],
-      'chest pain': ['chest pain', 'chest hurts', 'chest pressure', 'chest tightness'],
-      'headache': ['headache', 'migraine', 'head hurts', 'head pain'],
-      'fever': ['fever', 'hot', 'temperature', 'sweating', 'chills'],
-      'nausea': ['nausea', 'nauseated', 'sick to my stomach', 'feel sick', 'queasy'],
-      'vomiting': ['vomit', 'throwing up', 'threw up', 'puking'],
-      'weakness': ['weak', 'weakness', 'tired', 'fatigue', 'exhausted', 'no energy'],
-      'confusion': ['confused', 'confusion', 'disoriented', 'can\'t think straight'],
-    };
-
-    // Check if message is describing new symptoms
-    let newSymptoms: string[] = [];
-
-    Object.entries(symptomKeywords).forEach(([symptom, keywords]) => {
-      if (keywords.some(keyword => messageLower.includes(keyword))) {
-        newSymptoms.push(symptom);
-      }
-    });
-
-    // Prepare response based on message content
+    
+    // Simulate AI processing time for a more natural interaction
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Determine confidence level based on input complexity and available data
+    let confidence = 75; // Default confidence
+    
+    // Context-aware pattern matching for more realistic responses
     let response = "";
-
-    if (newSymptoms.length > 0) {
-      // User is describing new symptoms
-      response = `Thank you for sharing that information about your ${newSymptoms.join(', ')}. `;
-
-      if (triageStatus === 'critical' || triageStatus === 'high') {
-        response += "Based on this and your previous information, I continue to recommend seeking immediate medical attention. ";
-
-        if (newSymptoms.includes('chest pain') || newSymptoms.includes('breathing')) {
-          response += "The combination of symptoms you're describing could indicate a serious condition that requires emergency evaluation.";
+    const lowerCaseMessage = userMessage.toLowerCase();
+    
+    // Process specific vital signs questions with health metrics context
+    if (healthMetrics) {
+      if (lowerCaseMessage.includes('blood pressure')) {
+        const bp = healthMetrics.bloodPressure;
+        response = `Your blood pressure is ${bp.systolic}/${bp.diastolic} mmHg. `;
+        
+        if (bp.systolic > 180 || bp.diastolic > 120) {
+          response += "This is severely elevated and requires immediate medical attention.";
+          confidence = 90;
+        } else if (bp.systolic > 140 || bp.diastolic > 90) {
+          response += "This is considered hypertension (stage 2). I would recommend discussing this with a healthcare provider in the near future. In the meantime, reducing sodium intake, regular exercise, and stress management may help.";
+          confidence = 88;
+        } else if (bp.systolic > 130 || bp.diastolic > 80) {
+          response += "This is slightly elevated (stage 1 hypertension) and worth monitoring. Lifestyle changes like reduced sodium intake, regular exercise, and stress management can be helpful.";
+          confidence = 85;
+        } else if (bp.systolic < 90 || bp.diastolic < 60) {
+          response += "This is below the typical range (hypotension). If you're feeling dizzy or lightheaded, please ensure you're well-hydrated and consider consulting a healthcare provider.";
+          confidence = 83;
         } else {
-          response += "Would you like me to update your assessment with this new information?";
+          response += "This is within the normal range.";
+          confidence = 90;
         }
-      } else {
-        response += "I recommend updating your symptom questionnaire with this new information so I can provide a more accurate assessment.";
       }
-    } else {
-      // General response based on triage status
-      if (triageStatus === 'critical' || triageStatus === 'high') {
-        response = "I understand your concern. Given your current condition, it's important that you receive medical attention promptly. Are there any specific questions you have while preparing to seek care?";
-      } else if (triageStatus === 'medium') {
-        response = "I'm here to help you navigate your health concerns. Based on your information, medical evaluation is recommended. Is there anything specific you'd like to know about managing your symptoms in the meantime?";
-      } else {
-        response = "I'm here to assist with your health questions. Your condition appears stable based on the information provided. Would you like information about self-care measures for your symptoms?";
+      else if (lowerCaseMessage.includes('heart rate') || lowerCaseMessage.includes('pulse')) {
+        const hr = healthMetrics.heartRate;
+        response = `Your heart rate is ${hr} BPM. `;
+        
+        if (hr > 120) {
+          response += "This is significantly elevated (tachycardia). If you're experiencing chest pain, shortness of breath, or dizziness along with this elevated heart rate, please seek medical attention.";
+          confidence = 87;
+        } else if (hr > 100) {
+          response += "This is elevated (mild tachycardia) and could be due to recent physical activity, stress, caffeine, certain medications, or other factors. If you've been at rest and this persists, consider consulting a healthcare provider.";
+          confidence = 85;
+        } else if (hr < 50) {
+          response += "This is significantly lower than average (bradycardia). For athletes, this can be normal. If you're experiencing symptoms like dizziness or fatigue, please consult a healthcare provider.";
+          confidence = 83;
+        } else if (hr < 60) {
+          response += "This is lower than average (mild bradycardia). For some people, especially those who are physically fit, this can be normal. If you're not experiencing symptoms, this is likely not concerning.";
+          confidence = 85;
+        } else {
+          response += "This is within the normal range.";
+          confidence = 90;
+        }
+      }
+      else if (lowerCaseMessage.includes('oxygen') || lowerCaseMessage.includes('o2')) {
+        const oxygen = healthMetrics.bloodOxygen;
+        response = `Your blood oxygen saturation is ${oxygen}%. `;
+        
+        if (oxygen < 88) {
+          response += "This is significantly below normal and requires immediate medical attention.";
+          confidence = 90;
+        } else if (oxygen < 92) {
+          response += "This is below the normal range. For individuals with certain chronic conditions like COPD, this may be baseline, but otherwise should be evaluated by a healthcare provider.";
+          confidence = 85;
+        } else if (oxygen < 95) {
+          response += "This is slightly below the normal range. Please monitor closely, especially if you're experiencing shortness of breath or fatigue.";
+          confidence = 83;
+        } else {
+          response += "This is within the normal range.";
+          confidence = 90;
+        }
+      }
+      else if (lowerCaseMessage.includes('temperature') || lowerCaseMessage.includes('fever')) {
+        const temp = healthMetrics.temperature;
+        response = `Your temperature is ${temp}°F. `;
+        
+        if (temp > 103) {
+          response += "This indicates a high fever which may require medical attention, especially if it persists, is accompanied by severe symptoms, or if you have underlying health conditions.";
+          confidence = 88;
+        } else if (temp > 100.4) {
+          response += "This indicates a fever. Rest, stay hydrated, and consider over-the-counter fever reducers like acetaminophen or ibuprofen if appropriate for you. If your fever persists beyond 72 hours, please consult a healthcare provider.";
+          confidence = 85;
+        } else if (temp > 99.5) {
+          response += "This is slightly elevated and may indicate a low-grade fever. Monitor for changes and other symptoms, stay hydrated, and rest as needed.";
+          confidence = 83;
+        } else {
+          response += "This is within the normal range.";
+          confidence = 90;
+        }
       }
     }
+    
+    // Handle specific health questions or symptoms with medically appropriate responses
+    if (response === "") {
+      // Define symptom keywords to look for in user message
+      const symptomKeywords = {
+        'pain': ['pain', 'hurt', 'hurts', 'hurting', 'ache', 'sore'],
+        'breathing': ['breath', 'breathing', 'breathe', 'short of breath', 'shortness', 'suffocating'],
+        'dizziness': ['dizzy', 'dizziness', 'lightheaded', 'faint', 'fainting', 'vertigo', 'spinning'],
+        'chest pain': ['chest pain', 'chest hurts', 'chest pressure', 'chest tightness'],
+        'headache': ['headache', 'migraine', 'head hurts', 'head pain'],
+        'fever': ['fever', 'hot', 'temperature', 'sweating', 'chills'],
+        'nausea': ['nausea', 'nauseated', 'sick to my stomach', 'feel sick', 'queasy'],
+        'vomiting': ['vomit', 'throwing up', 'threw up', 'puking'],
+        'weakness': ['weak', 'weakness', 'tired', 'fatigue', 'exhausted', 'no energy'],
+        'back pain': ['back pain', 'back hurts', 'back ache', 'lower back', 'upper back'],
+      };
 
-    // Clear processing flag
-    set({ processingUserInput: false });
+      // Check if message is describing symptoms
+      let detectedSymptoms: string[] = [];
+      Object.entries(symptomKeywords).forEach(([symptom, keywords]) => {
+        if (keywords.some(keyword => lowerCaseMessage.includes(keyword))) {
+          detectedSymptoms.push(symptom);
+        }
+      });
 
+      if (detectedSymptoms.includes('chest pain')) {
+        // Different responses based on chest pain characteristics
+        if (lowerCaseMessage.includes('radiating') || lowerCaseMessage.includes('arm') || lowerCaseMessage.includes('jaw')) {
+          response = "Chest pain that radiates to the arm, jaw, neck, or back can be concerning for a heart condition. This type of pain, especially when accompanied by shortness of breath, sweating, or nausea, should be evaluated by a healthcare provider. If the pain is severe or new, consider seeking prompt medical evaluation.";
+          confidence = 80;
+        } else if (lowerCaseMessage.includes('exercise') || lowerCaseMessage.includes('exertion')) {
+          response = "Chest pain that occurs with physical exertion and improves with rest may indicate angina. If this is a new symptom for you, please consider scheduling an appointment with your doctor. They may recommend tests to evaluate your heart function.";
+          confidence = 78;
+        } else if (lowerCaseMessage.includes('sharp') || lowerCaseMessage.includes('stabbing')) {
+          response = "Sharp or stabbing chest pain that changes with breathing or body position often relates to musculoskeletal issues or inflammation around the lungs (pleurisy). While these conditions are typically less serious than heart problems, persistent or severe pain should be evaluated by a healthcare provider.";
+          confidence = 75;
+        } else {
+          response = "Chest pain can have many causes ranging from musculoskeletal issues to digestive problems to heart conditions. If your pain is mild and not associated with other concerning symptoms like shortness of breath or nausea, you might consider scheduling a regular appointment with your doctor. For severe, sudden, or concerning chest pain, prompt medical evaluation is recommended.";
+          confidence = 70;
+        }
+      }
+      else if (detectedSymptoms.includes('headache')) {
+        if (lowerCaseMessage.includes('worst') || lowerCaseMessage.includes('severe') || lowerCaseMessage.includes('thunderclap')) {
+          response = "A sudden, severe headache described as 'the worst headache of your life' should be evaluated promptly, especially if it's accompanied by neck stiffness, fever, confusion, or vision changes. This type of headache could indicate a serious condition that requires medical attention.";
+          confidence = 80;
+        } else if (lowerCaseMessage.includes('fever') || lowerCaseMessage.includes('stiff neck')) {
+          response = "A headache with fever and stiff neck should be evaluated by a healthcare provider, as it may indicate an infection. It's best to have these symptoms assessed to determine the appropriate treatment.";
+          confidence = 78;
+        } else if (lowerCaseMessage.includes('migraine') || lowerCaseMessage.includes('aura') || lowerCaseMessage.includes('vision')) {
+          response = "Migraines often cause throbbing pain, sensitivity to light and sound, and sometimes visual disturbances called 'aura'. Resting in a dark, quiet room and over-the-counter pain relievers may help. If migraines are frequent or significantly impact your daily life, consider discussing prescription medications with your healthcare provider.";
+          confidence = 75;
+        } else {
+          response = "Headaches can result from many factors including tension, dehydration, eye strain, or underlying health conditions. For occasional headaches, rest, hydration, and over-the-counter pain relievers often help. If you're experiencing frequent or particularly severe headaches, consider discussing this with your healthcare provider.";
+          confidence = 70;
+        }
+      }
+      else if (detectedSymptoms.includes('back pain')) {
+        if (lowerCaseMessage.includes('lower back') || lowerCaseMessage.includes('lumbar')) {
+          response = "Lower back pain is often caused by muscle strain or poor posture. Most cases improve with rest, gentle stretching, and over-the-counter anti-inflammatory medications. Using proper lifting technique and maintaining good posture can help prevent recurrence. If pain persists beyond a few weeks or is accompanied by numbness or weakness, consulting with your primary care provider would be appropriate.";
+          confidence = 75;
+        } else if (lowerCaseMessage.includes('chronic') || lowerCaseMessage.includes('long-term')) {
+          response = "Chronic back pain can significantly impact quality of life. A comprehensive approach often helps, including physical therapy, appropriate exercise, stress management, and sometimes medication. Your primary care provider can help develop a management plan or refer you to a specialist if needed.";
+          confidence = 70;
+        } else {
+          response = "Back pain is usually caused by muscle strain, poor posture, or stress. Most cases improve with rest, gentle movement, and over-the-counter pain relievers. If your pain is mild to moderate without other concerning symptoms, home care and over-the-counter medications are reasonable first steps. If symptoms persist or worsen, consider consulting your healthcare provider.";
+          confidence = 68;
+        }
+      }
+      else if (detectedSymptoms.length > 0) {
+        // Generic response for other symptoms
+        response = `I understand you're experiencing ${detectedSymptoms.join(', ')}. `;
+        
+        if (triageStatus === 'critical' || triageStatus === 'high') {
+          response += "Based on your overall assessment, I recommend seeking prompt medical evaluation. Would you like information about managing these symptoms in the meantime?";
+        } else if (triageStatus === 'medium') {
+          response += "These symptoms should be evaluated by a healthcare provider. Consider scheduling an appointment with your doctor in the next few days. In the meantime, rest and stay hydrated.";
+        } else {
+          response += "These symptoms are often manageable with self-care measures like rest, hydration, and over-the-counter medications as appropriate. If they persist or worsen, consider consulting with your healthcare provider.";
+        }
+        confidence = 65;
+      }
+      else if (lowerCaseMessage.includes('what should i do') || lowerCaseMessage.includes('should i go to')) {
+        // Recommendations for care based on triage status
+        if (triageStatus === 'critical') {
+          response = "Based on your assessment, I recommend seeking prompt medical evaluation. Your symptoms suggest a condition that should be evaluated by a healthcare professional soon. If you're experiencing severe symptoms such as significant shortness of breath, chest pain, or altered consciousness, please consider emergency services.";
+        } else if (triageStatus === 'high') {
+          response = "Your symptoms suggest you should be evaluated by a healthcare provider today. An urgent care center or same-day appointment with your doctor would be appropriate for your current condition.";
+        } else if (triageStatus === 'medium') {
+          response = "Consider scheduling an appointment with your healthcare provider in the next few days. In the meantime, rest, stay hydrated, and monitor your symptoms. If they worsen, seek care sooner.";
+        } else {
+          response = "Your symptoms appear to be mild. Self-care measures like rest, hydration, and over-the-counter medications are often helpful. If symptoms persist beyond a week or worsen, consider contacting your healthcare provider.";
+        }
+        confidence = 60;
+      }
+      else {
+        // General response if no specific pattern is matched
+        response = "I understand you have health concerns, but I need more specific information to provide helpful guidance. Could you describe your symptoms in more detail, including when they started, their severity, and any factors that make them better or worse? This will help me provide more tailored information.";
+        confidence = 50;
+      }
+    }
+    
+    // Add appropriate medical disclaimers based on the severity
+    if (response.includes("immediate medical attention") || response.includes("emergency")) {
+      response += " Please note that this information is not a substitute for professional medical advice. If you're experiencing a medical emergency, please contact emergency services or go to the nearest emergency department.";
+    } else if (!response.includes("consult")) {
+      response += " This information is meant for educational purposes only and shouldn't replace consultation with a healthcare provider for proper evaluation and treatment.";
+    }
+    
+    // Adjust confidence based on data quality and completeness
+    if (healthMetrics && questionnaireData.symptomsDescription) {
+      confidence += 10; // More data improves confidence
+    } else if (!healthMetrics && questionnaireData.symptomsDescription) {
+      confidence += 5; // Some data is better than none
+    } else if (!healthMetrics && !questionnaireData.symptomsDescription) {
+      confidence -= 10; // Very limited data reduces confidence
+    }
+    
+    // Further adjust confidence based on symptom specificity
+    if (lowerCaseMessage.length > 50) {
+      confidence += 5; // More detailed user input improves confidence
+    }
+    
+    // Clamp confidence between 35-95 (never perfect certainty or complete uncertainty)
+    confidence = Math.max(35, Math.min(95, confidence));
+    
+    // Update the state with the response and new confidence level
+    set({ 
+      processingUserInput: false,
+      aiConfidence: confidence
+    });
+    
     return response;
   },
 

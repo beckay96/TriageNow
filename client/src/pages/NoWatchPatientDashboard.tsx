@@ -121,11 +121,22 @@ const NoWatchPatientDashboard: FC = () => {
     }
   };
 
-  // Local state for form values
+  // Local state for form values - include all necessary fields from QuestionnaireData
   const [formData, setFormData] = useState({
     pain: questionnaireData.pain,
     breathing: questionnaireData.breathing,
-    symptoms: [...questionnaireData.symptoms]
+    symptoms: [...questionnaireData.symptoms],
+    symptomsDescription: questionnaireData.symptomsDescription,
+    symptomsStarted: questionnaireData.symptomsStarted,
+    painLevel: questionnaireData.painLevel,
+    painLocation: questionnaireData.painLocation,
+    painCharacteristics: [...questionnaireData.painCharacteristics],
+    conditions: { ...questionnaireData.conditions },
+    conditionsOther: questionnaireData.conditionsOther,
+    allergies: questionnaireData.allergies,
+    medications: questionnaireData.medications,
+    recentInjury: questionnaireData.recentInjury,
+    levelOfConsciousness: questionnaireData.levelOfConsciousness
   });
   
   // Handle questionnaire changes without submitting immediately
@@ -219,14 +230,14 @@ const NoWatchPatientDashboard: FC = () => {
     
     const hasSeriousSymptoms = painLevel === 'severe' || 
                                breathingLevel === 'severe' ||
-                               (formData.symptoms.includes('fever') && formData.temperature > 102);
+                               formData.symptoms.includes('fever');
     
     const hasModerateSymptoms = painLevel === 'moderate' || 
                                breathingLevel === 'moderate' ||
                                (formData.symptoms.includes('fever') && formData.symptoms.includes('dizziness'));
     
     const hasChestPain = formData.symptoms.includes('chest_pain');
-    const hasBackPain = formData.painLocation && formData.painLocation.toLowerCase().includes('back');
+    const hasBackPain = formData.symptoms.includes('back_pain');
     const hasHeadache = formData.symptoms.includes('headache');
     
     // Custom recommendations based on specific symptoms
@@ -245,7 +256,7 @@ const NoWatchPatientDashboard: FC = () => {
     else if (hasModerateSymptoms) {
       if (hasBackPain) {
         recommendation = "back pain can often be managed initially with rest, gentle stretching, and over-the-counter pain relievers. If the pain is persistent, worsening, or associated with other symptoms, consider scheduling an appointment with your primary care physician in the next few days.";
-      } else if (hasHeadache && formData.painLevel < 7) {
+      } else if (hasHeadache) {
         recommendation = "headaches can often be managed with adequate hydration, rest, and over-the-counter pain relievers. If your headache persists beyond 72 hours, worsens significantly, or is accompanied by other neurological symptoms, please consult your doctor.";
       } else {
         recommendation = "based on your symptoms, I recommend scheduling an appointment with your primary care provider in the next few days. In the meantime, rest and stay hydrated.";
