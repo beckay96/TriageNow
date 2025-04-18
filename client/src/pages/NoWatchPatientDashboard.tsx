@@ -14,7 +14,8 @@ const NoWatchPatientDashboard: FC = () => {
     triageStatus,
     showQuestionnaire,
     toggleQuestionnaire,
-    submitQuestionnaire
+    submitQuestionnaire,
+    addChatMessage
   } = useStore();
 
   // Redirect if not in patient role or no option selected
@@ -49,7 +50,6 @@ const NoWatchPatientDashboard: FC = () => {
     submitQuestionnaire(data);
     
     // Generate AI response based on the submitted data
-    const symptomDescription = data.symptoms.join(', ');
     const painLevel = data.pain;
     const breathingLevel = data.breathing;
     

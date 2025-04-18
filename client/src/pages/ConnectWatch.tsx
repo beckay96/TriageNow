@@ -1,19 +1,16 @@
 
-import { FC, useEffect, useState, useRef } from 'react';
+import { FC, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import HealthMetricCard from '@/components/HealthMetricCard';
-import ChatMessage from '@/components/ChatMessage';
-import ChatTypingIndicator from '@/components/ChatTypingIndicator';
 import QuestionnaireModal from '@/components/QuestionnaireModal';
 import VitalSignTrend from '@/components/VitalSignTrend';
 import DiagnosticInsights from '@/components/DiagnosticInsights';
 import TriageStatus from '@/components/TriageStatus';
+import ChatPopup from '@/components/ChatPopup';
 import useStore from '@/store';
 
 const ConnectWatch: FC = () => {
   const [, navigate] = useLocation();
-  const chatEndRef = useRef<HTMLDivElement>(null);
-  const [userMessage, setUserMessage] = useState('');
   
   const { 
     role, 
@@ -23,22 +20,10 @@ const ConnectWatch: FC = () => {
     healthMetrics, 
     healthStatuses,
     triageStatus,
-    chatMessages, 
-    addChatMessage,
     showQuestionnaire,
     toggleQuestionnaire,
-    questionnaireData,
-    updateQuestionnaireData,
-    submitQuestionnaire,
-    processingUserInput
+    submitQuestionnaire
   } = useStore();
-
-  // Scroll to bottom of chat whenever messages change
-  useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [chatMessages]);
 
   // Redirect if not in patient role or no option selected
   useEffect(() => {
@@ -51,19 +36,6 @@ const ConnectWatch: FC = () => {
 
   const handleWatchConnected = () => {
     setWatchConnected(true);
-  };
-
-  const handleSendMessage = () => {
-    if (userMessage.trim()) {
-      addChatMessage(userMessage, 'user');
-      setUserMessage('');
-    }
-  };
-
-  const handleKeyUp = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && userMessage.trim()) {
-      handleSendMessage();
-    }
   };
 
   const getContextMessage = () => {
@@ -261,40 +233,7 @@ const ConnectWatch: FC = () => {
                 </div>
               )}
               
-              {/* AI Chat Box */}
-              <div className="bg-white rounded-lg shadow overflow-hidden mb-8 dark:bg-black">
-                <div className="bg-gradient-to-r from-blue-400 via-purple-400 to-red-400 p-4 dark:bg-gradient-to-r dark:from-blue-900 dark:via-purple-800 dark:to-red-800 p-4">
-                  <h3 className="text-white font-semibold flex items-center">
-                    <span className="material-icons mr-2">smart_toy</span>
-                    Health Assistant
-                  </h3>
-                </div>
-                <div className="p-4 overflow-y-auto bg-neutral-50 dark:bg-black dark:text-white min-h-[300px]">
-                  {chatMessages.map(message => (
-                    <ChatMessage key={message.id} message={message} />
-                  ))}
-                  {processingUserInput && <ChatTypingIndicator />}
-                  <div ref={chatEndRef} />
-                </div>
-                <div className="p-4 border-t">
-                  <div className="flex">
-                    <input 
-                      type="text" 
-                      placeholder="Type your symptoms or questions here..." 
-                      className="flex-1 border border-blue-500 rounded-l-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-zinc-800 dark:text-white"
-                      value={userMessage}
-                      onChange={(e) => setUserMessage(e.target.value)}
-                      onKeyUp={handleKeyUp}
-                    />
-                    <button 
-                      className="bg-primary border border-transparent text-white px-4 rounded-r-md hover:bg-primary-dark transition-colors dark:bg-zinc-800 dark:text-white dark:border-blue-500 dark:hover:bg-blue-900"
-                      onClick={handleSendMessage}
-                    >
-                      <span className="material-icons">send</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
+              {/* Chat Popup will be added at the bottom of the page */}
             </>
           )}
 
@@ -385,6 +324,8 @@ const ConnectWatch: FC = () => {
 
         </div>
       )}
+      {/* Chat Popup */}
+      <ChatPopup patientOption={patientOption} showQuestionnaire={toggleQuestionnaire} />
     </div>
   );
 };
