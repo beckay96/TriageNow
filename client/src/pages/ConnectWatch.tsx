@@ -1,3 +1,4 @@
+
 import { FC, useEffect, useState, useRef } from 'react';
 import { useLocation } from 'wouter';
 import HealthMetricCard from '@/components/HealthMetricCard';
@@ -81,8 +82,6 @@ const ConnectWatch: FC = () => {
         return "Here are your current health metrics based on your smartwatch data.";
     }
   };
-
-  // Handle questionnaire submission directly from the modal
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -233,49 +232,49 @@ const ConnectWatch: FC = () => {
                 />
               </div>
 
-          {/* Triage Questionnaire Modal */}
-          <QuestionnaireModal 
-            isOpen={showQuestionnaire}
-            onClose={toggleQuestionnaire}
-            onSubmit={submitQuestionnaire}
-          />
-          {/* End of Questionnaire Section */}
-          
-          {/* AI Chat Box */}
-          <div className="bg-white rounded-lg shadow overflow-hidden mb-8 dark:bg-black">
-            <div className="bg-gradient-to-r from-blue-400 via-purple-400 to-red-400 p-4 dark:bg-gradient-to-r dark:from-blue-900 dark:via-purple-800 dark:to-red-800 p-4">
-              <h3 className="text-white font-semibold flex items-center">
-                <span className="material-icons mr-2">smart_toy</span>
-                Health Assistant
-              </h3>
-            </div>
-            <div className="p-4 overflow-y-auto bg-neutral-50 dark:bg-black dark:text-white min-h-[300px]">
-              {chatMessages.map(message => (
-                <ChatMessage key={message.id} message={message} />
-              ))}
-              {processingUserInput && <ChatTypingIndicator />}
-              <div ref={chatEndRef} />
-            </div>
-            <div className="p-4 border-t">
-              <div className="flex">
-                <input 
-                  type="text" 
-                  placeholder="Type your symptoms or questions here..." 
-                  className="flex-1 border border-blue-500 rounded-l-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-zinc-800 dark:text-white"
-                  value={userMessage}
-                  onChange={(e) => setUserMessage(e.target.value)}
-                  onKeyUp={handleKeyUp}
-                />
-                <button 
-                  className="bg-primary border border-transparent text-white px-4 rounded-r-md hover:bg-primary-dark transition-colors dark:bg-zinc-800 dark:text-white dark:border-blue-500 dark:hover:bg-blue-900"
-                  onClick={handleSendMessage}
-                >
-                  <span className="material-icons">send</span>
-                </button>
+              {/* Triage Questionnaire Modal */}
+              <QuestionnaireModal 
+                isOpen={showQuestionnaire}
+                onClose={toggleQuestionnaire}
+                onSubmit={submitQuestionnaire}
+              />
+              
+              {/* AI Chat Box */}
+              <div className="bg-white rounded-lg shadow overflow-hidden mb-8 dark:bg-black">
+                <div className="bg-gradient-to-r from-blue-400 via-purple-400 to-red-400 p-4 dark:bg-gradient-to-r dark:from-blue-900 dark:via-purple-800 dark:to-red-800 p-4">
+                  <h3 className="text-white font-semibold flex items-center">
+                    <span className="material-icons mr-2">smart_toy</span>
+                    Health Assistant
+                  </h3>
+                </div>
+                <div className="p-4 overflow-y-auto bg-neutral-50 dark:bg-black dark:text-white min-h-[300px]">
+                  {chatMessages.map(message => (
+                    <ChatMessage key={message.id} message={message} />
+                  ))}
+                  {processingUserInput && <ChatTypingIndicator />}
+                  <div ref={chatEndRef} />
+                </div>
+                <div className="p-4 border-t">
+                  <div className="flex">
+                    <input 
+                      type="text" 
+                      placeholder="Type your symptoms or questions here..." 
+                      className="flex-1 border border-blue-500 rounded-l-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-zinc-800 dark:text-white"
+                      value={userMessage}
+                      onChange={(e) => setUserMessage(e.target.value)}
+                      onKeyUp={handleKeyUp}
+                    />
+                    <button 
+                      className="bg-primary border border-transparent text-white px-4 rounded-r-md hover:bg-primary-dark transition-colors dark:bg-zinc-800 dark:text-white dark:border-blue-500 dark:hover:bg-blue-900"
+                      onClick={handleSendMessage}
+                    >
+                      <span className="material-icons">send</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-      )}
+            </>
+          )}
 
           {/* Vital Signs Trends */}
           <div className="mb-6">
@@ -361,32 +360,32 @@ const ConnectWatch: FC = () => {
               ]}
             />
           </div>
-          </>
-          )}
+
           {/* Health Assessment Banner */}
           {!showQuestionnaire && (
-          <div className="lg:flex flex-row gap-2 bg-gradient-to-r from-red-50 to-white dark:bg-gradient-to-r dark:from-black dark:via-black dark:to-red-900 border-l-4 border-red-500 p-5 rounded-lg shadow-md mb-8 items-center justify-between">
-          <div className="flex items-start">
-            <span className="material-icons text-red-500 mr-3 text-2xl">medical_services</span>
-            <div>
-              <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Complete Your Health Assessment</h3>
-              <p className="text-gray-700 dark:text-white/70">
-                Provide more details about your symptoms and medical history to receive a more accurate health assessment and priority level.
-              </p>
+            <div className="lg:flex flex-row gap-2 bg-gradient-to-r from-red-50 to-white dark:bg-gradient-to-r dark:from-black dark:via-black dark:to-red-900 border-l-4 border-red-500 p-5 rounded-lg shadow-md mb-8 items-center justify-between">
+              <div className="flex items-start">
+                <span className="material-icons text-red-500 mr-3 text-2xl">medical_services</span>
+                <div>
+                  <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Complete Your Health Assessment</h3>
+                  <p className="text-gray-700 dark:text-white/70">
+                    Provide more details about your symptoms and medical history to receive a more accurate health assessment and priority level.
+                  </p>
+                </div>
+              </div>
+              <button 
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md shadow-sm transition-colors flex items-center m-4 whitespace-nowrap"
+                onClick={toggleQuestionnaire}
+              >
+                <span className="material-icons mr-1">assignment_turned_in</span>
+                Start Assessment
+              </button>
             </div>
-          </div>
-          <button 
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md shadow-sm transition-colors flex items-center m-4 whitespace-nowrap"
-            onClick={toggleQuestionnaire}
-          >
-            <span className="material-icons mr-1">assignment_turned_in</span>
-            Start Assessment
-          </button>
-          </div>
           )}
-
+        </div>
+      )}
     </div>
-  )
+  );
 };
 
 export default ConnectWatch;
